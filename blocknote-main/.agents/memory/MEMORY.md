@@ -1,0 +1,4 @@
+- [Convex schema deployment](convex-schema-deployment.md) — avoid .withIndex() when schema not yet pushed to cloud; use .filter() instead
+- [BlockNote comments API](blocknote-comments-api.md) — CommentsExtension is a function, not class; FloatingComposerController+FloatingThreadController go inside BlockNoteView
+- [BlockNote TipTap internals](blocknote-tiptap-internals.md) — access ProseMirror/TipTap from BlockNote via editor._tiptapEditor (private but usable)
+- [@tiptap/pm direct dep](tiptap-pm-dep.md) — must be added as direct dep via pnpm add @tiptap/pm for TypeScript to resolve it; already a transitive dep of @blocknote
