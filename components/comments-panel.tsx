@@ -7,6 +7,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { MessageSquare, CheckCircle2, Circle, RotateCcw } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetContent,
@@ -14,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 interface CommentsPanelProps {
   pageId: Id<"pages">;
@@ -37,6 +39,12 @@ type RawThread = {
   updatedAt: number;
   resolved: boolean;
   comments: RawComment[];
+};
+
+type UserInfo = {
+  id: string;
+  username: string;
+  avatarUrl: string;
 };
 
 function extractText(body?: { version: number; content: unknown[] }): string {
@@ -66,13 +74,44 @@ function formatTime(ts: number): string {
   return `${Math.floor(h / 24)} hari lalu`;
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps) {
   const { data: threads, isPending } = useQuery(
     convexQuery(api.comments.listForPage, { pageId })
   );
 
-  const active = (threads as RawThread[] | undefined)?.filter((t) => !t.resolved) ?? [];
-  const resolved = (threads as RawThread[] | undefined)?.filter((t) => t.resolved) ?? [];
+  const threadList = (threads as RawThread[] | undefined) ?? [];
+  const active = threadList.filter((t) => !t.resolved);
+  const resolved = threadList.filter((t) => t.resolved);
+
+  const userIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const thread of threadList) {
+      const activeComments = thread.comments.filter((c) => !c.deletedAt);
+      if (activeComments[0]) ids.add(activeComments[0].userId);
+    }
+    return Array.from(ids);
+  }, [threadList]);
+
+  const { data: users } = useQuery(
+    convexQuery(api.comments.getUsersByIds, { userIds })
+  );
+
+  const usersMap = useMemo(() => {
+    const map = new Map<string, UserInfo>();
+    for (const u of (users as UserInfo[] | undefined) ?? []) {
+      map.set(u.id, u);
+    }
+    return map;
+  }, [users]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -96,7 +135,7 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
             </div>
           )}
 
-          {!isPending && (threads as RawThread[] | undefined)?.length === 0 && (
+          {!isPending && threadList.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
               <MessageSquare className="w-8 h-8 text-muted" />
               <p className="text-sm text-muted-foreground">Belum ada komentar</p>
@@ -109,7 +148,7 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
           {active.length > 0 && (
             <div className="py-2">
               {active.map((thread) => (
-                <ThreadItem key={thread.id} thread={thread} />
+                <ThreadItem key={thread.id} thread={thread} usersMap={usersMap} />
               ))}
             </div>
           )}
@@ -120,7 +159,7 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
                 Selesai ({resolved.length})
               </div>
               {resolved.map((thread) => (
-                <ThreadItem key={thread.id} thread={thread} resolved />
+                <ThreadItem key={thread.id} thread={thread} usersMap={usersMap} resolved />
               ))}
             </div>
           )}
@@ -130,11 +169,20 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
   );
 }
 
-function ThreadItem({ thread, resolved = false }: { thread: RawThread; resolved?: boolean }) {
+function ThreadItem({
+  thread,
+  usersMap,
+  resolved = false,
+}: {
+  thread: RawThread;
+  usersMap: Map<string, UserInfo>;
+  resolved?: boolean;
+}) {
   const activeComments = thread.comments.filter((c) => !c.deletedAt);
   const first = activeComments[0];
   const text = extractText(first?.body);
   const replyCount = activeComments.length - 1;
+  const author = first ? usersMap.get(first.userId) : undefined;
 
   const resolveThread = useConvexMutation(api.comments.resolveThread);
   const unresolveThread = useConvexMutation(api.comments.unresolveThread);
@@ -161,11 +209,7 @@ function ThreadItem({ thread, resolved = false }: { thread: RawThread; resolved?
           className="mt-0.5 shrink-0 cursor-pointer"
           title={resolved ? "Buka kembali" : "Tandai selesai"}
           disabled={resolving || unresolving}
-          onClick={() =>
-            resolved
-              ? unresolve({ threadId })
-              : resolve({ threadId })
-          }
+          onClick={() => resolved ? unresolve({ threadId }) : resolve({ threadId })}
         >
           {resolved ? (
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 hover:text-emerald-600 transition-colors" />
@@ -175,34 +219,46 @@ function ThreadItem({ thread, resolved = false }: { thread: RawThread; resolved?
         </button>
 
         <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <Avatar size="sm" className="size-5">
+              {author?.avatarUrl && <AvatarImage src={author.avatarUrl} alt={author.username} />}
+              <AvatarFallback className="text-[9px]">
+                {author ? getInitials(author.username) : "?"}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-[11px] font-medium text-foreground truncate">
+              {author?.username ?? "User"}
+            </span>
+            <span className="text-[10px] text-muted-foreground shrink-0">
+              · {formatTime(first?.createdAt ?? thread.createdAt)}
+            </span>
+          </div>
+
           <p className="text-sm text-foreground line-clamp-3 leading-snug">
             {text || <span className="italic text-muted-foreground">Komentar tanpa teks</span>}
           </p>
-          <div className="flex items-center justify-between mt-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground">
-                {formatTime(first?.createdAt ?? thread.createdAt)}
-              </span>
+
+          {(replyCount > 0 || resolved) && (
+            <div className="flex items-center justify-between mt-1.5">
               {replyCount > 0 && (
                 <span className="text-[10px] text-muted-foreground">
-                  · {replyCount} balasan
+                  {replyCount} balasan
                 </span>
               )}
+              {resolved && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 px-1.5 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground ml-auto"
+                  disabled={unresolving}
+                  onClick={() => unresolve({ threadId })}
+                >
+                  <RotateCcw className="w-2.5 h-2.5 mr-0.5" />
+                  Buka
+                </Button>
+              )}
             </div>
-
-            {resolved && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-5 px-1.5 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
-                disabled={unresolving}
-                onClick={() => unresolve({ threadId })}
-              >
-                <RotateCcw className="w-2.5 h-2.5 mr-0.5" />
-                Buka
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
