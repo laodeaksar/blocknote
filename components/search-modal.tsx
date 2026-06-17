@@ -7,8 +7,13 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Search, FileText, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupButton,
+} from "@/components/ui/input-group";
 
 interface SearchModalProps {
   open: boolean;
@@ -92,29 +97,29 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       />
 
       <div className="relative w-full max-w-lg mx-4 bg-popover rounded-2xl shadow-2xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-          <Input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari halaman..."
-            className="flex-1 h-auto border-0 shadow-none bg-transparent px-0 py-0 focus-visible:ring-0 focus-visible:border-0 text-sm"
-          />
-          <div className="flex items-center gap-2">
-            {query && (
-              <Button
-                onClick={() => setQuery("")}
-                variant="ghost"
-                size="icon-xs"
-              >
-                <X className="w-3.5 h-3.5 text-muted-foreground" />
-              </Button>
-            )}
-            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-border text-[10px] text-muted-foreground font-mono">
-              ESC
-            </kbd>
-          </div>
+        <div className="px-4 py-3 border-b border-border">
+          <InputGroup>
+            <InputGroupAddon align="inline-start">
+              <Search className="w-4 h-4" />
+            </InputGroupAddon>
+            <InputGroupInput
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari halaman..."
+              className="text-sm"
+            />
+            <InputGroupAddon align="inline-end">
+              {query && (
+                <InputGroupButton size="icon-xs" onClick={() => setQuery("")}>
+                  <X className="w-3.5 h-3.5" />
+                </InputGroupButton>
+              )}
+              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-border text-[10px] text-muted-foreground font-mono">
+                ESC
+              </kbd>
+            </InputGroupAddon>
+          </InputGroup>
         </div>
 
         <div
