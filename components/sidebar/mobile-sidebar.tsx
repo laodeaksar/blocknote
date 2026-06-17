@@ -7,7 +7,7 @@ import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
-import { Plus, Menu, X, FilePlus } from "lucide-react";
+import { Plus, Menu, X, FilePlus, Search } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -32,6 +32,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MobilePageItem } from "./mobile-page-item";
 import { TrashSection } from "./trash-section";
 import { ConfirmDeleteDialog } from "./confirm-delete-dialog";
+import { SearchModal } from "@/components/search-modal";
 import type { PageData } from "./types";
 
 export function MobileSidebar() {
@@ -83,6 +84,7 @@ export function MobileSidebar() {
 
   const [localPages, setLocalPages] = useState<PageData[]>([]);
   const [showTrash, setShowTrash] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{
     id: Id<"pages">;
     title: string;
@@ -264,13 +266,25 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => setSearchOpen(true)}
+          className="rounded-full"
+          aria-label="Cari halaman"
+        >
+          <Search className="w-4 h-4" />
+        </Button>
+        <Separator orientation="vertical" className="h-5 mx-0.5" />
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleCreate}
           className="rounded-full"
-          aria-label="New page"
+          aria-label="Halaman baru"
         >
           <FilePlus className="w-4 h-4" />
         </Button>
       </div>
+
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <ConfirmDeleteDialog
         page={pageToDelete}
