@@ -14,6 +14,8 @@ import {
   InputGroupInput,
   InputGroupButton,
 } from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
+import { Kbd } from "@/components/ui/kbd";
 
 interface SearchModalProps {
   open: boolean;
@@ -115,9 +117,9 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                   <X className="w-3.5 h-3.5" />
                 </InputGroupButton>
               )}
-              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-border text-[10px] text-muted-foreground font-mono">
+              <Kbd>
                 ESC
-              </kbd>
+              </Kbd>
             </InputGroupAddon>
           </InputGroup>
         </div>
@@ -128,7 +130,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         >
           {isPending && (
             <div className="flex items-center justify-center py-8">
-              <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
+              <Spinner className="size-4 " />
             </div>
           )}
 
@@ -168,15 +170,15 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         {filtered.length > 0 && (
           <div className="px-4 py-2 border-t border-border flex items-center gap-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <kbd className="border border-border rounded px-1 font-mono">↑↓</kbd>
+              <Kbd>↑↓</Kbd>
               navigasi
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="border border-border rounded px-1 font-mono">↵</kbd>
+              <Kbd>⏎</Kbd>
               buka
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="border border-border rounded px-1 font-mono">ESC</kbd>
+              <Kbd>ESC</Kbd>
               tutup
             </span>
           </div>
