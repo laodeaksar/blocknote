@@ -4,14 +4,20 @@ import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { X, MessageSquare, CheckCircle2, Circle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MessageSquare, CheckCircle2, Circle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 interface CommentsPanelProps {
   pageId: Id<"pages">;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 type RawComment = {
@@ -59,7 +65,7 @@ function formatTime(ts: number): string {
   return `${Math.floor(h / 24)} hari lalu`;
 }
 
-export function CommentsPanel({ pageId, onClose }: CommentsPanelProps) {
+export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps) {
   const { data: threads, isPending } = useQuery(
     convexQuery(api.comments.listForPage, { pageId })
   );
@@ -68,59 +74,58 @@ export function CommentsPanel({ pageId, onClose }: CommentsPanelProps) {
   const resolved = (threads as RawThread[] | undefined)?.filter((t) => t.resolved) ?? [];
 
   return (
-    <aside className="w-72 shrink-0 border-l border-border bg-background flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Komentar</span>
-          {active.length > 0 && (
-            <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
-              {active.length}
-            </span>
-          )}
-        </div>
-        <Button variant="ghost" size="icon-xs" onClick={onClose} className="h-6 w-6">
-          <X className="w-3.5 h-3.5" />
-        </Button>
-      </div>
-
-      <ScrollArea className="flex-1">
-        {isPending && (
-          <div className="flex items-center justify-center py-10">
-            <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-80 p-0 flex flex-col gap-0">
+        <SheetHeader className="px-4 py-3 border-b border-border">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+            <SheetTitle className="text-sm font-medium">Komentar</SheetTitle>
+            {active.length > 0 && (
+              <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
+                {active.length}
+              </span>
+            )}
           </div>
-        )}
+        </SheetHeader>
 
-        {!isPending && (threads as RawThread[] | undefined)?.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
-            <MessageSquare className="w-8 h-8 text-muted" />
-            <p className="text-sm text-muted-foreground">Belum ada komentar</p>
-            <p className="text-xs text-muted-foreground/60">
-              Pilih teks di dokumen lalu klik ikon komentar untuk memulai.
-            </p>
-          </div>
-        )}
-
-        {active.length > 0 && (
-          <div className="py-2">
-            {active.map((thread) => (
-              <ThreadItem key={thread.id} thread={thread} />
-            ))}
-          </div>
-        )}
-
-        {resolved.length > 0 && (
-          <div className="py-2">
-            <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
-              Selesai ({resolved.length})
+        <ScrollArea className="flex-1">
+          {isPending && (
+            <div className="flex items-center justify-center py-10">
+              <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
             </div>
-            {resolved.map((thread) => (
-              <ThreadItem key={thread.id} thread={thread} resolved />
-            ))}
-          </div>
-        )}
-      </ScrollArea>
-    </aside>
+          )}
+
+          {!isPending && (threads as RawThread[] | undefined)?.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
+              <MessageSquare className="w-8 h-8 text-muted" />
+              <p className="text-sm text-muted-foreground">Belum ada komentar</p>
+              <p className="text-xs text-muted-foreground/60">
+                Pilih teks di dokumen lalu klik ikon komentar untuk memulai.
+              </p>
+            </div>
+          )}
+
+          {active.length > 0 && (
+            <div className="py-2">
+              {active.map((thread) => (
+                <ThreadItem key={thread.id} thread={thread} />
+              ))}
+            </div>
+          )}
+
+          {resolved.length > 0 && (
+            <div className="py-2">
+              <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+                Selesai ({resolved.length})
+              </div>
+              {resolved.map((thread) => (
+                <ThreadItem key={thread.id} thread={thread} resolved />
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }
 

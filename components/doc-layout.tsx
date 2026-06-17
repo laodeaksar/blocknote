@@ -26,12 +26,11 @@ export function DocLayout({ pageId }: DocLayoutProps) {
             <EditorWrapper pageId={pageId} />
           </div>
         </div>
-        {commentsOpen && (
-          <CommentsPanel
-            pageId={pageId}
-            onClose={() => setCommentsOpen(false)}
-          />
-        )}
+        <CommentsPanel
+          pageId={pageId}
+          open={commentsOpen}
+          onOpenChange={setCommentsOpen}
+        />
       </div>
     </div>
   );
