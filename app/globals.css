@@ -368,3 +368,53 @@ body {
   from { opacity: 0; transform: translateX(-50%) translateY(8px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* ── Vaul drawer — spring curve override ─────────────────────────── */
+[data-vaul-drawer] {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1) !important;
+  transition-duration: 320ms !important;
+}
+
+/* ── Drawer snap handle ───────────────────────────────────────────── */
+[data-slot="drawer-content"] [data-vaul-drag-handle] {
+  background-color: var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+[data-slot="drawer-content"] [data-vaul-drag-handle]:hover {
+  background-color: var(--color-muted-foreground);
+}
+
+/* ── Sheet slide keyframes (fallback for older Base UI) ──────────── */
+@keyframes sheet-slide-in-right {
+  from { opacity: 0; transform: translateX(110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes sheet-slide-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(110%); }
+}
+@keyframes sheet-slide-in-left {
+  from { opacity: 0; transform: translateX(-110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes sheet-slide-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-110%); }
+}
+@keyframes sheet-slide-in-bottom {
+  from { opacity: 0; transform: translateY(110%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sheet-slide-out-bottom {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(110%); }
+}
+@keyframes sheet-slide-in-top {
+  from { opacity: 0; transform: translateY(-110%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sheet-slide-out-top {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-110%); }
+}
