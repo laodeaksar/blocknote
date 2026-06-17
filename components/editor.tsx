@@ -15,6 +15,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
 import { useTiptapSync } from "@convex-dev/prosemirror-sync/tiptap";
+import { SlashExtension } from "@/lib/slash-extension";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -198,6 +199,7 @@ function TiptapEditorInner({
       TaskItem.configure({ nested: true }),
       Image,
       Typography,
+      SlashExtension,
       extension,
     ],
     content: initialContent,
