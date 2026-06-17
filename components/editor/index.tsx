@@ -16,9 +16,10 @@ const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
 interface EditorProps {
   pageId: Id<"pages">;
   editable?: boolean;
+  onCommentsOpen?: () => void;
 }
 
-export function Editor({ pageId, editable = true }: EditorProps) {
+export function Editor({ pageId, editable = true, onCommentsOpen }: EditorProps) {
   const [syncError, setSyncError] = useState<Error | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
@@ -95,6 +96,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
         initialContent={sync.initialContent}
         userId={userId}
         userName={userName}
+        onCommentsOpen={onCommentsOpen}
       />
     </div>
   );

@@ -23,7 +23,10 @@ export function DocLayout({ pageId }: DocLayoutProps) {
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto pb-24 md:pb-0">
           <div className="max-w-4xl mx-auto py-8 px-4 md:py-16">
-            <EditorWrapper pageId={pageId} />
+            <EditorWrapper
+              pageId={pageId}
+              onCommentsOpen={() => setCommentsOpen(true)}
+            />
           </div>
         </div>
         <CommentsPanel

@@ -15,15 +15,17 @@ import {
   AlignCenter,
   AlignRight,
   Link2,
+  MessageSquare,
 } from "lucide-react";
 import { useCallback } from "react";
 import { ToolbarButton } from "./toolbar-button";
 
 interface EditorBubbleMenuProps {
   editor: Editor;
+  onComment?: (rect: DOMRect) => void;
 }
 
-export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
+export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
   const setLink = useCallback(() => {
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("URL", prev ?? "");
@@ -34,6 +36,22 @@ export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
       editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
     }
   }, [editor]);
+
+  const handleComment = useCallback(() => {
+    if (!onComment) return;
+    const { view, state } = editor;
+    const { from, to } = state.selection;
+    if (from === to) return;
+    const startCoords = view.coordsAtPos(from);
+    const endCoords = view.coordsAtPos(to);
+    const rect = new DOMRect(
+      startCoords.left,
+      Math.min(startCoords.top, endCoords.top),
+      endCoords.right - startCoords.left,
+      Math.abs(endCoords.bottom - startCoords.top)
+    );
+    onComment(rect);
+  }, [editor, onComment]);
 
   return (
     <>
@@ -110,6 +128,18 @@ export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
           >
             <Link2 className="w-3.5 h-3.5" />
           </ToolbarButton>
+          {onComment && (
+            <>
+              <div className="w-px h-5 bg-border mx-0.5" />
+              <ToolbarButton
+                active={false}
+                onClick={handleComment}
+                title="Tambah komentar"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+              </ToolbarButton>
+            </>
+          )}
         </div>
       </TiptapBubbleMenu>
 
