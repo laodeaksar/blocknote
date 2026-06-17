@@ -18,16 +18,14 @@ import { useTiptapSync } from "@convex-dev/prosemirror-sync/tiptap";
 import { SlashExtension } from "@/lib/slash-extension";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import {
-  AlignHorizontalJustifyStart,
-  AlignHorizontalJustifyCenter,
-  AlignHorizontalJustifyEnd,
-} from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
 import { useEffect, useState, useCallback } from "react";
 import { useConvexConnectionState } from "convex/react";
 import {
+  AlignStartVertical,
+  AlignCenterVertical,
+  AlignEndVertical,
   WifiOff,
   RefreshCw,
   AlertCircle,
@@ -339,21 +337,21 @@ function TiptapEditorInner({
             onClick={() => editor.chain().focus().updateAttributes("image", { style: "float: left; margin: 0 1rem 0.5rem 0" }).run()}
             title="Gambar rata kiri"
           >
-            <AlignHorizontalJustifyStart className="w-3.5 h-3.5" />
+            <AlignStartVertical className="w-3.5 h-3.5" />
           </ToolbarButton>
           <ToolbarButton
             active={editor.getAttributes("image").style?.includes("margin: 0 auto")}
             onClick={() => editor.chain().focus().updateAttributes("image", { style: "display: block; margin: 0 auto" }).run()}
             title="Gambar rata tengah"
           >
-            <AlignHorizontalJustifyCenter className="w-3.5 h-3.5" />
+            <AlignCenterVertical className="w-3.5 h-3.5" />
           </ToolbarButton>
           <ToolbarButton
             active={editor.getAttributes("image").style?.includes("float: right")}
             onClick={() => editor.chain().focus().updateAttributes("image", { style: "float: right; margin: 0 0 0.5rem 1rem" }).run()}
             title="Gambar rata kanan"
           >
-            <AlignHorizontalJustifyEnd className="w-3.5 h-3.5" />
+            <AlignEndVertical className="w-3.5 h-3.5" />
           </ToolbarButton>
         </div>
       </BubbleMenu>

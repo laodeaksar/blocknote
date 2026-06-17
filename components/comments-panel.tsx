@@ -128,7 +128,6 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
           </div>
         </SheetHeader>
 
-        <ScrollArea className="flex-1">
           {isPending && (
             <div className="flex items-center justify-center py-10">
               <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
@@ -163,7 +162,6 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
               ))}
             </div>
           )}
-        </ScrollArea>
       </SheetContent>
     </Sheet>
   );

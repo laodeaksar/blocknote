@@ -178,7 +178,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
               buka
             </span>
             <span className="flex items-center gap-1">
-              <Kbd>ESC</Kbd>
+              <Kbd>Esc</Kbd>
               tutup
             </span>
           </div>
