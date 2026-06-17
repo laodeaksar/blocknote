@@ -170,6 +170,77 @@ body {
   }
 }
 
+/* ── BlockNote root color vars: sync to app palette ──────────────── */
+.bn-root {
+  --bn-colors-editor-background: var(--background);
+  --bn-colors-editor-text:       var(--foreground);
+  --bn-colors-menu-background:   var(--card);
+  --bn-colors-menu-text:         var(--card-foreground);
+  --bn-colors-border:            var(--border);
+  --bn-colors-hovered-background:var(--accent);
+  --bn-colors-hovered-text:      var(--accent-foreground);
+  --bn-colors-shadow:            rgba(0, 0, 0, 0.07);
+}
+
+.bn-root[data-color-scheme="dark"] {
+  --bn-colors-editor-background: var(--background);
+  --bn-colors-editor-text:       var(--foreground);
+  --bn-colors-menu-background:   var(--card);
+  --bn-colors-menu-text:         var(--card-foreground);
+  --bn-colors-border:            var(--border);
+  --bn-colors-hovered-background:var(--accent);
+  --bn-colors-hovered-text:      var(--accent-foreground);
+  --bn-colors-shadow:            rgba(0, 0, 0, 0.4);
+}
+
+/* ── Floating comment composer ────────────────────────────────────── */
+
+/* Inner BlockNote editor inside comment card should be transparent */
+.bn-thread .bn-editor,
+.bn-thread .bn-comment-editor .bn-editor {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+/* Card wrapper sizing & focus ring */
+.bn-thread.w-\[300px\] {
+  width: 320px;
+}
+
+/* Comment input area: comfortable min-height for typing */
+.bn-thread .bn-comment-editor {
+  min-height: 52px;
+}
+
+/* Actions toolbar (Save button row) — flush bottom padding */
+.bn-shadcn .bn-comment-actions-wrapper {
+  padding-top: 4px;
+}
+
+/* ── Thread mark highlight in document ────────────────────────────── */
+.bn-thread-mark:not([data-orphan="true"]) {
+  background: rgba(255, 200, 0, 0.15) !important;
+  border-bottom: 1.5px solid rgba(255, 165, 0, 0.45);
+  border-radius: 1px;
+}
+
+.bn-thread-mark .bn-thread-mark-selected,
+.bn-thread-mark[data-selected] {
+  background: rgba(255, 200, 0, 0.38) !important;
+  border-bottom-color: rgba(255, 165, 0, 0.75);
+}
+
+/* ── Selected thread card (sidebar + floating) ────────────────────── */
+.bn-threads-sidebar .bn-thread.selected {
+  background-color: color-mix(in srgb, var(--ring) 10%, var(--card)) !important;
+  border: 1.5px solid color-mix(in srgb, var(--ring) 40%, transparent) !important;
+}
+
+.dark .bn-threads-sidebar .bn-thread.selected {
+  background-color: color-mix(in srgb, var(--ring) 12%, var(--card)) !important;
+  border: 1.5px solid color-mix(in srgb, var(--ring) 35%, transparent) !important;
+}
+
 /* Slash menu width on mobile */
 @media (max-width: 768px) {
   .bn-suggestion-menu {
