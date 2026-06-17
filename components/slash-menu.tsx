@@ -16,12 +16,13 @@ import {
   shift,
   autoUpdate,
 } from "@floating-ui/react";
+import type { LucideIcon } from "lucide-react";
 
 export interface SlashMenuItem {
   group: string;
   title: string;
   description: string;
-  icon: string;
+  icon: LucideIcon;
   command: (props: { editor: Editor; range: Range }) => void;
 }
 
@@ -128,8 +129,8 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                       : "text-foreground hover:bg-accent/60"
                   }`}
                 >
-                  <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-md border border-border bg-background text-xs font-bold text-foreground">
-                    {item.icon}
+                  <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-md border border-border bg-background text-foreground">
+                    <item.icon className="w-4 h-4" />
                   </span>
                   <div className="min-w-0">
                     <div className="text-sm font-medium leading-tight">{item.title}</div>

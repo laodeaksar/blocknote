@@ -4,6 +4,18 @@ import { Extension, ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";
 import type { SuggestionProps, SuggestionKeyDownProps } from "@tiptap/suggestion";
 import { SlashMenu, type SlashMenuItem } from "@/components/slash-menu";
+import {
+  Pilcrow,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  ListTodo,
+  Code2,
+  Quote,
+  Minus,
+} from "lucide-react";
 
 export interface SlashCommandItem extends SlashMenuItem {}
 
@@ -12,7 +24,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Teks",
     title: "Paragraf",
     description: "Teks biasa",
-    icon: "¶",
+    icon: Pilcrow,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setParagraph().run();
     },
@@ -21,7 +33,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Teks",
     title: "Judul 1",
     description: "Judul besar",
-    icon: "H1",
+    icon: Heading1,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHeading({ level: 1 }).run();
     },
@@ -30,7 +42,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Teks",
     title: "Judul 2",
     description: "Judul sedang",
-    icon: "H2",
+    icon: Heading2,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run();
     },
@@ -39,7 +51,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Teks",
     title: "Judul 3",
     description: "Judul kecil",
-    icon: "H3",
+    icon: Heading3,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run();
     },
@@ -48,7 +60,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Daftar",
     title: "Daftar Bullet",
     description: "Daftar tidak berurutan",
-    icon: "•",
+    icon: List,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleBulletList().run();
     },
@@ -57,7 +69,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Daftar",
     title: "Daftar Angka",
     description: "Daftar berurutan",
-    icon: "1.",
+    icon: ListOrdered,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleOrderedList().run();
     },
@@ -66,7 +78,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Daftar",
     title: "Daftar Tugas",
     description: "Daftar dengan kotak centang",
-    icon: "☑",
+    icon: ListTodo,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleTaskList().run();
     },
@@ -75,7 +87,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Format",
     title: "Blok Kode",
     description: "Kode dengan highlight sintaks",
-    icon: "</>",
+    icon: Code2,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
     },
@@ -84,7 +96,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Format",
     title: "Kutipan",
     description: "Blok kutipan teks",
-    icon: "❝",
+    icon: Quote,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleBlockquote().run();
     },
@@ -93,7 +105,7 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     group: "Format",
     title: "Garis Pemisah",
     description: "Garis horizontal",
-    icon: "—",
+    icon: Minus,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHorizontalRule().run();
     },
