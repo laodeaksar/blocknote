@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
+const STORAGE_KEY = "sidebar:collapsed"
+
 interface SidebarContextValue {
   collapsed: boolean
   toggle: () => void
@@ -13,10 +15,24 @@ const SidebarContext = createContext<SidebarContextValue | null>(null)
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    try {
+      return localStorage.getItem(STORAGE_KEY) === "true"
+    } catch {
+      return false
+    }
+  })
+
+  const setAndPersist = (value: boolean) => {
+    setCollapsed(value)
+    try {
+      localStorage.setItem(STORAGE_KEY, String(value))
+    } catch {}
+  }
 
   useEffect(() => {
-    if (isDesktop) setCollapsed(false)
+    if (isDesktop) setAndPersist(false)
   }, [isDesktop])
 
   useEffect(() => {
@@ -24,15 +40,21 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       const tag = (e.target as HTMLElement).tagName
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement).isContentEditable) return
       if (e.key === "[" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        setCollapsed((v) => !v)
+        setAndPersist(!collapsed)
       }
     }
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
-  }, [])
+  }, [collapsed])
 
   return (
-    <SidebarContext.Provider value={{ collapsed, toggle: () => setCollapsed((v) => !v), expand: () => setCollapsed(false) }}>
+    <SidebarContext.Provider
+      value={{
+        collapsed,
+        toggle: () => setAndPersist(!collapsed),
+        expand: () => setAndPersist(false),
+      }}
+    >
       {children}
     </SidebarContext.Provider>
   )
