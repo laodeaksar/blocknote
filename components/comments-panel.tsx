@@ -1,11 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MessageSquare, CheckCircle2, Circle } from "lucide-react";
+import { MessageSquare, CheckCircle2, Circle, RotateCcw } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -135,33 +136,71 @@ function ThreadItem({ thread, resolved = false }: { thread: RawThread; resolved?
   const text = extractText(first?.body);
   const replyCount = activeComments.length - 1;
 
+  const resolveThread = useConvexMutation(api.comments.resolveThread);
+  const unresolveThread = useConvexMutation(api.comments.unresolveThread);
+
+  const { mutate: resolve, isPending: resolving } = useMutation({
+    mutationFn: resolveThread,
+  });
+
+  const { mutate: unresolve, isPending: unresolving } = useMutation({
+    mutationFn: unresolveThread,
+  });
+
+  const threadId = thread.id as Id<"threads">;
+
   return (
     <div
       className={cn(
-        "px-4 py-3 border-b border-border/50 last:border-0",
+        "group px-4 py-3 border-b border-border/50 last:border-0",
         resolved ? "opacity-60" : "hover:bg-accent/40 transition-colors"
       )}
     >
       <div className="flex items-start gap-2.5">
-        <div className="mt-0.5 shrink-0">
+        <button
+          className="mt-0.5 shrink-0 cursor-pointer"
+          title={resolved ? "Buka kembali" : "Tandai selesai"}
+          disabled={resolving || unresolving}
+          onClick={() =>
+            resolved
+              ? unresolve({ threadId })
+              : resolve({ threadId })
+          }
+        >
           {resolved ? (
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 hover:text-emerald-600 transition-colors" />
           ) : (
-            <Circle className="w-3.5 h-3.5 text-primary/60" />
+            <Circle className="w-3.5 h-3.5 text-primary/60 hover:text-primary transition-colors" />
           )}
-        </div>
+        </button>
+
         <div className="min-w-0 flex-1">
           <p className="text-sm text-foreground line-clamp-3 leading-snug">
             {text || <span className="italic text-muted-foreground">Komentar tanpa teks</span>}
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] text-muted-foreground">
-              {formatTime(first?.createdAt ?? thread.createdAt)}
-            </span>
-            {replyCount > 0 && (
+          <div className="flex items-center justify-between mt-1.5">
+            <div className="flex items-center gap-2">
               <span className="text-[10px] text-muted-foreground">
-                · {replyCount} balasan
+                {formatTime(first?.createdAt ?? thread.createdAt)}
               </span>
+              {replyCount > 0 && (
+                <span className="text-[10px] text-muted-foreground">
+                  · {replyCount} balasan
+                </span>
+              )}
+            </div>
+
+            {resolved && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1.5 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                disabled={unresolving}
+                onClick={() => unresolve({ threadId })}
+              >
+                <RotateCcw className="w-2.5 h-2.5 mr-0.5" />
+                Buka
+              </Button>
             )}
           </div>
         </div>
