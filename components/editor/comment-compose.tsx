@@ -15,8 +15,14 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
 import { MessageSquare, Send, X } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 interface CommentComposeProps {
@@ -105,6 +111,7 @@ export function CommentCompose({
         style={floatingStyles}
         className="z-[9999] w-72 rounded-xl border border-border bg-background shadow-2xl p-3 animate-in fade-in-0 zoom-in-95 duration-150"
       >
+        {/* Header */}
         <div className="flex items-center gap-2 mb-2.5">
           <MessageSquare className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           <span className="text-xs font-medium text-foreground">Komentar baru</span>
@@ -117,30 +124,54 @@ export function CommentCompose({
           </button>
         </div>
 
-        <Textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Tulis komentar… (Ctrl+Enter untuk kirim)"
-          className="min-h-[80px] resize-none text-sm"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-              e.preventDefault();
-              handleSubmit();
-            }
-            if (e.key === "Escape") onClose();
-          }}
-        />
-
-        <div className="flex justify-end gap-1.5 mt-2.5">
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={isPending}>
-            Batal
-          </Button>
-          <Button size="sm" onClick={handleSubmit} disabled={!text.trim() || isPending}>
-            <Send className="w-3 h-3 mr-1" />
-            Kirim
-          </Button>
-        </div>
+        {/* Input group: textarea + bottom action bar */}
+        <InputGroup className="rounded-lg">
+          <InputGroupTextarea
+            ref={textareaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Tulis komentar…"
+            rows={3}
+            className="text-sm min-h-[72px] py-2.5 px-3"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                handleSubmit();
+              }
+              if (e.key === "Escape") onClose();
+            }}
+          />
+          <InputGroupAddon
+            align="block-end"
+            className="justify-between border-t border-border px-2 py-1.5"
+          >
+            <InputGroupText className="text-[10px] text-muted-foreground/60">
+              Ctrl+Enter
+            </InputGroupText>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-xs"
+                onClick={onClose}
+                disabled={isPending}
+              >
+                Batal
+              </Button>
+              <InputGroupButton
+                size="xs"
+                variant="default"
+                disabled={!text.trim() || isPending}
+                onClick={handleSubmit}
+                className="gap-1 px-2"
+              >
+                <Send className="size-3" />
+                Kirim
+              </InputGroupButton>
+            </div>
+          </InputGroupAddon>
+        </InputGroup>
       </div>
     </FloatingPortal>
   );
