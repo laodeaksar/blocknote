@@ -17,6 +17,7 @@ import {
   Minus,
   ImageUp,
 } from "lucide-react";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export interface SlashCommandItem extends SlashMenuItem {}
 
@@ -113,39 +114,35 @@ const BASE_COMMANDS: SlashCommandItem[] = [
   },
 ];
 
-function buildImageCommand(
-  uploadImage: (file: File) => Promise<string>
-): SlashCommandItem {
-  return {
-    group: "Media",
-    title: "Upload Gambar",
-    description: "Sisipkan gambar dari perangkat",
-    icon: ImageUp,
-    command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).run();
+const IMAGE_COMMAND: SlashCommandItem = {
+  group: "Media",
+  title: "Upload Gambar",
+  description: "Sisipkan gambar dari perangkat",
+  icon: ImageUp,
+  command: ({ editor, range }) => {
+    editor.chain().focus().deleteRange(range).run();
 
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.style.cssText = "position:fixed;top:-9999px;left:-9999px";
-      document.body.appendChild(input);
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.cssText = "position:fixed;top:-9999px;left:-9999px";
+    document.body.appendChild(input);
 
-      input.onchange = async () => {
-        const file = input.files?.[0];
-        document.body.removeChild(input);
-        if (!file) return;
-        try {
-          const src = await uploadImage(file);
-          editor.chain().focus().setImage({ src }).run();
-        } catch (err) {
-          console.error("Image upload failed:", err);
-        }
-      };
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      document.body.removeChild(input);
+      if (!file) return;
+      try {
+        const src = await uploadToCloudinary(file);
+        editor.chain().focus().setImage({ src }).run();
+      } catch (err) {
+        console.error("Image upload failed:", err);
+      }
+    };
 
-      input.click();
-    },
-  };
-}
+    input.click();
+  },
+};
 
 type MenuRef = { onKeyDown: (props: { event: KeyboardEvent }) => boolean };
 
@@ -180,22 +177,11 @@ function renderSlashMenu() {
   };
 }
 
-export const SlashExtension = Extension.create<{
-  uploadImage: ((file: File) => Promise<string>) | null;
-}>({
+export const SlashExtension = Extension.create({
   name: "slash",
 
-  addOptions() {
-    return {
-      uploadImage: null,
-    };
-  },
-
   addProseMirrorPlugins() {
-    const uploadImage = this.options.uploadImage;
-    const commands: SlashCommandItem[] = uploadImage
-      ? [...BASE_COMMANDS, buildImageCommand(uploadImage)]
-      : BASE_COMMANDS;
+    const commands: SlashCommandItem[] = [...BASE_COMMANDS, IMAGE_COMMAND];
 
     return [
       Suggestion({

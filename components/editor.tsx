@@ -18,6 +18,11 @@ import { useTiptapSync } from "@convex-dev/prosemirror-sync/tiptap";
 import { SlashExtension } from "@/lib/slash-extension";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import {
+  AlignHorizontalJustifyStart,
+  AlignHorizontalJustifyCenter,
+  AlignHorizontalJustifyEnd,
+} from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
 import { useEffect, useState, useCallback } from "react";
@@ -186,26 +191,6 @@ function TiptapEditorInner({
 }: TiptapEditorInnerProps) {
   const { resolvedTheme } = useTheme();
 
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const getStorageUrl = useMutation(api.files.getStorageUrl);
-
-  const uploadImage = useCallback(
-    async (file: File): Promise<string> => {
-      const uploadUrl = await generateUploadUrl();
-      const res = await fetch(uploadUrl, {
-        method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      const { storageId } = await res.json();
-      const src = await getStorageUrl({ storageId });
-      if (!src) throw new Error("Failed to get image URL");
-      return src;
-    },
-    [generateUploadUrl, getStorageUrl]
-  );
-
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
@@ -217,9 +202,16 @@ function TiptapEditorInner({
       Placeholder.configure({ placeholder: "Mulai menulis…" }),
       TaskList,
       TaskItem.configure({ nested: true }),
-      Image,
+      Image.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            style: { default: null },
+          };
+        },
+      }).configure({ HTMLAttributes: { class: "tiptap-image" } }),
       Typography,
-      SlashExtension.configure({ uploadImage }),
+      SlashExtension,
       extension,
     ],
     content: initialContent,
@@ -333,6 +325,35 @@ function TiptapEditorInner({
             title="Tautan"
           >
             <Link2 className="w-3.5 h-3.5" />
+          </ToolbarButton>
+        </div>
+      </BubbleMenu>
+
+      <BubbleMenu
+        editor={editor}
+        shouldShow={({ editor: e }) => e.isActive("image")}
+      >
+        <div className="flex items-center gap-0.5 rounded-lg border border-border bg-background shadow-lg p-1">
+          <ToolbarButton
+            active={editor.getAttributes("image").style?.includes("float: left")}
+            onClick={() => editor.chain().focus().updateAttributes("image", { style: "float: left; margin: 0 1rem 0.5rem 0" }).run()}
+            title="Gambar rata kiri"
+          >
+            <AlignHorizontalJustifyStart className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.getAttributes("image").style?.includes("margin: 0 auto")}
+            onClick={() => editor.chain().focus().updateAttributes("image", { style: "display: block; margin: 0 auto" }).run()}
+            title="Gambar rata tengah"
+          >
+            <AlignHorizontalJustifyCenter className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.getAttributes("image").style?.includes("float: right")}
+            onClick={() => editor.chain().focus().updateAttributes("image", { style: "float: right; margin: 0 0 0.5rem 1rem" }).run()}
+            title="Gambar rata kanan"
+          >
+            <AlignHorizontalJustifyEnd className="w-3.5 h-3.5" />
           </ToolbarButton>
         </div>
       </BubbleMenu>
