@@ -159,11 +159,6 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ── BlockNote editor ─────────────────────────────────────────────── */
-.bn-editor {
-  padding: 0 !important;
-}
-
 @layer base {
   .bn-shadcn * {
     @apply border-border outline-ring/50;
@@ -197,6 +192,13 @@ html .bn-root[data-color-scheme="dark"] {
 /* Remove editor border-radius so it blends seamlessly with the page */
 .bn-editor {
   border-radius: 0 !important;
+}
+
+/* Mobile: remove BlockNote's 54px internal padding (no drag handle on touch) */
+@media (max-width: 767px) {
+  .bn-editor {
+    padding-inline: 0 !important;
+  }
 }
 
 /* ── Floating comment composer ────────────────────────────────────── */
