@@ -26,7 +26,7 @@ export default async function PublicPage({ params }: Props) {
         </Link>
       </header>
 
-      <main className="max-w-4xl mx-auto py-16 pl-14 pr-4 md:px-16">
+      <main className="max-w-4xl mx-auto py-16 px-4 md:px-16">
         <EditorWrapper pageId={id as Id<"pages">} editable={false} />
       </main>
     </div>
