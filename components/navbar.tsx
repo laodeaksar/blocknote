@@ -14,6 +14,7 @@ import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
 import {
   Popover,
   PopoverTrigger,
@@ -149,7 +150,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
               <PanelLeft className={`w-4 h-4 transition-colors ${collapsed ? "text-foreground" : "text-muted-foreground"}`} />
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              Toggle sidebar <kbd className="ml-1 text-[10px] font-mono border border-border rounded px-1">[</kbd>
+              Toggle sidebar <Kbd data-icon="inline-end">[</Kbd>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -197,18 +198,12 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
         <div className="flex items-center gap-1">
           <Popover open={showPublish} onOpenChange={setShowPublish}>
             <PopoverTrigger
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors",
-                page.isPublished
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
-                  : "border-border hover:bg-accent text-foreground"
-              )}
-            >
-              <Share2 className="w-3 h-3" />
-              <span className="hidden sm:inline">
-                {page.isPublished ? "Published" : "Share"}
-              </span>
-            </PopoverTrigger>
+            render={
+            <Button variant="ghost" size="icon-sm" aria-label={page.isPublished ? "Published" : "Share"}>
+              <Share2 className={cn("w-3 h-3", page.isPublished ? "text-emerald-700" : "text-foreground")} />
+              </Button>
+            }
+            />
             <PopoverContent align="end" className="w-auto p-0">
               <PublishPopover
                 pageId={pageId}

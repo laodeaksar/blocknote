@@ -184,8 +184,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
 
       {isDisconnected && !isReconnecting && (
         <div className="mb-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 text-gray-500">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin shrink-0" />
-          Menghubungkan ke server…
+          <Spinner className="size-4" />          Menghubungkan ke server…
         </div>
       )}
 
