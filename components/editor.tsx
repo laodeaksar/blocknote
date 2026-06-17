@@ -194,6 +194,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
         theme={resolvedTheme as "light" | "dark" | undefined}
         sideMenu={false}
         formattingToolbar={false}
+        portalElements={{ default: null }}
       >
         <FormattingToolbarController
           formattingToolbar={renderFormattingToolbar}
