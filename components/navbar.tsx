@@ -7,7 +7,7 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft } from "lucide-react";
+import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useSidebar } from "@/lib/sidebar-context";
 import { UserMenu } from "@/components/user-menu";
@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 
 interface NavbarProps {
   pageId: Id<"pages">;
+  commentsOpen?: boolean;
+  onToggleComments?: () => void;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
@@ -33,7 +35,7 @@ function formatRelativeTime(date: Date): string {
   return `Disimpan ${Math.floor(minutes / 60)} jam lalu`;
 }
 
-export function Navbar({ pageId }: NavbarProps) {
+export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) {
   const { toggle, collapsed } = useSidebar();
   const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
@@ -206,6 +208,25 @@ export function Navbar({ pageId }: NavbarProps) {
               />
             </PopoverContent>
           </Popover>
+
+          {onToggleComments && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Toggle comments"
+                    onClick={onToggleComments}
+                    className={commentsOpen ? "bg-accent text-foreground" : ""}
+                  />
+                }>
+                  <MessageSquare className={`w-4 h-4 ${commentsOpen ? "text-foreground" : "text-muted-foreground"}`} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Komentar</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
 
           <TooltipProvider>
             <Tooltip>
