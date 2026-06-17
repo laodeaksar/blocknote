@@ -11,12 +11,21 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Check } from "lucide-react";
 
 const AVATAR_COLORS = [
@@ -68,94 +77,109 @@ export function UserSettingsDialog({ open, onClose }: Props) {
       setSaving(false);
     }
   };
-const isDesktop = useMediaQuery("(min-width: 768px)")
-if (isDesktop) {
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const formContent = (
+    <div className="space-y-5 py-1">
+      <div className="flex justify-center pt-1">
+        <Avatar size="lg">
+          <AvatarFallback
+            className="text-white text-base font-semibold"
+            style={{ backgroundColor: color }}
+          >
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="settings-name">Display name</Label>
+        <Input
+          id="settings-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSave()}
+          placeholder="Your name"
+          maxLength={50}
+          autoComplete="off"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Avatar color</Label>
+        <div className="flex flex-wrap gap-2.5">
+          {AVATAR_COLORS.map((c) => (
+            <button
+              key={c.value}
+              title={c.label}
+              onClick={() => setColor(c.value)}
+              className={cn(
+                "w-7 h-7 rounded-full transition-transform hover:scale-110 flex items-center justify-center shrink-0",
+                color === c.value &&
+                  "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
+              )}
+              style={{ backgroundColor: c.value }}
+            >
+              {color === c.value && (
+                <Check className="w-3 h-3 text-white drop-shadow" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isDesktop) {
+    return (
+      <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Profile settings</DialogTitle>
+          </DialogHeader>
+
+          {formContent}
+
+          <DialogFooter showCloseButton>
+            <Button
+              onClick={handleSave}
+              disabled={saving || !name.trim()}
+            >
+              {saving ? "Saving…" : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Profile settings</DialogTitle>
-        </DialogHeader>
+    <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
+      <DrawerContent>
+        <DrawerHeader className="text-left">
+          <DrawerTitle>Profile settings</DrawerTitle>
+          <DrawerDescription>
+            Update your display name and avatar color.
+          </DrawerDescription>
+        </DrawerHeader>
 
-        <div className="space-y-5 py-1">
-          <div className="flex justify-center pt-1">
-            <Avatar size="lg">
-              <AvatarFallback
-                className="text-white text-base font-semibold"
-                style={{ backgroundColor: color }}
-              >
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="settings-name">Display name</Label>
-            <Input
-              id="settings-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              placeholder="Your name"
-              maxLength={50}
-              autoComplete="off"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Avatar color</Label>
-            <div className="flex flex-wrap gap-2.5">
-              {AVATAR_COLORS.map((c) => (
-                <button
-                  key={c.value}
-                  title={c.label}
-                  onClick={() => setColor(c.value)}
-                  className={cn(
-                    "w-7 h-7 rounded-full transition-transform hover:scale-110 flex items-center justify-center shrink-0",
-                    color === c.value &&
-                      "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
-                  )}
-                  style={{ backgroundColor: c.value }}
-                >
-                  {color === c.value && (
-                    <Check className="w-3 h-3 text-white drop-shadow" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="px-4">
+          {formContent}
         </div>
 
-        <DialogFooter showCloseButton>
+        <DrawerFooter className="pt-4">
           <Button
             onClick={handleSave}
             disabled={saving || !name.trim()}
           >
             {saving ? "Saving…" : "Save changes"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Edit profile</DrawerTitle>
-          <DrawerDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </DrawerDescription> </DrawerHeader> <ProfileForm className = "px-4" />
-  <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>
-        </DrawerFooter> </DrawerContent> 
-  </Drawer>
-)
-
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
 }
