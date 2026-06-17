@@ -7,8 +7,9 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil } from "lucide-react";
+import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useSidebar } from "@/lib/sidebar-context";
 import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ function formatRelativeTime(date: Date): string {
 }
 
 export function Navbar({ pageId }: NavbarProps) {
+  const { toggle, collapsed } = useSidebar();
   const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { mutateAsync: updatePage } = useMutation({
@@ -122,6 +124,24 @@ export function Navbar({ pageId }: NavbarProps) {
   return (
     <nav className="h-12 flex items-center justify-between px-4 border-b border-border bg-background relative">
       <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={toggle}
+                aria-label="Toggle sidebar"
+                className="hidden md:inline-flex shrink-0"
+              />
+            }>
+              <PanelLeft className={`w-4 h-4 transition-colors ${collapsed ? "text-foreground" : "text-muted-foreground"}`} />
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Toggle sidebar <kbd className="ml-1 text-[10px] font-mono border border-border rounded px-1">[</kbd>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {page.icon && <span className="text-sm shrink-0">{page.icon}</span>}
 
         {isEditingTitle ? (

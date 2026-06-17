@@ -38,7 +38,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useSidebar } from "@/lib/sidebar-context";
 import { UserMenu } from "@/components/user-menu";
 import { SearchModal } from "@/components/search-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -668,26 +668,21 @@ function SidebarContent({
 }
 
 export function Sidebar() {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    if (isDesktop) setCollapsed(false);
-  }, [isDesktop]);
+  const { collapsed, toggle, expand } = useSidebar();
 
   return (
-    <div className="hidden md:flex h-full shrink-0 transition-all duration-200">
+    <div className="hidden md:flex h-full shrink-0">
       {collapsed ? (
         <button
-          onClick={() => setCollapsed(false)}
-          title="Expand sidebar"
+          onClick={expand}
+          title="Expand sidebar  [ "
           className="flex items-center justify-center w-4 h-full bg-sidebar border-r border-border hover:bg-sidebar-hover transition-colors group"
         >
           <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground" />
         </button>
       ) : (
         <aside className="flex flex-col w-60 h-full bg-sidebar border-r border-border">
-          <SidebarContent onCollapse={() => setCollapsed(true)} />
+          <SidebarContent onCollapse={toggle} />
         </aside>
       )}
     </div>
@@ -696,7 +691,7 @@ export function Sidebar() {
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { collapsed: desktopCollapsed } = useSidebar();
   const popoverRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -705,8 +700,10 @@ export function MobileSidebar() {
   const convex = useConvex();
 
   useEffect(() => {
-    if (isDesktop) setOpen(false);
-  }, [isDesktop]);
+    if (desktopCollapsed === false && typeof window !== "undefined" && window.innerWidth >= 768) {
+      setOpen(false);
+    }
+  }, [desktopCollapsed]);
 
   const { data: pages, isPending: pagesPending } = useQuery(convexQuery(api.pages.list, {}));
   const { data: archivedPages } = useQuery(convexQuery(api.pages.getArchived, {}));
