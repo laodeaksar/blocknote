@@ -8,15 +8,13 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import type { Editor } from "@tiptap/react";
-import type { Range } from "@tiptap/core";
+import type { Editor, Range } from "@tiptap/react";
 import {
   useFloating,
   offset,
   flip,
   shift,
   autoUpdate,
-  type VirtualElement,
 } from "@floating-ui/react";
 
 export interface SlashMenuItem {
@@ -43,28 +41,19 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
     const [mounted, setMounted] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const virtualEl = useRef<VirtualElement>({
-      getBoundingClientRect() {
-        return clientRect?.() ?? new DOMRect();
-      },
-    });
-
-    useEffect(() => {
-      virtualEl.current = {
-        getBoundingClientRect() {
-          return clientRect?.() ?? new DOMRect();
-        },
-      };
-    }, [clientRect]);
-
-    const { refs, floatingStyles, update } = useFloating({
+    const { refs, floatingStyles } = useFloating({
       placement: "bottom-start",
       middleware: [offset(6), flip(), shift({ padding: 8 })],
       whileElementsMounted: autoUpdate,
-      elements: {
-        reference: virtualEl.current,
-      },
     });
+
+    useEffect(() => {
+      refs.setReference({
+        getBoundingClientRect() {
+          return clientRect?.() ?? new DOMRect();
+        },
+      });
+    }, [clientRect, refs]);
 
     useEffect(() => {
       setMounted(true);
@@ -73,10 +62,6 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
     useEffect(() => {
       setSelectedIndex(0);
     }, [items]);
-
-    useEffect(() => {
-      if (clientRect) update();
-    }, [clientRect, update]);
 
     useImperativeHandle(ref, () => ({
       onKeyDown({ event }: { event: KeyboardEvent }) {

@@ -73,7 +73,7 @@ export function ConvexClientProvider({
   }
 
   return (
-    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+    <ConvexBetterAuthProvider client={convex} authClient={authClient as unknown as Parameters<typeof ConvexBetterAuthProvider>[0]["authClient"]}>
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>
