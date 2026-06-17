@@ -10,6 +10,14 @@ import {
 import { createPortal } from "react-dom";
 import type { Editor } from "@tiptap/react";
 import type { Range } from "@tiptap/core";
+import {
+  useFloating,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+  type VirtualElement,
+} from "@floating-ui/react";
 
 export interface SlashMenuItem {
   group: string;
@@ -32,9 +40,31 @@ export interface SlashMenuRef {
 export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
   function SlashMenu({ items, command, clientRect }, ref) {
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [position, setPosition] = useState({ top: 0, left: 0 });
     const [mounted, setMounted] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const virtualEl = useRef<VirtualElement>({
+      getBoundingClientRect() {
+        return clientRect?.() ?? new DOMRect();
+      },
+    });
+
+    useEffect(() => {
+      virtualEl.current = {
+        getBoundingClientRect() {
+          return clientRect?.() ?? new DOMRect();
+        },
+      };
+    }, [clientRect]);
+
+    const { refs, floatingStyles, update } = useFloating({
+      placement: "bottom-start",
+      middleware: [offset(6), flip(), shift({ padding: 8 })],
+      whileElementsMounted: autoUpdate,
+      elements: {
+        reference: virtualEl.current,
+      },
+    });
 
     useEffect(() => {
       setMounted(true);
@@ -45,28 +75,8 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
     }, [items]);
 
     useEffect(() => {
-      if (!clientRect) return;
-      const rect = clientRect();
-      if (!rect) return;
-
-      const menuHeight = 320;
-      const menuWidth = 260;
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-
-      let top = rect.bottom + 6;
-      let left = rect.left;
-
-      if (top + menuHeight > viewportHeight) {
-        top = rect.top - menuHeight - 6;
-      }
-      if (left + menuWidth > viewportWidth) {
-        left = viewportWidth - menuWidth - 8;
-      }
-      if (left < 8) left = 8;
-
-      setPosition({ top, left });
-    }, [clientRect]);
+      if (clientRect) update();
+    }, [clientRect, update]);
 
     useImperativeHandle(ref, () => ({
       onKeyDown({ event }: { event: KeyboardEvent }) {
@@ -103,14 +113,11 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
 
     const menu = (
       <div
-        ref={menuRef}
-        style={{
-          position: "fixed",
-          top: position.top,
-          left: position.left,
-          pointerEvents: "auto",
-          zIndex: 9999,
+        ref={(node) => {
+          menuRef.current = node;
+          refs.setFloating(node);
         }}
+        style={{ ...floatingStyles, zIndex: 9999 }}
         className="w-64 max-h-80 overflow-y-auto rounded-xl border border-border bg-background shadow-xl py-1"
       >
         {Array.from(groupMap.entries()).map(([group, groupItems]) => (
