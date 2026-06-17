@@ -1,40 +1,46 @@
 "use client";
 
-import "@blocknote/shadcn/style.css";
-import { BlockNoteView } from "@blocknote/shadcn";
-import {
-  FormattingToolbar,
-  FormattingToolbarController,
-  SideMenuController,
-  DragHandleButton,
-  SideMenu,
-  BasicTextStyleButton,
-  TextAlignButton,
-  ColorStyleButton,
-  CreateLinkButton,
-  NestBlockButton,
-  UnnestBlockButton,
-  AddCommentButton,
-  FloatingComposerController,
-  FloatingThreadController,
-} from "@blocknote/react";
-import { CommentsExtension } from "@blocknote/core/comments";
-import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import { useEditor, EditorContent, type AnyExtension } from "@tiptap/react";
+import type { Content } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Color from "@tiptap/extension-color";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Image from "@tiptap/extension-image";
+import Typography from "@tiptap/extension-typography";
+import { useTiptapSync } from "@convex-dev/prosemirror-sync/tiptap";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useConvexConnectionState } from "convex/react";
-import { WifiOff, RefreshCw, AlertCircle } from "lucide-react";
+import {
+  WifiOff,
+  RefreshCw,
+  AlertCircle,
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Strikethrough,
+  Code,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Link2,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useConvexThreadStore } from "@/lib/thread-store";
 import { usePresence } from "@/lib/use-presence";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/ui/spinner";
 
-
-const EMPTY_DOC = { type: "doc", content: [] };
+const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
 
 interface EditorProps {
   pageId: Id<"pages">;
@@ -47,8 +53,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
 
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id ?? "";
-  const userName =
-    session?.user?.name ?? session?.user?.email ?? "User";
+  const userName = session?.user?.name ?? session?.user?.email ?? "User";
   const userAvatar = session?.user?.image ?? undefined;
 
   const upsertUser = useMutation(api.comments.upsertUser);
@@ -58,30 +63,15 @@ export function Editor({ pageId, editable = true }: EditorProps) {
     upsertUser({ name: userName, avatarUrl: userAvatar }).catch(() => {});
   }, [userId, userName, userAvatar, editable, upsertUser]);
 
-  const { store: threadStore, resolveUsers } = useConvexThreadStore(
-    pageId,
-    editable ? userId : "",
-    userName
-  );
-
-  const commentsExtension = useMemo(() => {
-    if (!editable || !userId || !threadStore || !resolveUsers) return null;
-    return CommentsExtension({ threadStore, resolveUsers });
-  }, [editable, userId, threadStore, resolveUsers]);
-
   const handleSyncError = useCallback((error: Error) => {
     setSyncError(error);
   }, []);
 
-  const sync = useBlockNoteSync(api.prosemirrorSync, pageId, {
+  const sync = useTiptapSync(api.prosemirrorSync, pageId, {
     onSyncError: handleSyncError,
-    editorOptions: commentsExtension
-      ? { extensions: [commentsExtension] }
-      : undefined,
   });
-  const { resolvedTheme } = useTheme();
-  const connectionState = useConvexConnectionState();
 
+  const connectionState = useConvexConnectionState();
   const isDisconnected = !connectionState.isWebSocketConnected;
   const isReconnecting = isDisconnected && connectionState.hasEverConnected;
 
@@ -92,42 +82,10 @@ export function Editor({ pageId, editable = true }: EditorProps) {
   }, [connectionState.isWebSocketConnected, syncError]);
 
   useEffect(() => {
-    if (!sync.isLoading && !sync.editor) {
-      sync.create(EMPTY_DOC);
+    if (!sync.isLoading && sync.initialContent === null) {
+      sync.create?.(EMPTY_DOC);
     }
-  }, [sync.isLoading, sync.editor]);
-
-  usePresence(
-    sync.editor,
-    pageId,
-    userId,
-    userName,
-    editable && !!userId
-  );
-
-  // FIX: FormattingToolbarController's `position` is computed via useEditorState,
-  // which only updates on TipTap "transaction" events. After mouse selection,
-  // `store.state` becomes true (via FormattingToolbarExtension's pointerup listener)
-  // but `position` stays undefined because mouseup may not dispatch a new transaction
-  // if the selection didn't change from the last mousemove.
-  // Solution: register a pointerup listener (capture, runs AFTER FormattingToolbarExtension's)
-  // that dispatches a no-op transaction, forcing the position selector to re-run with
-  // the updated store.state=true, so position = {from, to} and the toolbar renders.
-  useEffect(() => {
-    const editor = sync.editor;
-    if (!editor) return;
-
-    const handlePointerUp = () => {
-      const view = editor.prosemirrorView;
-      if (!view) return;
-      view.dispatch(view.state.tr.setMeta("_formattingToolbarForceSync", true));
-    };
-
-    document.addEventListener("pointerup", handlePointerUp, { capture: true });
-    return () => {
-      document.removeEventListener("pointerup", handlePointerUp, true);
-    };
-  }, [sync.editor]);
+  }, [sync.isLoading, sync.initialContent]);
 
   const handleRetry = useCallback(() => {
     setIsRetrying(true);
@@ -137,39 +95,8 @@ export function Editor({ pageId, editable = true }: EditorProps) {
     }, 300);
   }, []);
 
-  const renderFormattingToolbar = useCallback(
-    () => (
-      <FormattingToolbar>
-        <BasicTextStyleButton basicTextStyle="bold" key="bold" />
-        <BasicTextStyleButton basicTextStyle="italic" key="italic" />
-        <BasicTextStyleButton basicTextStyle="underline" key="underline" />
-        <BasicTextStyleButton basicTextStyle="strike" key="strike" />
-        <BasicTextStyleButton basicTextStyle="code" key="code" />
-        <TextAlignButton textAlignment="left" key="left" />
-        <TextAlignButton textAlignment="center" key="center" />
-        <TextAlignButton textAlignment="right" key="right" />
-        <ColorStyleButton key="color" />
-        <NestBlockButton key="nest" />
-        <UnnestBlockButton key="unnest" />
-        <CreateLinkButton key="link" />
-        {editable && commentsExtension && (
-          <AddCommentButton key="comment" />
-        )}
-      </FormattingToolbar>
-    ),
-    [editable, commentsExtension]
-  );
-
-  if (sync.isLoading || !sync.editor) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner className="size-5" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative">
+  const banners = (
+    <>
       {(isReconnecting || syncError) && (
         <div
           className={`mb-3 flex items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm ${
@@ -188,7 +115,6 @@ export function Editor({ pageId, editable = true }: EditorProps) {
               ? "Gagal menyinkronkan perubahan."
               : "Koneksi terputus. Mencoba menghubungkan kembali…"}
           </span>
-
           <Button
             onClick={handleRetry}
             disabled={isRetrying}
@@ -205,42 +131,221 @@ export function Editor({ pageId, editable = true }: EditorProps) {
           </Button>
         </div>
       )}
-
       {isDisconnected && !isReconnecting && (
         <div className="mb-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 text-gray-500">
-          <Spinner className="size-4" />          Menghubungkan ke server…
+          <Spinner className="size-4" />
+          Menghubungkan ke server…
         </div>
       )}
+    </>
+  );
 
-      <BlockNoteView
-        editor={sync.editor}
+  if (sync.isLoading || !sync.extension || !sync.initialContent) {
+    return (
+      <div className="relative">
+        {banners}
+        <div className="flex items-center justify-center py-12">
+          <Spinner className="size-5" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {banners}
+      <TiptapEditorInner
+        pageId={pageId}
         editable={editable}
-        theme={resolvedTheme as "light" | "dark" | undefined}
-        sideMenu={false}
-        formattingToolbar={false}
-        portalElements={{ default: null }}
-      >
-        <FormattingToolbarController
-          formattingToolbar={renderFormattingToolbar}
-        />
-        <SideMenuController
-          sideMenu={(props) => (
-            <SideMenu {...props}>
-              <DragHandleButton {...props} />
-            </SideMenu>
-          )}
-        />
-        {commentsExtension && (
-          <>
-            <FloatingComposerController
-              floatingUIOptions={{
-                useDismissProps: { outsidePressEvent: "click" },
-              }}
-            />
-            <FloatingThreadController />
-          </>
-        )}
-      </BlockNoteView>
+        extension={sync.extension}
+        initialContent={sync.initialContent}
+        userId={userId}
+        userName={userName}
+      />
     </div>
+  );
+}
+
+interface TiptapEditorInnerProps {
+  pageId: Id<"pages">;
+  editable: boolean;
+  extension: AnyExtension;
+  initialContent: Content;
+  userId: string;
+  userName: string;
+}
+
+function TiptapEditorInner({
+  pageId,
+  editable,
+  extension,
+  initialContent,
+  userId,
+  userName,
+}: TiptapEditorInnerProps) {
+  const { resolvedTheme } = useTheme();
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({}),
+      Underline,
+      TextStyle,
+      Color,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Link.configure({ openOnClick: false, autolink: true }),
+      Placeholder.configure({ placeholder: "Mulai menulis…" }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Image,
+      Typography,
+      extension,
+    ],
+    content: initialContent,
+    editable,
+    immediatelyRender: false,
+  });
+
+  usePresence(
+    editor ?? null,
+    pageId,
+    userId,
+    userName,
+    editable && !!userId
+  );
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
+    const prev = editor.getAttributes("link").href as string | undefined;
+    const url = window.prompt("URL", prev ?? "");
+    if (url === null) return;
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    } else {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+    }
+  }, [editor]);
+
+  if (!editor) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Spinner className="size-5" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`tiptap-editor ${resolvedTheme === "dark" ? "dark" : ""}`}>
+      <BubbleMenu
+        editor={editor}
+        shouldShow={({ editor: e, state }) => {
+          const { from, to } = state.selection;
+          return (
+            from !== to &&
+            !e.isActive("image") &&
+            !e.isActive("codeBlock")
+          );
+        }}
+      >
+        <div className="flex items-center gap-0.5 rounded-lg border border-border bg-background shadow-lg p-1">
+          <ToolbarButton
+            active={editor.isActive("bold")}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            title="Bold"
+          >
+            <Bold className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive("italic")}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            title="Italic"
+          >
+            <Italic className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive("underline")}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            title="Underline"
+          >
+            <UnderlineIcon className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive("strike")}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            title="Strikethrough"
+          >
+            <Strikethrough className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive("code")}
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            title="Kode inline"
+          >
+            <Code className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <div className="w-px h-5 bg-border mx-0.5" />
+          <ToolbarButton
+            active={editor.isActive({ textAlign: "left" })}
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            title="Rata kiri"
+          >
+            <AlignLeft className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive({ textAlign: "center" })}
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            title="Rata tengah"
+          >
+            <AlignCenter className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive({ textAlign: "right" })}
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            title="Rata kanan"
+          >
+            <AlignRight className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <div className="w-px h-5 bg-border mx-0.5" />
+          <ToolbarButton
+            active={editor.isActive("link")}
+            onClick={setLink}
+            title="Tautan"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+          </ToolbarButton>
+        </div>
+      </BubbleMenu>
+
+      <EditorContent editor={editor} className="tiptap-content" />
+    </div>
+  );
+}
+
+function ToolbarButton({
+  children,
+  active,
+  onClick,
+  title,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
+      className={`flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors ${
+        active
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

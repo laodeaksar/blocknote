@@ -4,9 +4,8 @@ import { useEffect, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import type { BlockNoteEditor } from "@blocknote/core";
+import type { Editor } from "@tiptap/react";
 import { Transaction } from "@tiptap/pm/state";
-import { EditorView } from "@tiptap/pm/view";
 import { createCursorPlugin, remoteCursorsKey, RemoteCursor } from "./cursor-plugin";
 
 const CURSOR_COLORS = [
@@ -33,20 +32,8 @@ function makeSessionId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-type TiptapLike = {
-  on(event: string, handler: () => void): void;
-  off(event: string, handler: () => void): void;
-  registerPlugin(plugin: unknown): void;
-  view: EditorView;
-};
-
-function getTiptap(editor: BlockNoteEditor): TiptapLike | undefined {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (editor as any)._tiptapEditor as TiptapLike | undefined;
-}
-
 export function usePresence(
-  editor: BlockNoteEditor | null,
+  editor: Editor | null,
   pageId: Id<"pages">,
   userId: string,
   userName: string,
@@ -65,20 +52,15 @@ export function usePresence(
     enabled && userId ? { pageId, excludeSessionId: sessionId } : "skip"
   );
 
-  // Register the cursor decoration plugin once the editor is ready.
   useEffect(() => {
     if (!editor || pluginRegistered.current) return;
-    const tiptap = getTiptap(editor);
-    if (!tiptap) return;
     pluginRegistered.current = true;
-    tiptap.registerPlugin(createCursorPlugin());
+    editor.registerPlugin(createCursorPlugin());
   }, [editor]);
 
-  // Push remote cursor positions into the ProseMirror plugin state.
   useEffect(() => {
     if (!editor || remoteCursors === undefined) return;
-    const tiptap = getTiptap(editor);
-    if (!tiptap?.view) return;
+    if (!editor.view) return;
 
     const cursorMap = new Map<string, RemoteCursor>();
     for (const c of remoteCursors) {
@@ -91,20 +73,18 @@ export function usePresence(
       });
     }
 
-    const { state, dispatch } = tiptap.view;
+    const { state, dispatch } = editor.view;
     const tr: Transaction = state.tr.setMeta(remoteCursorsKey, cursorMap);
     dispatch(tr);
   }, [editor, remoteCursors]);
 
-  // Throttled local cursor broadcaster.
   const sendCursor = useCallback(() => {
     if (throttleTimer.current !== null) return;
     throttleTimer.current = setTimeout(() => {
       throttleTimer.current = null;
       if (!editor || !userId || !enabled) return;
-      const tiptap = getTiptap(editor);
-      if (!tiptap?.view) return;
-      const { from, to } = tiptap.view.state.selection;
+      if (!editor.view) return;
+      const { from, to } = editor.view.state.selection;
       updatePresence({
         pageId,
         sessionId,
@@ -117,20 +97,16 @@ export function usePresence(
     }, 300);
   }, [editor, userId, userName, enabled, pageId, sessionId, color, updatePresence]);
 
-  // Subscribe to TipTap selection / document updates.
   useEffect(() => {
     if (!editor || !enabled) return;
-    const tiptap = getTiptap(editor);
-    if (!tiptap) return;
-    tiptap.on("selectionUpdate", sendCursor);
-    tiptap.on("update", sendCursor);
+    editor.on("selectionUpdate", sendCursor);
+    editor.on("update", sendCursor);
     return () => {
-      tiptap.off("selectionUpdate", sendCursor);
-      tiptap.off("update", sendCursor);
+      editor.off("selectionUpdate", sendCursor);
+      editor.off("update", sendCursor);
     };
   }, [editor, enabled, sendCursor]);
 
-  // Remove presence entry when this session unmounts.
   useEffect(() => {
     if (!enabled || !userId) return;
     return () => {

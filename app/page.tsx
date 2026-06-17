@@ -49,7 +49,7 @@ export default async function HomePage() {
             {
               icon: "✏️",
               title: "Rich text editing",
-              desc: "Powered by BlockNote with slash commands, markdown, and more.",
+              desc: "Powered by TipTap with rich formatting and markdown support.",
             },
             {
               icon: "📁",

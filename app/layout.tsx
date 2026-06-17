@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Notion Clone",
-  description: "A Notion-like collaborative editor built with BlockNote",
+  description: "A Notion-like collaborative editor built with TipTap",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
