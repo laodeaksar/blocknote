@@ -7,11 +7,12 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Check, Loader2 } from "lucide-react";
+import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,10 @@ export function Navbar({ pageId }: NavbarProps) {
   const prevInflightRef = useRef(connectionState.hasInflightRequests);
   const hasEverSavedRef = useRef(false);
 
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState("");
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const wasInflight = prevInflightRef.current;
     const isInflight = connectionState.hasInflightRequests;
@@ -69,6 +74,41 @@ export function Navbar({ pageId }: NavbarProps) {
     return () => clearInterval(id);
   }, [saveStatus]);
 
+  useEffect(() => {
+    if (isEditingTitle) {
+      titleInputRef.current?.focus();
+      titleInputRef.current?.select();
+    }
+  }, [isEditingTitle]);
+
+  const startEditingTitle = () => {
+    if (!page) return;
+    setTitleDraft(page.title || "");
+    setIsEditingTitle(true);
+  };
+
+  const commitTitle = async () => {
+    if (!page) return;
+    const trimmed = titleDraft.trim();
+    if (trimmed && trimmed !== page.title) {
+      await updatePage({ id: pageId, title: trimmed });
+    }
+    setIsEditingTitle(false);
+  };
+
+  const cancelTitle = () => {
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitTitle();
+    } else if (e.key === "Escape") {
+      cancelTitle();
+    }
+  };
+
   if (isPending || isError) {
     return (
       <nav className="h-12 flex items-center px-4 border-b border-border bg-background">
@@ -81,11 +121,32 @@ export function Navbar({ pageId }: NavbarProps) {
 
   return (
     <nav className="h-12 flex items-center justify-between px-4 border-b border-border bg-background relative">
-      <div className="flex items-center gap-2 min-w-0">
-        {page.icon && <span className="text-sm">{page.icon}</span>}
-        <span className="text-sm font-medium text-foreground truncate">
-          {page.title || "Untitled"}
-        </span>
+      <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+        {page.icon && <span className="text-sm shrink-0">{page.icon}</span>}
+
+        {isEditingTitle ? (
+          <Input
+            ref={titleInputRef}
+            value={titleDraft}
+            onChange={(e) => setTitleDraft(e.target.value)}
+            onBlur={commitTitle}
+            onKeyDown={handleTitleKeyDown}
+            className="h-7 text-sm font-medium border-0 border-b border-border rounded-none shadow-none bg-transparent px-1 focus-visible:ring-0 focus-visible:border-primary min-w-0 flex-1"
+            placeholder="Untitled"
+            maxLength={100}
+          />
+        ) : (
+          <button
+            onClick={startEditingTitle}
+            className="group flex items-center gap-1.5 min-w-0 text-left"
+            title="Tap to rename"
+          >
+            <span className="text-sm font-medium text-foreground truncate">
+              {page.title || "Untitled"}
+            </span>
+            <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 shrink-0 transition-opacity" />
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
@@ -113,7 +174,9 @@ export function Navbar({ pageId }: NavbarProps) {
               )}
             >
               <Share2 className="w-3 h-3" />
-              {page.isPublished ? "Published" : "Share"}
+              <span className="hidden sm:inline">
+                {page.isPublished ? "Published" : "Share"}
+              </span>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-auto p-0">
               <PublishPopover
