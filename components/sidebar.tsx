@@ -12,6 +12,7 @@ import {
   Trash2,
   RotateCcw,
   ChevronDown,
+  ChevronRight,
   Search,
   Settings,
   Menu,
@@ -37,6 +38,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { UserMenu } from "@/components/user-menu";
 import { SearchModal } from "@/components/search-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -366,7 +368,13 @@ function ConfirmDeleteDialog({
   );
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({
+  onNavigate,
+  onCollapse,
+}: {
+  onNavigate?: () => void;
+  onCollapse?: () => void;
+}) {
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
@@ -482,7 +490,20 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </div>
           <span className="text-sm font-medium text-foreground">Workspace</span>
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-1">
+          {onCollapse && (
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={onCollapse}
+              title="Collapse sidebar"
+              className="h-6 w-6 text-muted-foreground"
+            >
+              <X className="w-3.5 h-3.5" />
+            </Button>
+          )}
+          <UserMenu />
+        </div>
       </div>
 
       <div className="px-2 space-y-0.5">
@@ -647,21 +668,45 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function Sidebar() {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) setCollapsed(false);
+  }, [isDesktop]);
+
   return (
-    <aside className="hidden md:flex flex-col w-60 h-full bg-sidebar border-r border-border shrink-0">
-      <SidebarContent />
-    </aside>
+    <div className="hidden md:flex h-full shrink-0 transition-all duration-200">
+      {collapsed ? (
+        <button
+          onClick={() => setCollapsed(false)}
+          title="Expand sidebar"
+          className="flex items-center justify-center w-4 h-full bg-sidebar border-r border-border hover:bg-sidebar-hover transition-colors group"
+        >
+          <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground" />
+        </button>
+      ) : (
+        <aside className="flex flex-col w-60 h-full bg-sidebar border-r border-border">
+          <SidebarContent onCollapse={() => setCollapsed(true)} />
+        </aside>
+      )}
+    </div>
   );
 }
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const popoverRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
+
+  useEffect(() => {
+    if (isDesktop) setOpen(false);
+  }, [isDesktop]);
 
   const { data: pages, isPending: pagesPending } = useQuery(convexQuery(api.pages.list, {}));
   const { data: archivedPages } = useQuery(convexQuery(api.pages.getArchived, {}));
