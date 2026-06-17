@@ -30,6 +30,7 @@ import { WifiOff, RefreshCw, AlertCircle, Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useConvexThreadStore } from "@/lib/thread-store";
 import { usePresence } from "@/lib/use-presence";
+import { Button } from "@/components/ui/button";
 
 const EMPTY_DOC = { type: "doc", content: [] };
 
@@ -162,18 +163,20 @@ export function Editor({ pageId, editable = true }: EditorProps) {
               : "Koneksi terputus. Mencoba menghubungkan kembali…"}
           </span>
 
-          <button
+          <Button
             onClick={handleRetry}
             disabled={isRetrying}
-            className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md transition-colors shrink-0 ${
+            size="xs"
+            variant="ghost"
+            className={`shrink-0 ${
               syncError
                 ? "bg-red-100 hover:bg-red-200 text-red-700"
                 : "bg-amber-100 hover:bg-amber-200 text-amber-700"
-            } disabled:opacity-50`}
+            }`}
           >
             <RefreshCw className={`w-3 h-3 ${isRetrying ? "animate-spin" : ""}`} />
             {isRetrying ? "Memuat ulang…" : "Coba lagi"}
-          </button>
+          </Button>
         </div>
       )}
 

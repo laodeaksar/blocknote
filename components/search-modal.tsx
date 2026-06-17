@@ -7,6 +7,8 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Search, FileText, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SearchModalProps {
   open: boolean;
@@ -92,21 +94,22 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       <div className="relative w-full max-w-lg mx-4 bg-popover rounded-2xl shadow-2xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-          <input
+          <Input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari halaman..."
-            className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
+            className="flex-1 h-auto border-0 shadow-none bg-transparent px-0 py-0 focus-visible:ring-0 focus-visible:border-0 text-sm"
           />
           <div className="flex items-center gap-2">
             {query && (
-              <button
+              <Button
                 onClick={() => setQuery("")}
-                className="p-0.5 rounded hover:bg-accent transition-colors"
+                variant="ghost"
+                size="icon-xs"
               >
                 <X className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
+              </Button>
             )}
             <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-border text-[10px] text-muted-foreground font-mono">
               ESC
@@ -131,11 +134,12 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
           )}
 
           {filtered.map((page: Page, i: number) => (
-            <button
+            <Button
               key={page._id}
               onClick={() => navigate(page._id)}
               onMouseEnter={() => setCursor(i)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+              variant="ghost"
+              className={`w-full justify-start gap-3 px-4 py-2.5 h-auto rounded-none text-left font-normal ${
                 i === cursor ? "bg-accent" : "hover:bg-accent/50"
               }`}
             >
@@ -144,7 +148,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
               ) : (
                 <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
               )}
-              <span className="text-sm text-foreground truncate">
+              <span className="text-sm text-foreground truncate flex-1">
                 {page.title || "Untitled"}
               </span>
               {page.isPublished && (
@@ -152,7 +156,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                   publik
                 </span>
               )}
-            </button>
+            </Button>
           ))}
         </div>
 

@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface PublishPopoverProps {
   pageId: Id<"pages">;
@@ -74,21 +75,18 @@ export function PublishPopover({
         </div>
       </div>
 
-      <button
+      <Button
         onClick={handleToggle}
         disabled={isPending}
-        className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-          isPublished
-            ? "bg-muted hover:bg-accent text-foreground"
-            : "bg-primary hover:bg-primary/90 text-primary-foreground"
-        } disabled:opacity-50`}
+        variant={isPublished ? "outline" : "default"}
+        className="w-full"
       >
         {isPending
           ? "Saving..."
           : isPublished
             ? "Unpublish"
             : "Publish to web"}
-      </button>
+      </Button>
 
       {isPublished && (
         <div className="space-y-2">
@@ -96,9 +94,10 @@ export function PublishPopover({
             <span className="text-xs text-muted-foreground truncate flex-1 font-mono">
               {publicUrl}
             </span>
-            <button
+            <Button
               onClick={handleCopy}
-              className="shrink-0 p-1 hover:bg-accent rounded transition-colors"
+              variant="ghost"
+              size="icon-xs"
               title="Copy link"
             >
               {copied ? (
@@ -106,7 +105,7 @@ export function PublishPopover({
               ) : (
                 <Copy className="w-3.5 h-3.5 text-muted-foreground" />
               )}
-            </button>
+            </Button>
           </div>
           <a
             href={publicUrl}

@@ -291,13 +291,13 @@ function MobilePageItem({
           ) : (
             <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
           )}
-          <input
+          <Input
             ref={inputRef}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleKeyDown}
-            className="flex-1 min-w-0 bg-transparent text-sm outline-none border-b border-primary"
+            className="flex-1 min-w-0 h-7 bg-transparent text-sm border-0 border-b border-primary rounded-none shadow-none px-0 focus-visible:ring-0"
             placeholder="Untitled"
           />
         </div>
@@ -568,9 +568,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="px-2 pb-2 mt-2">
         <Separator className="mb-2" />
 
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setShowTrash((v) => !v)}
-          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-hover hover:text-foreground rounded-md transition-colors"
+          className="w-full justify-between text-muted-foreground"
         >
           <span className="flex items-center gap-2">
             <Trash2 className="w-4 h-4" />
@@ -579,7 +581,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <ChevronDown
             className={`w-4 h-4 transition-transform ${showTrash ? "rotate-180" : ""}`}
           />
-        </button>
+        </Button>
 
         {showTrash && (
           <div className="mt-1 space-y-0.5">
@@ -829,9 +831,11 @@ export function MobileSidebar() {
               New Page
             </Button>
 
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowTrash((v) => !v)}
-              className="w-full flex items-center justify-between px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 rounded-md transition-colors"
+              className="w-full justify-between text-muted-foreground"
             >
               <span className="flex items-center gap-2">
                 <Trash2 className="w-4 h-4" />
@@ -845,7 +849,7 @@ export function MobileSidebar() {
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform ${showTrash ? "rotate-180" : ""}`}
               />
-            </button>
+            </Button>
 
             {showTrash && (
               <div className="space-y-0.5 pb-1">
