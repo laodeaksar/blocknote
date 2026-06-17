@@ -26,7 +26,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useConvexConnectionState } from "convex/react";
-import { WifiOff, RefreshCw, AlertCircle } from "lucide-react";
+import { WifiOff, RefreshCw, AlertCircle, Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useConvexThreadStore } from "@/lib/thread-store";
 import { usePresence } from "@/lib/use-presence";
@@ -136,7 +136,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
   if (sync.isLoading || !sync.editor) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+        <Loader2Icon className="w-5 h-5 animate-spin" />
       </div>
     );
   }

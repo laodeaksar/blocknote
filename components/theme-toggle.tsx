@@ -6,15 +6,15 @@ import { useEffect, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark" | "system";
 
 const CYCLE: Theme[] = ["light", "dark", "system"];
 
 const LABELS: Record<Theme, string> = {
-  light:  "Light mode — click for dark (Ctrl+Shift+L)",
-  dark:   "Dark mode — click for system (Ctrl+Shift+L)",
+  light: "Light mode — click for dark (Ctrl+Shift+L)",
+  dark: "Dark mode — click for system (Ctrl+Shift+L)",
   system: "System mode — click for light (Ctrl+Shift+L)",
 };
 
@@ -23,9 +23,9 @@ function nextTheme(current: Theme): Theme {
 }
 
 function ThemeIcon({ theme }: { theme: Theme }) {
-  if (theme === "dark")   return <Moon    className="w-4 h-4" />;
+  if (theme === "dark")   return <Moon className="w-4 h-4" />;
   if (theme === "system") return <Monitor className="w-4 h-4" />;
-  return                         <Sun     className="w-4 h-4" />;
+  return                         <Sun className="w-4 h-4" />;
 }
 
 export function ThemeToggle() {

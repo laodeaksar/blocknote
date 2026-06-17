@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { Check } from "lucide-react";
 
 const AVATAR_COLORS = [
@@ -67,7 +68,8 @@ export function UserSettingsDialog({ open, onClose }: Props) {
       setSaving(false);
     }
   };
-
+const isDesktop = useMediaQuery("(min-width: 768px)")
+if (isDesktop) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
       <DialogContent className="max-w-sm">
@@ -135,4 +137,25 @@ export function UserSettingsDialog({ open, onClose }: Props) {
       </DialogContent>
     </Dialog>
   );
+}
+
+return (
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
+        <Button variant="outline">Edit Profile</Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader className="text-left">
+          <DrawerTitle>Edit profile</DrawerTitle>
+          <DrawerDescription>
+            Make changes to your profile here. Click save when you&apos;re done.
+          </DrawerDescription> </DrawerHeader> <ProfileForm className = "px-4" />
+  <DrawerFooter className="pt-2">
+          <DrawerClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter> </DrawerContent> 
+  </Drawer>
+)
+
 }

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ConvexClientProvider } from "@/lib/convex";
 import { ThemeProvider } from "next-themes";
 import { ThemeShortcut } from "@/components/theme-shortcut";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function RootLayout({
           <ConvexClientProvider>
             {children}
             <ThemeShortcut />
-            <Toaster richColors position="bottom-right" />
+            <Toaster />
           </ConvexClientProvider>
         </ThemeProvider>
       </body>
