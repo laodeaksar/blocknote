@@ -2,11 +2,10 @@
 
 import dynamic from "next/dynamic";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Spinner } from "@/components/ui/spinner"
-
+import { Spinner } from "@/components/ui/spinner";
 
 const Editor = dynamic(
-  () => import("@/components/editor").then((m) => m.Editor),
+  () => import("@/components/editor/index").then((m) => m.Editor),
   {
     ssr: false,
     loading: () => (
