@@ -171,7 +171,8 @@ body {
 }
 
 /* ── BlockNote root color vars: sync to app palette ──────────────── */
-.bn-root {
+/* Use html prefix to ensure higher specificity than BlockNote's own .bn-root {} */
+html .bn-root {
   --bn-colors-editor-background: var(--background);
   --bn-colors-editor-text:       var(--foreground);
   --bn-colors-menu-background:   var(--card);
@@ -182,7 +183,7 @@ body {
   --bn-colors-shadow:            rgba(0, 0, 0, 0.07);
 }
 
-.bn-root[data-color-scheme="dark"] {
+html .bn-root[data-color-scheme="dark"] {
   --bn-colors-editor-background: var(--background);
   --bn-colors-editor-text:       var(--foreground);
   --bn-colors-menu-background:   var(--card);
@@ -191,6 +192,11 @@ body {
   --bn-colors-hovered-background:var(--accent);
   --bn-colors-hovered-text:      var(--accent-foreground);
   --bn-colors-shadow:            rgba(0, 0, 0, 0.4);
+}
+
+/* Remove editor border-radius so it blends seamlessly with the page */
+.bn-editor {
+  border-radius: 0 !important;
 }
 
 /* ── Floating comment composer ────────────────────────────────────── */
