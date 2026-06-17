@@ -105,6 +105,30 @@ export function Editor({ pageId, editable = true }: EditorProps) {
     editable && !!userId
   );
 
+  // FIX: FormattingToolbarController's `position` is computed via useEditorState,
+  // which only updates on TipTap "transaction" events. After mouse selection,
+  // `store.state` becomes true (via FormattingToolbarExtension's pointerup listener)
+  // but `position` stays undefined because mouseup may not dispatch a new transaction
+  // if the selection didn't change from the last mousemove.
+  // Solution: register a pointerup listener (capture, runs AFTER FormattingToolbarExtension's)
+  // that dispatches a no-op transaction, forcing the position selector to re-run with
+  // the updated store.state=true, so position = {from, to} and the toolbar renders.
+  useEffect(() => {
+    const editor = sync.editor;
+    if (!editor) return;
+
+    const handlePointerUp = () => {
+      const view = editor.prosemirrorView;
+      if (!view) return;
+      view.dispatch(view.state.tr.setMeta("_formattingToolbarForceSync", true));
+    };
+
+    document.addEventListener("pointerup", handlePointerUp, { capture: true });
+    return () => {
+      document.removeEventListener("pointerup", handlePointerUp, true);
+    };
+  }, [sync.editor]);
+
   const handleRetry = useCallback(() => {
     setIsRetrying(true);
     setSyncError(null);
