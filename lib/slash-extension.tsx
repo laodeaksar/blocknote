@@ -15,11 +15,12 @@ import {
   Code2,
   Quote,
   Minus,
+  ImageUp,
 } from "lucide-react";
 
 export interface SlashCommandItem extends SlashMenuItem {}
 
-export const SLASH_COMMANDS: SlashCommandItem[] = [
+const BASE_COMMANDS: SlashCommandItem[] = [
   {
     group: "Teks",
     title: "Paragraf",
@@ -112,6 +113,40 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
   },
 ];
 
+function buildImageCommand(
+  uploadImage: (file: File) => Promise<string>
+): SlashCommandItem {
+  return {
+    group: "Media",
+    title: "Upload Gambar",
+    description: "Sisipkan gambar dari perangkat",
+    icon: ImageUp,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run();
+
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.style.cssText = "position:fixed;top:-9999px;left:-9999px";
+      document.body.appendChild(input);
+
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        document.body.removeChild(input);
+        if (!file) return;
+        try {
+          const src = await uploadImage(file);
+          editor.chain().focus().setImage({ src }).run();
+        } catch (err) {
+          console.error("Image upload failed:", err);
+        }
+      };
+
+      input.click();
+    },
+  };
+}
+
 type MenuRef = { onKeyDown: (props: { event: KeyboardEvent }) => boolean };
 
 function renderSlashMenu() {
@@ -145,10 +180,23 @@ function renderSlashMenu() {
   };
 }
 
-export const SlashExtension = Extension.create({
+export const SlashExtension = Extension.create<{
+  uploadImage: ((file: File) => Promise<string>) | null;
+}>({
   name: "slash",
 
+  addOptions() {
+    return {
+      uploadImage: null,
+    };
+  },
+
   addProseMirrorPlugins() {
+    const uploadImage = this.options.uploadImage;
+    const commands: SlashCommandItem[] = uploadImage
+      ? [...BASE_COMMANDS, buildImageCommand(uploadImage)]
+      : BASE_COMMANDS;
+
     return [
       Suggestion({
         editor: this.editor,
@@ -160,8 +208,8 @@ export const SlashExtension = Extension.create({
         },
         items: ({ query }) => {
           const q = query.toLowerCase().trim();
-          if (!q) return SLASH_COMMANDS;
-          return SLASH_COMMANDS.filter(
+          if (!q) return commands;
+          return commands.filter(
             (c) =>
               c.title.toLowerCase().includes(q) ||
               c.group.toLowerCase().includes(q) ||

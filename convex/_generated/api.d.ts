@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as blocks from "../blocks.js";
 import type * as comments from "../comments.js";
+import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as pages from "../pages.js";
 import type * as presence from "../presence.js";
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   blocks: typeof blocks;
   comments: typeof comments;
+  files: typeof files;
   http: typeof http;
   pages: typeof pages;
   presence: typeof presence;

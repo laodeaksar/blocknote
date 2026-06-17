@@ -186,6 +186,26 @@ function TiptapEditorInner({
 }: TiptapEditorInnerProps) {
   const { resolvedTheme } = useTheme();
 
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const getStorageUrl = useMutation(api.files.getStorageUrl);
+
+  const uploadImage = useCallback(
+    async (file: File): Promise<string> => {
+      const uploadUrl = await generateUploadUrl();
+      const res = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { storageId } = await res.json();
+      const src = await getStorageUrl({ storageId });
+      if (!src) throw new Error("Failed to get image URL");
+      return src;
+    },
+    [generateUploadUrl, getStorageUrl]
+  );
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
@@ -199,7 +219,7 @@ function TiptapEditorInner({
       TaskItem.configure({ nested: true }),
       Image,
       Typography,
-      SlashExtension,
+      SlashExtension.configure({ uploadImage }),
       extension,
     ],
     content: initialContent,
