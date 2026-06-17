@@ -33,6 +33,8 @@ interface CommentsPanelProps {
   pageId: Id<"pages">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  activeThreadId?: string;
+  onActiveThreadChange?: (threadId: string | undefined) => void;
 }
 
 type RawComment = {
@@ -93,7 +95,13 @@ function getInitials(name: string): string {
   return name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 }
 
-export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps) {
+export function CommentsPanel({
+  pageId,
+  open,
+  onOpenChange,
+  activeThreadId,
+  onActiveThreadChange,
+}: CommentsPanelProps) {
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user?.id ?? "";
 
@@ -165,6 +173,8 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
                   thread={thread}
                   usersMap={usersMap}
                   currentUserId={currentUserId}
+                  isActive={thread.id === activeThreadId}
+                  onActivate={() => onActiveThreadChange?.(thread.id)}
                 />
               ))}
             </div>
@@ -181,6 +191,8 @@ export function CommentsPanel({ pageId, open, onOpenChange }: CommentsPanelProps
                   thread={thread}
                   usersMap={usersMap}
                   currentUserId={currentUserId}
+                  isActive={thread.id === activeThreadId}
+                  onActivate={() => onActiveThreadChange?.(thread.id)}
                   resolved
                 />
               ))}
@@ -196,23 +208,42 @@ function ThreadItem({
   thread,
   usersMap,
   currentUserId,
+  isActive,
+  onActivate,
   resolved = false,
 }: {
   thread: RawThread;
   usersMap: Map<string, UserInfo>;
   currentUserId: string;
+  isActive: boolean;
+  onActivate: () => void;
   resolved?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [replyText, setReplyText] = useState("");
   const replyRef = useRef<HTMLTextAreaElement>(null);
+  const itemRef = useRef<HTMLDivElement>(null);
 
   const activeComments = thread.comments.filter((c) => !c.deletedAt);
   const first = activeComments[0];
   const replies = activeComments.slice(1);
-  const text = extractText(first?.body);
   const author = first ? usersMap.get(first.userId) : undefined;
   const threadId = thread.id as Id<"threads">;
+
+  useEffect(() => {
+    if (isActive && !expanded) {
+      setExpanded(true);
+      setTimeout(() => {
+        itemRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 80);
+    }
+  }, [isActive, expanded]);
+
+  useEffect(() => {
+    if (expanded && !resolved) {
+      setTimeout(() => replyRef.current?.focus(), 100);
+    }
+  }, [expanded, resolved]);
 
   const resolveThread = useConvexMutation(api.comments.resolveThread);
   const unresolveThread = useConvexMutation(api.comments.unresolveThread);
@@ -236,10 +267,6 @@ function ThreadItem({
     onError: () => toast.error("Gagal menghapus thread"),
   });
 
-  useEffect(() => {
-    if (expanded) setTimeout(() => replyRef.current?.focus(), 80);
-  }, [expanded]);
-
   const handleReply = () => {
     const trimmed = replyText.trim();
     if (!trimmed) return;
@@ -254,19 +281,29 @@ function ThreadItem({
     }
   };
 
+  const handleToggle = () => {
+    if (!resolved) {
+      const next = !expanded;
+      setExpanded(next);
+      if (next) onActivate();
+    }
+  };
+
   return (
     <div
+      ref={itemRef}
       className={cn(
-        "border-b border-border/50 last:border-0",
+        "border-b border-border/50 last:border-0 transition-colors",
+        isActive && !resolved ? "bg-primary/5" : "",
         resolved ? "opacity-60" : ""
       )}
     >
       <div
         className={cn(
           "px-4 py-3",
-          !resolved && "hover:bg-accent/30 transition-colors cursor-pointer"
+          !resolved && "hover:bg-accent/30 cursor-pointer"
         )}
-        onClick={() => !resolved && setExpanded((v) => !v)}
+        onClick={handleToggle}
       >
         <div className="flex items-start gap-2.5">
           <button
@@ -312,7 +349,9 @@ function ThreadItem({
             </div>
 
             <p className={cn("text-sm text-foreground leading-snug", !expanded && "line-clamp-2")}>
-              {text || <span className="italic text-muted-foreground">Komentar kosong</span>}
+              {extractText(first?.body) || (
+                <span className="italic text-muted-foreground">Komentar kosong</span>
+              )}
             </p>
 
             {!expanded && (replies.length > 0 || resolved) && (
@@ -353,20 +392,17 @@ function ThreadItem({
           )}
 
           {replies.length > 0 && (
-            <div className="mt-2 pl-2 border-l-2 border-border space-y-2">
-              {replies.map((c) => {
-                const replyAuthor = usersMap.get(c.userId);
-                return (
-                  <CommentRow
-                    key={c.id}
-                    comment={c}
-                    author={replyAuthor}
-                    currentUserId={currentUserId}
-                    isOnly={false}
-                    onDelete={() => handleDeleteComment(c.id, false)}
-                  />
-                );
-              })}
+            <div className="mt-2 pl-2 border-l-2 border-border space-y-1">
+              {replies.map((c) => (
+                <CommentRow
+                  key={c.id}
+                  comment={c}
+                  author={usersMap.get(c.userId)}
+                  currentUserId={currentUserId}
+                  isOnly={false}
+                  onDelete={() => handleDeleteComment(c.id, false)}
+                />
+              ))}
             </div>
           )}
 
@@ -376,7 +412,7 @@ function ThreadItem({
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Tulis balasan…"
-              className="min-h-[60px] resize-none text-sm flex-1"
+              className="min-h-[56px] resize-none text-sm flex-1"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
@@ -386,7 +422,7 @@ function ThreadItem({
             />
             <Button
               size="icon"
-              className="shrink-0 mb-0.5"
+              className="shrink-0 mb-0.5 size-8"
               disabled={!replyText.trim() || sending}
               onClick={handleReply}
             >
@@ -438,7 +474,7 @@ function CommentRow({
           type="button"
           title={isOnly ? "Hapus thread" : "Hapus komentar"}
           onClick={onDelete}
-          className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 mt-0.5"
+          className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive mt-0.5"
         >
           <Trash2 className="w-3 h-3" />
         </button>

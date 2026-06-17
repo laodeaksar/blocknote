@@ -12,6 +12,7 @@ import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
 import type { Node } from "@tiptap/pm/model";
 import { SlashExtension } from "@/lib/slash-extension";
+import { CommentHighlight } from "./comment-highlight-extension";
 
 const PLACEHOLDER_MAP: Record<string, string | ((node: Node) => string)> = {
   paragraph: "Ketik '/' untuk perintah, atau mulai menulis…",
@@ -57,6 +58,7 @@ export function buildEditorExtensions(syncExtension: AnyExtension): AnyExtension
     }).configure({ HTMLAttributes: { class: "tiptap-image" } }),
     Typography,
     SlashExtension,
+    CommentHighlight,
     syncExtension,
   ];
 }

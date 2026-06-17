@@ -12,6 +12,11 @@ import { BlockDragHandle } from "./block-drag-handle";
 import { CommentCompose } from "./comment-compose";
 import { buildEditorExtensions } from "./use-editor-extensions";
 
+interface ComposeState {
+  anchorRect: DOMRect;
+  selectionRange: { from: number; to: number };
+}
+
 interface EditorInnerProps {
   pageId: Id<"pages">;
   editable: boolean;
@@ -19,7 +24,7 @@ interface EditorInnerProps {
   initialContent: Content;
   userId: string;
   userName: string;
-  onCommentsOpen?: () => void;
+  onCommentsOpen?: (threadId?: string) => void;
 }
 
 export function EditorInner({
@@ -32,7 +37,7 @@ export function EditorInner({
   onCommentsOpen,
 }: EditorInnerProps) {
   const { resolvedTheme } = useTheme();
-  const [composeAnchor, setComposeAnchor] = useState<DOMRect | null>(null);
+  const [compose, setCompose] = useState<ComposeState | null>(null);
 
   const editor = useEditor({
     extensions: buildEditorExtensions(extension),
@@ -43,13 +48,35 @@ export function EditorInner({
 
   usePresence(editor ?? null, pageId, userId, userName, editable && !!userId);
 
-  const handleComment = useCallback((rect: DOMRect) => {
-    setComposeAnchor(rect);
-  }, []);
+  const handleComment = useCallback(
+    (rect: DOMRect) => {
+      if (!editor) return;
+      const { from, to } = editor.state.selection;
+      if (from === to) return;
+      setCompose({ anchorRect: rect, selectionRange: { from, to } });
+    },
+    [editor]
+  );
 
-  const handleComposeSuccess = useCallback(() => {
-    onCommentsOpen?.();
-  }, [onCommentsOpen]);
+  const handleComposeSuccess = useCallback(
+    (threadId: string) => {
+      onCommentsOpen?.(threadId);
+    },
+    [onCommentsOpen]
+  );
+
+  const handleEditorClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const mark = target.closest("mark[data-thread-id]");
+      if (!mark) return;
+      const threadId = mark.getAttribute("data-thread-id");
+      if (threadId) {
+        onCommentsOpen?.(threadId);
+      }
+    },
+    [onCommentsOpen]
+  );
 
   if (!editor) {
     return (
@@ -66,13 +93,17 @@ export function EditorInner({
         onComment={editable ? handleComment : undefined}
       />
       {editable && <BlockDragHandle editor={editor} />}
-      <EditorContent editor={editor} className="tiptap-content" />
+      <div onClick={handleEditorClick}>
+        <EditorContent editor={editor} className="tiptap-content" />
+      </div>
 
-      {composeAnchor && (
+      {compose && editor && (
         <CommentCompose
           pageId={pageId}
-          anchorRect={composeAnchor}
-          onClose={() => setComposeAnchor(null)}
+          anchorRect={compose.anchorRect}
+          selectionRange={compose.selectionRange}
+          editor={editor}
+          onClose={() => setCompose(null)}
           onSuccess={handleComposeSuccess}
         />
       )}

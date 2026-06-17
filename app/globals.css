@@ -418,3 +418,22 @@ body {
   from { opacity: 1; transform: translateY(0); }
   to   { opacity: 0; transform: translateY(-110%); }
 }
+
+/* ── Comment highlight mark ─────────────────────────────────────── */
+mark.comment-highlight {
+  background-color: oklch(91% 0.12 84);   /* warm amber-yellow */
+  border-radius: 2px;
+  padding: 1px 0;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+mark.comment-highlight:hover {
+  background-color: oklch(84% 0.16 72);
+}
+.dark mark.comment-highlight {
+  background-color: oklch(42% 0.10 75 / 0.55);
+  color: oklch(90% 0.04 84);
+}
+.dark mark.comment-highlight:hover {
+  background-color: oklch(50% 0.14 72 / 0.65);
+}

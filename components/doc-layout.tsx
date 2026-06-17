@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Navbar } from "@/components/navbar";
 import { CommentsPanel } from "@/components/comments-panel";
 import { EditorWrapper } from "@/components/editor-wrapper";
@@ -12,6 +12,17 @@ interface DocLayoutProps {
 
 export function DocLayout({ pageId }: DocLayoutProps) {
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [activeThreadId, setActiveThreadId] = useState<string | undefined>();
+
+  const handleCommentsOpen = useCallback((threadId?: string) => {
+    setCommentsOpen(true);
+    if (threadId) setActiveThreadId(threadId);
+  }, []);
+
+  const handlePanelOpenChange = useCallback((open: boolean) => {
+    setCommentsOpen(open);
+    if (!open) setActiveThreadId(undefined);
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -25,14 +36,16 @@ export function DocLayout({ pageId }: DocLayoutProps) {
           <div className="max-w-4xl mx-auto py-8 px-4 md:py-16">
             <EditorWrapper
               pageId={pageId}
-              onCommentsOpen={() => setCommentsOpen(true)}
+              onCommentsOpen={handleCommentsOpen}
             />
           </div>
         </div>
         <CommentsPanel
           pageId={pageId}
           open={commentsOpen}
-          onOpenChange={setCommentsOpen}
+          onOpenChange={handlePanelOpenChange}
+          activeThreadId={activeThreadId}
+          onActiveThreadChange={setActiveThreadId}
         />
       </div>
     </div>
