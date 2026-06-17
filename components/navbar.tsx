@@ -182,15 +182,15 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
 
       <div className="flex items-center gap-2 shrink-0">
         {saveStatus === "saving" && (
-          <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Loader2 className="w-3 h-3 animate-spin" />
-            Menyimpan…
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+            <span className="hidden sm:inline">Menyimpan…</span>
           </span>
         )}
         {saveStatus === "saved" && lastSavedAt && (
-          <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Check className="w-3 h-3 text-emerald-500" />
-            {formatRelativeTime(lastSavedAt)}
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+            <span className="hidden sm:inline">{formatRelativeTime(lastSavedAt)}</span>
           </span>
         )}
 
