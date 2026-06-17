@@ -13,6 +13,7 @@ import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
@@ -123,13 +124,23 @@ export function Navbar({ pageId }: NavbarProps) {
             </PopoverContent>
           </Popover>
 
-          <Button variant="ghost" size="icon-sm">
-            <Star className="w-4 h-4 text-muted-foreground" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Favorite" />}>
+                <Star className="w-4 h-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Favorite</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button variant="ghost" size="icon-sm">
-            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="More options" />}>
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">More options</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <UserMenu />
         </div>
