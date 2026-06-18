@@ -10,11 +10,17 @@ import { useState, useCallback } from "react";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { BlockDragHandle } from "./block-drag-handle";
 import { CommentCompose } from "./comment-compose";
+import { CommentContextMenu } from "./comment-context-menu";
 import { buildEditorExtensions } from "./use-editor-extensions";
 
 interface ComposeState {
   anchorRect: DOMRect;
   selectionRange: { from: number; to: number };
+}
+
+interface ContextMenuState {
+  anchorRect: DOMRect;
+  threadId: string;
 }
 
 interface EditorInnerProps {
@@ -38,6 +44,7 @@ export function EditorInner({
 }: EditorInnerProps) {
   const { resolvedTheme } = useTheme();
   const [compose, setCompose] = useState<ComposeState | null>(null);
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   const editor = useEditor({
     extensions: buildEditorExtensions(extension),
@@ -71,11 +78,32 @@ export function EditorInner({
       const mark = target.closest("mark[data-thread-id]");
       if (!mark) return;
       const threadId = mark.getAttribute("data-thread-id");
-      if (threadId) {
-        onCommentsOpen?.(threadId);
-      }
+      if (threadId) onCommentsOpen?.(threadId);
     },
     [onCommentsOpen]
+  );
+
+  const handleEditorContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const mark = target.closest("mark[data-thread-id]");
+
+      if (!mark) {
+        // Not on a highlight — suppress native context menu, do nothing
+        e.preventDefault();
+        return;
+      }
+
+      const threadId = mark.getAttribute("data-thread-id");
+      if (!threadId) { e.preventDefault(); return; }
+
+      e.preventDefault(); // suppress native browser context menu
+
+      // Position the floating menu at the cursor point
+      const rect = new DOMRect(e.clientX, e.clientY, 0, 0);
+      setContextMenu({ anchorRect: rect, threadId });
+    },
+    []
   );
 
   if (!editor) {
@@ -93,11 +121,12 @@ export function EditorInner({
         onComment={editable ? handleComment : undefined}
       />
       {editable && <BlockDragHandle editor={editor} />}
-      <div onClick={handleEditorClick}>
+
+      <div onClick={handleEditorClick} onContextMenu={handleEditorContextMenu}>
         <EditorContent editor={editor} className="tiptap-content" />
       </div>
 
-      {compose && editor && (
+      {compose && (
         <CommentCompose
           pageId={pageId}
           anchorRect={compose.anchorRect}
@@ -105,6 +134,19 @@ export function EditorInner({
           editor={editor}
           onClose={() => setCompose(null)}
           onSuccess={handleComposeSuccess}
+        />
+      )}
+
+      {contextMenu && (
+        <CommentContextMenu
+          threadId={contextMenu.threadId}
+          anchorRect={contextMenu.anchorRect}
+          editor={editor}
+          onClose={() => setContextMenu(null)}
+          onViewComments={(threadId) => {
+            onCommentsOpen?.(threadId);
+            setContextMenu(null);
+          }}
         />
       )}
     </div>
