@@ -421,8 +421,8 @@ function ThreadItem({
               }}
             />
             <Button
-              size="icon"
-              className="shrink-0 mb-0.5 size-8"
+              size="icon-sm"
+              className="shrink-0 mb-0.5"
               disabled={!replyText.trim() || sending}
               onClick={handleReply}
             >

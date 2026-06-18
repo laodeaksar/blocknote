@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Kbd } from "@/components/ui/kbd";
 import { PageItem } from "./page-item";
 import { TrashSection } from "./trash-section";
 import { ConfirmDeleteDialog } from "./confirm-delete-dialog";
@@ -192,10 +193,10 @@ export function SidebarContent({
         >
           <Search className="w-4 h-4" />
           <span className="flex-1 text-left">Search</span>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-mono text-muted-foreground/60">
+          <Kbd className="hidden sm:inline-flex">
             <span>⌘</span>
             <span>K</span>
-          </kbd>
+          </Kbd>
         </Button>
         <div className="flex items-center gap-1">
           <Button

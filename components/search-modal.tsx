@@ -118,7 +118,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                 </InputGroupButton>
               )}
               <Kbd>
-                ESC
+                Esc
               </Kbd>
             </InputGroupAddon>
           </InputGroup>
