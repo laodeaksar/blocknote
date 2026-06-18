@@ -49,6 +49,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
   const { toggle, collapsed } = useSidebar();
   const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
+  const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId }));
   const { mutateAsync: updatePage } = useMutation({
     mutationFn: (vars: FunctionArgs<typeof api.pages.update>) =>
       convex.mutation(api.pages.update, vars),
@@ -222,12 +223,19 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                     size="icon-sm"
                     aria-label="Toggle comments"
                     onClick={onToggleComments}
-                    className={commentsOpen ? "bg-accent text-foreground" : ""}
+                    className={cn("relative", commentsOpen ? "bg-accent text-foreground" : "")}
                   />
                 }>
                   <MessageSquare className={`w-4 h-4 ${commentsOpen ? "text-foreground" : "text-muted-foreground"}`} />
+                  {activeThreadCount > 0 && (
+                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-amber-500 px-0.5 text-[9px] font-bold leading-none text-white ring-1 ring-background">
+                      {activeThreadCount > 99 ? "99+" : activeThreadCount}
+                    </span>
+                  )}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Komentar</TooltipContent>
+                <TooltipContent side="bottom">
+                  {activeThreadCount > 0 ? `Komentar (${activeThreadCount} aktif)` : "Komentar"}
+                </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}

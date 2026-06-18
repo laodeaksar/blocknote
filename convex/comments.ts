@@ -62,6 +62,19 @@ export const getUsersByIds = query({
   },
 });
 
+export const countActiveThreads = query({
+  args: { pageId: v.id("pages") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+    const threads = await ctx.db
+      .query("threads")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .collect();
+    return threads.filter((t) => !t.resolved).length;
+  },
+});
+
 export const upsertUser = mutation({
   args: { name: v.string(), avatarUrl: v.optional(v.string()) },
   handler: async (ctx, args) => {
