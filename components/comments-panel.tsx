@@ -16,7 +16,13 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -406,13 +412,14 @@ function ThreadItem({
             </div>
           )}
 
-          <div className="mt-3 flex gap-2 items-end">
-            <Textarea
+          <InputGroup className="mt-3 rounded-lg">
+            <InputGroupTextarea
               ref={replyRef}
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Tulis balasan…"
-              className="min-h-[56px] resize-none text-sm flex-1"
+              rows={2}
+              className="text-sm min-h-[52px] py-2 px-3"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
@@ -420,16 +427,25 @@ function ThreadItem({
                 }
               }}
             />
-            <Button
-              size="icon-sm"
-              className="shrink-0 mb-0.5"
-              disabled={!replyText.trim() || sending}
-              onClick={handleReply}
+            <InputGroupAddon
+              align="block-end"
+              className="justify-between border-t border-border px-2 py-1"
             >
-              <Send className="w-3.5 h-3.5" />
-            </Button>
-          </div>
-          <p className="text-[10px] text-muted-foreground/60 mt-1">Ctrl+Enter untuk kirim</p>
+              <InputGroupText className="text-[10px] text-muted-foreground/60">
+                Ctrl+Enter
+              </InputGroupText>
+              <InputGroupButton
+                size="xs"
+                variant="default"
+                disabled={!replyText.trim() || sending}
+                onClick={handleReply}
+                className="gap-1 px-2"
+              >
+                <Send className="size-3" />
+                Kirim
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
         </div>
       )}
     </div>
