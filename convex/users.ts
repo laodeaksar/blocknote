@@ -47,7 +47,11 @@ export const getMyProfile = query({
       .first();
 
     if (!user) return null;
-    return { name: user.name, avatarColor: user.avatarColor ?? null };
+    return {
+      name: user.name,
+      avatarColor: user.avatarColor ?? null,
+      avatarUrl: user.avatarUrl ?? null,
+    };
   },
 });
 
@@ -55,6 +59,7 @@ export const updateProfile = mutation({
   args: {
     name: v.string(),
     avatarColor: v.string(),
+    avatarUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -69,6 +74,7 @@ export const updateProfile = mutation({
       await ctx.db.patch(user._id, {
         name: args.name,
         avatarColor: args.avatarColor,
+        ...(args.avatarUrl !== undefined && { avatarUrl: args.avatarUrl }),
       });
     }
   },

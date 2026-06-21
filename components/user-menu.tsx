@@ -30,6 +30,7 @@ export function UserMenu() {
   const displayName = profile?.name ?? session?.user?.name ?? "";
   const email = session?.user?.email ?? "";
   const avatarColor = profile?.avatarColor ?? null;
+  const avatarUrl = profile?.avatarUrl ?? null;
 
   return (
     <>
@@ -41,7 +42,8 @@ export function UserMenu() {
           <UserAvatar
             name={displayName}
             email={email}
-            avatarColor={avatarColor}
+            avatarColor={avatarUrl ? undefined : avatarColor}
+            avatarUrl={avatarUrl}
             size="sm"
           />
         </DropdownMenuTrigger>
@@ -52,7 +54,8 @@ export function UserMenu() {
               <UserAvatar
                 name={displayName}
                 email={email}
-                avatarColor={avatarColor}
+                avatarColor={avatarUrl ? undefined : avatarColor}
+                avatarUrl={avatarUrl}
                 size="sm"
                 className="shrink-0"
               />
