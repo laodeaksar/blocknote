@@ -24,10 +24,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserAvatar } from "@/components/ui/avatar";
+import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { usePending } from "@/hooks/use-pending";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { fileToDataUrl } from "@/lib/image-crop";
 import { Check, Camera, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,6 +61,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
   const [name, setName] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -69,16 +72,24 @@ export function UserSettingsDialog({ open, onClose }: Props) {
     }
   }, [open, profile, session?.user?.name]);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Foto terlalu besar. Maksimal 5 MB.");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Foto terlalu besar. Maksimal 10 MB.");
       return;
     }
+    const dataUrl = await fileToDataUrl(file);
+    setCropSrc(dataUrl);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCropApply = (blob: Blob) => {
+    setCropSrc(null);
+    const croppedFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
     runUpload(async () => {
       try {
-        const url = await uploadToCloudinary(file);
+        const url = await uploadToCloudinary(croppedFile);
         setAvatarUrl(url);
       } catch {
         toast.error("Gagal mengupload foto. Pastikan Cloudinary sudah dikonfigurasi.");
@@ -125,7 +136,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
             className={cn(
               "absolute inset-0 flex items-center justify-center rounded-full",
               "bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity",
-              uploading && "opacity-100 cursor-wait"
+              uploading && "opacity-100 cursor-wait",
             )}
             title="Ganti foto profil"
           >
@@ -153,7 +164,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           className="hidden"
-          onChange={handlePhotoChange}
+          onChange={handleFileChange}
         />
       </div>
 
@@ -182,7 +193,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
                 className={cn(
                   "w-7 h-7 rounded-full transition-transform hover:scale-110 flex items-center justify-center shrink-0",
                   color === c.value &&
-                    "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
+                    "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110",
                 )}
                 style={{ backgroundColor: c.value }}
               >
@@ -197,49 +208,53 @@ export function UserSettingsDialog({ open, onClose }: Props) {
     </div>
   );
 
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Profile settings</DialogTitle>
-          </DialogHeader>
-
-          {formContent}
-
-          <DialogFooter showCloseButton>
-            <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
-              {saving ? "Saving…" : "Save changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
-    <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Profile settings</DrawerTitle>
-          <DrawerDescription>
-            Update your display name, avatar color, or upload a photo.
-          </DrawerDescription>
-        </DrawerHeader>
+    <>
+      <ImageCropDialog
+        src={cropSrc}
+        onApply={handleCropApply}
+        onCancel={() => setCropSrc(null)}
+      />
 
-        <div className="px-4">
-          {formContent}
-        </div>
+      {isDesktop ? (
+        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Profile settings</DialogTitle>
+            </DialogHeader>
 
-        <DrawerFooter className="pt-4">
-          <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
-            {saving ? "Saving…" : "Save changes"}
-          </Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+            {formContent}
+
+            <DialogFooter showCloseButton>
+              <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
+                {saving ? "Saving…" : "Save changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Profile settings</DrawerTitle>
+              <DrawerDescription>
+                Update your display name, avatar color, or upload a photo.
+              </DrawerDescription>
+            </DrawerHeader>
+
+            <div className="px-4">{formContent}</div>
+
+            <DrawerFooter className="pt-4">
+              <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
+                {saving ? "Saving…" : "Save changes"}
+              </Button>
+              <DrawerClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      )}
+    </>
   );
 }
