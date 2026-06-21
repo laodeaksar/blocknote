@@ -45,3 +45,4 @@ build = ["npm", "run", "build"]
 NEXT_PUBLIC_APP_URL = "https://34b5bec9-2fad-49be-b12b-f20e8e83d1a0-00-2zymgz2axwxrw.sisko.replit.dev"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = "laodeaksar"
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET = "blocknote"
+CONVEX_DEPLOYMENT = "prod:reminiscent-curlew-987"
