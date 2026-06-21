@@ -14,25 +14,6 @@ import type { Node } from "@tiptap/pm/model";
 import { SlashExtension } from "@/lib/slash-extension";
 import { CommentHighlight } from "./comment-highlight-extension";
 
-const PLACEHOLDER_MAP: Record<string, string | ((node: Node) => string)> = {
-  paragraph: "Ketik '/' untuk perintah, atau mulai menulis…",
-  heading: (node: Node) => {
-    const level = node.attrs.level as number;
-    if (level === 1) return "Judul utama…";
-    if (level === 2) return "Subjudul…";
-    return "Judul kecil…";
-  },
-  codeBlock: "// Tulis kode di sini…",
-  blockquote: "Tulis kutipan…",
-};
-
-function getPlaceholder(node: Node): string {
-  const entry = PLACEHOLDER_MAP[node.type.name];
-  if (!entry) return "";
-  if (typeof entry === "function") return entry(node);
-  return entry;
-}
-
 export function buildEditorExtensions(syncExtension: AnyExtension): AnyExtension[] {
   return [
     StarterKit.configure({}),
@@ -41,11 +22,6 @@ export function buildEditorExtensions(syncExtension: AnyExtension): AnyExtension
     Color,
     TextAlign.configure({ types: ["heading", "paragraph"] }),
     Link.configure({ openOnClick: false, autolink: true }),
-    Placeholder.configure({
-      placeholder: ({ node }) => getPlaceholder(node),
-      includeChildren: false,
-      showOnlyCurrent: true,
-    }),
     TaskList,
     TaskItem.configure({ nested: true }),
     Image.extend({
