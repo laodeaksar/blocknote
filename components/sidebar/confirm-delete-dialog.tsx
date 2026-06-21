@@ -1,6 +1,7 @@
 "use client";
 
 import type { Id } from "@/convex/_generated/dataModel";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,13 +37,14 @@ export function ConfirmDeleteDialog({
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             Batal
           </Button>
-          <Button
+          <LoadingButton
             variant="destructive"
             onClick={onConfirm}
-            disabled={isPending}
+            isPending={isPending}
+            loadingText="Menghapus..."
           >
-            {isPending ? "Menghapus..." : "Hapus"}
-          </Button>
+            Hapus
+          </LoadingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

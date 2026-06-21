@@ -8,6 +8,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 interface PublishPopoverProps {
   pageId: Id<"pages">;
@@ -75,18 +76,15 @@ export function PublishPopover({
         </div>
       </div>
 
-      <Button
+      <LoadingButton
         onClick={handleToggle}
-        disabled={isPending}
+        isPending={isPending}
+        loadingText="Saving..."
         variant={isPublished ? "outline" : "default"}
         className="w-full"
       >
-        {isPending
-          ? "Saving..."
-          : isPublished
-            ? "Unpublish"
-            : "Publish to web"}
-      </Button>
+        {isPublished ? "Unpublish" : "Publish to web"}
+      </LoadingButton>
 
       {isPublished && (
         <div className="space-y-2">
