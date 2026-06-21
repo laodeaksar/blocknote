@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     resolveAlias: {
       "@tiptap/core":
-        "./node_modules/.pnpm/@tiptap+core@3.27.0_@tiptap+pm@3.27.0/node_modules/@tiptap/core",
+        "./node_modules/.pnpm/@tiptap+core@3.27.1_@tiptap+pm@3.27.1/node_modules/@tiptap/core",
     },
   },
   experimental: {
