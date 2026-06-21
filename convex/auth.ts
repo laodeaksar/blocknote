@@ -2,10 +2,10 @@ import { components } from "./_generated/api";
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
-import { type DataModel } from "./_generated/dataModel";
+import { type GenericDataModel } from "convex/server";
 import authConfig from "./auth.config";
 
-export const authComponent = createClient<DataModel>(components.betterAuth);
+export const authComponent = createClient<GenericDataModel>(components.betterAuth);
 
 function getBaseUrl(): string | undefined {
   const url = process.env.NEXT_PUBLIC_APP_URL;
@@ -13,7 +13,7 @@ function getBaseUrl(): string | undefined {
   return url.replace(/\/$/, "");
 }
 
-export const createAuth = (ctx: GenericCtx<DataModel>) => {
+export const createAuth = (ctx: GenericCtx<GenericDataModel>) => {
   const baseUrl = getBaseUrl();
 
   return betterAuth({
