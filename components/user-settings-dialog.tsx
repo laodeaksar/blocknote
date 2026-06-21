@@ -23,9 +23,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { usePending } from "@/hooks/use-pending";
+import { getDisplayInitials } from "@/lib/initials";
 import { Check } from "lucide-react";
 
 const AVATAR_COLORS = [
@@ -50,10 +52,10 @@ export function UserSettingsDialog({ open, onClose }: Props) {
   const { data: session } = authClient.useSession();
   const profile = useQuery(api.users.getMyProfile, session?.user ? {} : "skip");
   const updateProfile = useMutation(api.users.updateProfile);
+  const { isPending: saving, run } = usePending();
 
   const [name, setName] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open && profile !== undefined) {
@@ -62,20 +64,14 @@ export function UserSettingsDialog({ open, onClose }: Props) {
     }
   }, [open, profile, session?.user?.name]);
 
-  const initials = name.trim()
-    ? name.trim().split(/\s+/).map((w) => w[0]).join("").toUpperCase().slice(0, 2)
-    : session?.user?.email?.[0]?.toUpperCase() ?? "?";
+  const initials = getDisplayInitials(name, session?.user?.email);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!name.trim()) return;
-    setSaving(true);
-    try {
+    run(async () => {
       await updateProfile({ name: name.trim(), avatarColor: color });
       onClose();
-    } catch {
-    } finally {
-      setSaving(false);
-    }
+    });
   };
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -83,14 +79,12 @@ export function UserSettingsDialog({ open, onClose }: Props) {
   const formContent = (
     <div className="space-y-5 py-1">
       <div className="flex justify-center pt-1">
-        <Avatar size="lg">
-          <AvatarFallback
-            className="text-white text-base font-semibold"
-            style={{ backgroundColor: color }}
-          >
-            {initials}
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          name={name}
+          email={session?.user?.email}
+          avatarColor={color}
+          size="lg"
+        />
       </div>
 
       <div className="space-y-1.5">

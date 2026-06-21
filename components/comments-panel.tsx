@@ -23,7 +23,7 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetContent,
@@ -95,10 +95,6 @@ function formatTime(ts: number): string {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h} jam lalu`;
   return `${Math.floor(h / 24)} hari lalu`;
-}
-
-function getInitials(name: string): string {
-  return name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 }
 
 export function CommentsPanel({
@@ -331,12 +327,12 @@ function ThreadItem({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-1">
-              <Avatar size="sm" className="size-5">
-                {author?.avatarUrl && <AvatarImage src={author.avatarUrl} alt={author.username} />}
-                <AvatarFallback className="text-[9px]">
-                  {author ? getInitials(author.username) : "?"}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={author?.username}
+                avatarUrl={author?.avatarUrl}
+                size="sm"
+                className="size-5"
+              />
               <span className="text-[11px] font-medium text-foreground truncate">
                 {author?.username ?? "User"}
               </span>
@@ -470,12 +466,12 @@ function CommentRow({
 
   return (
     <div className="group flex items-start gap-2 py-1.5">
-      <Avatar size="sm" className="size-5 mt-0.5 shrink-0">
-        {author?.avatarUrl && <AvatarImage src={author.avatarUrl} alt={author.username} />}
-        <AvatarFallback className="text-[9px]">
-          {author ? getInitials(author.username) : "?"}
-        </AvatarFallback>
-      </Avatar>
+      <UserAvatar
+        name={author?.username}
+        avatarUrl={author?.avatarUrl}
+        size="sm"
+        className="size-5 mt-0.5 shrink-0"
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-1.5">
           <span className="text-[11px] font-medium text-foreground">{author?.username ?? "User"}</span>

@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/avatar";
 import { UserSettingsDialog } from "@/components/user-settings-dialog";
 
 export function UserMenu() {
@@ -28,51 +28,41 @@ export function UserMenu() {
   };
 
   const displayName = profile?.name ?? session?.user?.name ?? "";
+  const email = session?.user?.email ?? "";
   const avatarColor = profile?.avatarColor ?? null;
-
-  const initials = displayName
-    ? displayName.trim().split(/\s+/).map((w: string) => w[0]).join("").toUpperCase().slice(0, 2)
-    : session?.user?.email?.[0]?.toUpperCase() ?? "?";
-
-  const avatarStyle = avatarColor
-    ? { backgroundColor: avatarColor }
-    : undefined;
-
-  const fallbackClass = avatarColor
-    ? "text-white text-xs font-semibold"
-    : "bg-foreground text-background text-xs font-semibold";
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
           className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          title={session?.user?.email ?? "Account"}
+          title={email || "Account"}
         >
-          <Avatar size="sm">
-            <AvatarFallback className={fallbackClass} style={avatarStyle}>
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            name={displayName}
+            email={email}
+            avatarColor={avatarColor}
+            size="sm"
+          />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent side="bottom" align="end" sideOffset={6} className="w-56">
           <div className="px-2 py-1.5">
             <div className="flex items-center gap-2">
-              <Avatar size="sm" className="shrink-0">
-                <AvatarFallback className={fallbackClass} style={avatarStyle}>
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={displayName}
+                email={email}
+                avatarColor={avatarColor}
+                size="sm"
+                className="shrink-0"
+              />
               <div className="min-w-0">
                 {displayName && (
                   <p className="text-sm font-medium text-foreground truncate">
                     {displayName}
                   </p>
                 )}
-                <p className="text-xs text-muted-foreground truncate">
-                  {session?.user?.email}
-                </p>
+                <p className="text-xs text-muted-foreground truncate">{email}</p>
               </div>
             </div>
           </div>

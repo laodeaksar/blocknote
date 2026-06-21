@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 import { cn } from "@/lib/utils";
+import { getDisplayInitials, getAvatarColor } from "@/lib/initials";
 
 function Avatar({
   className,
@@ -51,4 +52,39 @@ function AvatarFallback({
   );
 }
 
-export { Avatar, AvatarImage, AvatarFallback };
+interface UserAvatarProps {
+  name?: string | null;
+  email?: string | null;
+  avatarColor?: string | null;
+  avatarUrl?: string | null;
+  size?: "sm" | "default" | "lg";
+  className?: string;
+}
+
+function UserAvatar({
+  name,
+  email,
+  avatarColor,
+  avatarUrl,
+  size = "default",
+  className,
+}: UserAvatarProps) {
+  const initials = getDisplayInitials(name, email);
+  const color = avatarColor ?? getAvatarColor(name ?? email ?? "?");
+
+  return (
+    <Avatar size={size} className={className}>
+      {avatarUrl && (
+        <AvatarImage src={avatarUrl} alt={name ?? email ?? ""} />
+      )}
+      <AvatarFallback
+        className="text-white font-semibold"
+        style={{ backgroundColor: color }}
+      >
+        {initials}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
+export { Avatar, AvatarImage, AvatarFallback, UserAvatar };
