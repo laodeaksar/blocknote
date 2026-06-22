@@ -6,12 +6,13 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
 import { usePresence } from "@/lib/use-presence";
 import { Spinner } from "@/components/ui/spinner";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { BlockDragHandle } from "./block-drag-handle";
 import { CommentCompose } from "./comment-compose";
 import { CommentContextMenu } from "./comment-context-menu";
 import { buildEditorExtensions } from "./use-editor-extensions";
+import { ImageUploadButton, type ImageUploadButtonRef } from "./image-upload-button";
 
 interface ComposeState {
   anchorRect: DOMRect;
@@ -45,9 +46,14 @@ export function EditorInner({
   const { resolvedTheme } = useTheme();
   const [compose, setCompose] = useState<ComposeState | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const imageUploadRef = useRef<ImageUploadButtonRef>(null);
+
+  const handleImageUpload = useCallback(() => {
+    imageUploadRef.current?.trigger();
+  }, []);
 
   const editor = useEditor({
-    extensions: buildEditorExtensions(extension),
+    extensions: buildEditorExtensions(extension, handleImageUpload),
     content: initialContent,
     editable,
     immediatelyRender: false,
@@ -116,6 +122,7 @@ export function EditorInner({
 
   return (
     <div className={`tiptap-editor ${resolvedTheme === "dark" ? "dark" : ""} group`}>
+      <ImageUploadButton ref={imageUploadRef} editor={editor} />
       <EditorBubbleMenu
         editor={editor}
         onComment={editable ? handleComment : undefined}

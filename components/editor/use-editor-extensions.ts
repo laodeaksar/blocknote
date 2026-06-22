@@ -10,11 +10,14 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
-import type { Node } from "@tiptap/pm/model";
 import { SlashExtension } from "@/lib/slash-extension";
 import { CommentHighlight } from "./comment-highlight-extension";
+import { ImageUploadExtension } from "@/lib/image-upload-extension";
 
-export function buildEditorExtensions(syncExtension: AnyExtension): AnyExtension[] {
+export function buildEditorExtensions(
+  syncExtension: AnyExtension,
+  onImageUpload?: () => void
+): AnyExtension[] {
   return [
     StarterKit.configure({}),
     Underline,
@@ -35,6 +38,7 @@ export function buildEditorExtensions(syncExtension: AnyExtension): AnyExtension
     Typography,
     SlashExtension,
     CommentHighlight,
+    ImageUploadExtension.configure({ onTrigger: onImageUpload ?? null }),
     syncExtension,
   ];
 }

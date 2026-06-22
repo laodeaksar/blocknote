@@ -131,12 +131,11 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
   },
   {
     group: "Media",
-    title: "Gambar",
-    description: "Sisipkan gambar dari URL",
+    title: "Upload Gambar",
+    description: "Unggah gambar dari perangkat",
     icon: <Image className="size-4" />,
     command: (editor) => {
-      const url = window.prompt("URL Gambar:");
-      if (url) editor.chain().focus().setImage({ src: url }).run();
+      editor.commands.uploadImage();
     },
   },
 ];
