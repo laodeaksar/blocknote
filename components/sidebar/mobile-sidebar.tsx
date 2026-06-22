@@ -210,10 +210,10 @@ export function MobileSidebar() {
       {/* Floating sheet */}
       <div
         className={cn(
-          "md:hidden fixed inset-x-3 bottom-3 z-50 flex flex-col",
+          "md:hidden fixed inset-x-3 bottom-[88px] z-50 flex flex-col",
           "bg-background rounded-2xl shadow-2xl border border-border/60",
-          "max-h-[85vh]",
-          open ? "translate-y-0" : "translate-y-[calc(100%+12px)]"
+          "max-h-[calc(100dvh-104px)]",
+          open ? "translate-y-0" : "translate-y-[calc(100%+96px)]"
         )}
         style={
           dragOffset > 0
