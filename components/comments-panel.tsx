@@ -31,10 +31,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface CommentsPanelProps {
   pageId: Id<"pages">;
@@ -98,6 +105,81 @@ function formatTime(ts: number): string {
   return `${Math.floor(h / 24)} hari lalu`;
 }
 
+
+function PanelBody({
+  isPending,
+  threadList,
+  active,
+  resolved,
+  usersMap,
+  currentUserId,
+  activeThreadId,
+  onActiveThreadChange,
+}: {
+  isPending: boolean;
+  threadList: RawThread[];
+  active: RawThread[];
+  resolved: RawThread[];
+  usersMap: Map<string, UserInfo>;
+  currentUserId: string;
+  activeThreadId?: string;
+  onActiveThreadChange?: (id: string | undefined) => void;
+}) {
+  return (
+    <ScrollArea className="flex-1">
+      {isPending && (
+        <div className="flex items-center justify-center py-10">
+          <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
+        </div>
+      )}
+
+      {!isPending && threadList.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
+          <MessageSquare className="w-8 h-8 text-muted" />
+          <p className="text-sm text-muted-foreground">Belum ada komentar</p>
+          <p className="text-xs text-muted-foreground/60">
+            Pilih teks di dokumen lalu klik ikon 💬 untuk memulai.
+          </p>
+        </div>
+      )}
+
+      {active.length > 0 && (
+        <div className="py-1">
+          {active.map((thread) => (
+            <ThreadItem
+              key={thread.id}
+              thread={thread}
+              usersMap={usersMap}
+              currentUserId={currentUserId}
+              isActive={thread.id === activeThreadId}
+              onActivate={() => onActiveThreadChange?.(thread.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {resolved.length > 0 && (
+        <div className="py-1">
+          <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+            Selesai ({resolved.length})
+          </div>
+          {resolved.map((thread) => (
+            <ThreadItem
+              key={thread.id}
+              thread={thread}
+              usersMap={usersMap}
+              currentUserId={currentUserId}
+              isActive={thread.id === activeThreadId}
+              onActivate={() => onActiveThreadChange?.(thread.id)}
+              resolved
+            />
+          ))}
+        </div>
+      )}
+    </ScrollArea>
+  );
+}
+
 export function CommentsPanel({
   pageId,
   open,
@@ -105,6 +187,7 @@ export function CommentsPanel({
   activeThreadId,
   onActiveThreadChange,
 }: CommentsPanelProps) {
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user?.id ?? "";
 
@@ -136,72 +219,51 @@ export function CommentsPanel({
     return map;
   }, [users]);
 
+  const bodyProps = {
+    isPending,
+    threadList,
+    active,
+    resolved,
+    usersMap,
+    currentUserId,
+    activeThreadId,
+    onActiveThreadChange,
+  };
+
+  const headerContent = (
+    <div className="flex items-center gap-2">
+      <MessageSquare className="w-4 h-4 text-muted-foreground" />
+      <span className="text-sm font-medium">Komentar</span>
+      {active.length > 0 && (
+        <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
+          {active.length}
+        </span>
+      )}
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="flex flex-col max-h-[85vh]">
+          <DrawerHeader className="px-4 py-3 border-b border-border shrink-0 !text-left gap-0">
+            <DrawerTitle className="sr-only">Komentar</DrawerTitle>
+            {headerContent}
+          </DrawerHeader>
+          <PanelBody {...bodyProps} />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-80 p-0 flex flex-col gap-0" swipeToClose={false}>
         <SheetHeader className="px-4 py-3 border-b border-border shrink-0">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-muted-foreground" />
-            <SheetTitle className="text-sm font-medium">Komentar</SheetTitle>
-            {active.length > 0 && (
-              <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
-                {active.length}
-              </span>
-            )}
-          </div>
+          <SheetTitle className="sr-only">Komentar</SheetTitle>
+          {headerContent}
         </SheetHeader>
-
-        <ScrollArea className="flex-1">
-          {isPending && (
-            <div className="flex items-center justify-center py-10">
-              <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
-            </div>
-          )}
-
-          {!isPending && threadList.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
-              <MessageSquare className="w-8 h-8 text-muted" />
-              <p className="text-sm text-muted-foreground">Belum ada komentar</p>
-              <p className="text-xs text-muted-foreground/60">
-                Pilih teks di dokumen lalu klik ikon 💬 untuk memulai.
-              </p>
-            </div>
-          )}
-
-          {active.length > 0 && (
-            <div className="py-1">
-              {active.map((thread) => (
-                <ThreadItem
-                  key={thread.id}
-                  thread={thread}
-                  usersMap={usersMap}
-                  currentUserId={currentUserId}
-                  isActive={thread.id === activeThreadId}
-                  onActivate={() => onActiveThreadChange?.(thread.id)}
-                />
-              ))}
-            </div>
-          )}
-
-          {resolved.length > 0 && (
-            <div className="py-1">
-              <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
-                Selesai ({resolved.length})
-              </div>
-              {resolved.map((thread) => (
-                <ThreadItem
-                  key={thread.id}
-                  thread={thread}
-                  usersMap={usersMap}
-                  currentUserId={currentUserId}
-                  isActive={thread.id === activeThreadId}
-                  onActivate={() => onActiveThreadChange?.(thread.id)}
-                  resolved
-                />
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+        <PanelBody {...bodyProps} />
       </SheetContent>
     </Sheet>
   );
