@@ -21,7 +21,7 @@ export default function GlobalError({
 
   return (
     <ErrorScreen
-      icon={TriangleAlert}
+      icon={<TriangleAlert className="size-4 text-muted-foreground" />}
       title="Terjadi kesalahan"
       description="Sesuatu tidak berjalan dengan benar. Coba muat ulang halaman."
     >

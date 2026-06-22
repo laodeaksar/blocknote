@@ -36,7 +36,7 @@ export function ConvexClientProvider({
   if (!convexUrl || !convex || !queryClient) {
     return (
       <ErrorScreen
-        icon={Settings}
+        icon={<Settings className="size-4 text-muted-foreground" />}
         title="Convex belum dikonfigurasi"
         description="Tambahkan secret NEXT_PUBLIC_CONVEX_URL di tab Secrets pada panel kiri Replit, lalu restart workflow. URL bisa ditemukan di Convex Dashboard → Settings → URL & Deploy Key."
       />

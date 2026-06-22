@@ -21,7 +21,7 @@ export default function DocError({
 
   return (
     <ErrorScreen
-      icon={TriangleAlert}
+      icon={<TriangleAlert className="size-4 text-muted-foreground" />}
       title="Halaman gagal dimuat"
       description="Terjadi kesalahan saat memuat dokumen. Coba muat ulang."
     >
