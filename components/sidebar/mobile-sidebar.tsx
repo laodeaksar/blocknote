@@ -267,7 +267,7 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setSearchOpen(true)}
+          onClick={() => { setOpen(false); setSearchOpen(true); }}
           className="rounded-full"
           aria-label="Cari halaman"
         >
