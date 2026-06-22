@@ -2,14 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
-} from "@/components/ui/empty";
+import { ErrorScreen } from "@/components/ui/error-screen";
 import { Button } from "@/components/ui/button";
 import { TriangleAlert } from "lucide-react";
 
@@ -27,32 +20,23 @@ export default function DocError({
   const router = useRouter();
 
   return (
-    <div className="flex h-screen items-center justify-center bg-background">
-      <Empty className="max-w-sm border-none">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <TriangleAlert className="size-4 text-muted-foreground" />
-          </EmptyMedia>
-          <EmptyTitle>Halaman gagal dimuat</EmptyTitle>
-          <EmptyDescription>
-            Terjadi kesalahan saat memuat dokumen. Coba muat ulang.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={reset}>
-              Muat ulang
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => router.push("/dashboard")}
-            >
-              Kembali
-            </Button>
-          </div>
-        </EmptyContent>
-      </Empty>
-    </div>
+    <ErrorScreen
+      icon={TriangleAlert}
+      title="Halaman gagal dimuat"
+      description="Terjadi kesalahan saat memuat dokumen. Coba muat ulang."
+    >
+      <div className="flex gap-2">
+        <Button size="sm" onClick={reset}>
+          Muat ulang
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => router.push("/dashboard")}
+        >
+          Kembali
+        </Button>
+      </div>
+    </ErrorScreen>
   );
 }

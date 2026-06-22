@@ -2,14 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
-} from "@/components/ui/empty";
+import { ErrorScreen } from "@/components/ui/error-screen";
 import { Button } from "@/components/ui/button";
 import { TriangleAlert } from "lucide-react";
 
@@ -27,32 +20,19 @@ export default function GlobalError({
   const router = useRouter();
 
   return (
-    <div className="flex h-screen items-center justify-center bg-background">
-      <Empty className="max-w-sm border-none">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <TriangleAlert className="size-4 text-muted-foreground" />
-          </EmptyMedia>
-          <EmptyTitle>Terjadi kesalahan</EmptyTitle>
-          <EmptyDescription>
-            Sesuatu tidak berjalan dengan benar. Coba muat ulang halaman.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={reset}>
-              Muat ulang
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => router.push("/")}
-            >
-              Ke beranda
-            </Button>
-          </div>
-        </EmptyContent>
-      </Empty>
-    </div>
+    <ErrorScreen
+      icon={TriangleAlert}
+      title="Terjadi kesalahan"
+      description="Sesuatu tidak berjalan dengan benar. Coba muat ulang halaman."
+    >
+      <div className="flex gap-2">
+        <Button size="sm" onClick={reset}>
+          Muat ulang
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => router.push("/")}>
+          Ke beranda
+        </Button>
+      </div>
+    </ErrorScreen>
   );
 }
