@@ -182,9 +182,15 @@ export function MobileSidebar() {
       {/* Backdrop */}
       <div
         className={cn(
-          "md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          "md:hidden fixed inset-0 z-40 bg-black/40",
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
+        style={{
+          backdropFilter: open ? "blur(4px)" : "blur(0px)",
+          transition: open
+            ? "opacity 350ms ease-out, backdrop-filter 350ms ease-out"
+            : "opacity 220ms ease-in, backdrop-filter 220ms ease-in",
+        }}
         onClick={() => setOpen(false)}
       />
 
@@ -194,10 +200,17 @@ export function MobileSidebar() {
           "md:hidden fixed inset-x-3 bottom-3 z-50 flex flex-col",
           "bg-background rounded-2xl shadow-2xl border border-border/60",
           "max-h-[85vh]",
-          dragOffset === 0 && "transition-transform duration-300 ease-in-out",
           open ? "translate-y-0" : "translate-y-[calc(100%+12px)]"
         )}
-        style={dragOffset > 0 ? { transform: `translateY(${dragOffset}px)` } : undefined}
+        style={
+          dragOffset > 0
+            ? { transform: `translateY(${dragOffset}px)` }
+            : {
+                transition: open
+                  ? "transform 420ms var(--ease-spring)"
+                  : "transform 280ms var(--ease-snap)",
+              }
+        }
       >
         {/* Drag handle */}
         <div
