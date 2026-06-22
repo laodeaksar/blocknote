@@ -2,6 +2,16 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import { TriangleAlert } from "lucide-react";
 
 export default function DocError({
   error,
@@ -18,31 +28,31 @@ export default function DocError({
 
   return (
     <div className="flex h-screen items-center justify-center bg-background">
-      <div className="text-center space-y-4 max-w-sm px-6">
-        <div className="size-12 bg-muted rounded-full flex items-center justify-center mx-auto">
-          <span className="text-2xl">⚠️</span>
-        </div>
-        <h2 className="text-base font-semibold text-foreground">
-          Halaman gagal dimuat
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Terjadi kesalahan saat memuat dokumen. Coba muat ulang.
-        </p>
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={reset}
-            className="px-4 py-2 text-sm font-medium bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors"
-          >
-            Muat ulang
-          </button>
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="px-4 py-2 text-sm font-medium border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
-          >
-            Kembali
-          </button>
-        </div>
-      </div>
+      <Empty className="max-w-sm border-none">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <TriangleAlert className="size-4 text-muted-foreground" />
+          </EmptyMedia>
+          <EmptyTitle>Halaman gagal dimuat</EmptyTitle>
+          <EmptyDescription>
+            Terjadi kesalahan saat memuat dokumen. Coba muat ulang.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={reset}>
+              Muat ulang
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.push("/dashboard")}
+            >
+              Kembali
+            </Button>
+          </div>
+        </EmptyContent>
+      </Empty>
     </div>
   );
 }
