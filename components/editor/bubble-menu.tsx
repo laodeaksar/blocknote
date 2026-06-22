@@ -18,7 +18,7 @@ import { ToolbarButton } from "./toolbar-button";
 
 interface EditorBubbleMenuProps {
   editor: Editor;
-  onComment?: (rect: DOMRect) => void;
+  onComment?: (rect: DOMRect, from: number, to: number) => void;
 }
 
 export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
@@ -35,10 +35,25 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
 
   const handleComment = () => {
     if (!onComment) return;
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
-    onComment(new DOMRect(rect.x, rect.y, rect.width, rect.height));
+    const { from, to } = editor.state.selection;
+    if (from === to) return;
+
+    try {
+      const startCoords = editor.view.coordsAtPos(from);
+      const endCoords = editor.view.coordsAtPos(to);
+      const rect = new DOMRect(
+        Math.min(startCoords.left, endCoords.left),
+        startCoords.top,
+        Math.abs(endCoords.right - startCoords.left),
+        endCoords.bottom - startCoords.top
+      );
+      onComment(rect, from, to);
+    } catch {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      onComment(new DOMRect(rect.x, rect.y, rect.width, rect.height), from, to);
+    }
   };
 
   return (

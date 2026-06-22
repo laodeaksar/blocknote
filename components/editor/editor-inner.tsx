@@ -62,9 +62,8 @@ export function EditorInner({
   usePresence(editor ?? null, pageId, userId, userName, editable && !!userId);
 
   const handleComment = useCallback(
-    (rect: DOMRect) => {
+    (rect: DOMRect, from: number, to: number) => {
       if (!editor) return;
-      const { from, to } = editor.state.selection;
       if (from === to) return;
       setCompose({ anchorRect: rect, selectionRange: { from, to } });
     },

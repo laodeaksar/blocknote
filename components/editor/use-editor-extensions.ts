@@ -9,12 +9,14 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Image from "@tiptap/extension-image";
+import { ReactNodeViewRenderer } from "@tiptap/react";
 import Typography from "@tiptap/extension-typography";
 import { SlashExtension } from "@/lib/slash-extension";
 import { CommentHighlight } from "./comment-highlight-extension";
 import { ImageUploadExtension } from "@/lib/image-upload-extension";
 import { ImageDropPasteExtension } from "@/lib/image-drop-paste-extension";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { ImageNodeView } from "./image-node-view";
 
 export function buildEditorExtensions(
   syncExtension: AnyExtension,
@@ -35,6 +37,9 @@ export function buildEditorExtensions(
           ...this.parent?.(),
           style: { default: null },
         };
+      },
+      addNodeView() {
+        return ReactNodeViewRenderer(ImageNodeView);
       },
     }).configure({ HTMLAttributes: { class: "tiptap-image" } }),
     Typography,
