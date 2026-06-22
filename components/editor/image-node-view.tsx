@@ -98,13 +98,30 @@ export function ImageNodeView({
     !isFullWidth && align === "left" && "mr-auto"
   );
 
+  const handleAlignClick = useCallback(
+    (value: ImageAlign) => {
+      if (isFullWidth) {
+        // Exit fullscreen, pick a sensible px width
+        const defaultPx = containerRef.current
+          ? Math.round(containerRef.current.offsetWidth * 0.6)
+          : 400;
+        liveWidthRef.current = defaultPx;
+        setLiveWidth(defaultPx);
+        updateAttributes({ align: value, style: `width: ${defaultPx}px` });
+      } else {
+        updateAttributes({ align: value });
+      }
+    },
+    [isFullWidth, updateAttributes]
+  );
+
   return (
-    <NodeViewWrapper as="figure" className="block w-full my-2 not-prose">
-      <div ref={containerRef} className={containerAlignClass} style={containerStyle}>
+    <NodeViewWrapper as="figure" className="block w-full my-2 not-prose overflow-visible">
+      <div ref={containerRef} className={containerAlignClass} style={{ ...containerStyle, overflow: "visible" }}>
         {/* Floating toolbar */}
         {selected && (
           <div
-            className="absolute -top-9 left-1/2 -translate-x-1/2 z-20 flex items-center gap-0.5 rounded-lg border border-border bg-background px-1 py-0.5 shadow-lg ring-1 ring-foreground/5 whitespace-nowrap"
+            className="absolute -top-9 left-1/2 -translate-x-1/2 z-50 flex items-center gap-0.5 rounded-lg border border-border bg-background px-1 py-0.5 shadow-lg ring-1 ring-foreground/5 whitespace-nowrap"
             onMouseDown={(e) => e.preventDefault()}
           >
             {ALIGN_BUTTONS.map(({ value, icon, label }) => (
@@ -114,7 +131,7 @@ export function ImageNodeView({
                 title={label}
                 onMouseDown={(e) => {
                   e.preventDefault();
-                  updateAttributes({ align: value });
+                  handleAlignClick(value);
                 }}
                 className={cn(
                   "flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors",
