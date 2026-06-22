@@ -15,11 +15,13 @@ import type { PageData } from "./types";
 export function MobilePageItem({
   page,
   isActive,
+  index,
   onNavigate,
   onArchive,
 }: {
   page: PageData;
   isActive: boolean;
+  index?: number;
   onNavigate: () => void;
   onArchive: (e: React.MouseEvent) => void;
 }) {
@@ -76,14 +78,14 @@ export function MobilePageItem({
   };
 
   return (
+    <div ref={setNodeRef} style={style}>
     <div
-      ref={setNodeRef}
-      style={style}
-      className={`flex items-center gap-1 px-1 py-1 transition-colors ${
+      className={`flex items-center gap-1 px-1 py-1 transition-colors animate-page-item-in ${
         isActive
           ? "bg-muted text-foreground"
           : "text-foreground/70 hover:bg-muted/50"
       }`}
+      style={index !== undefined ? { animationDelay: `${index * 50}ms` } : undefined}
     >
       <button
         {...attributes}
@@ -136,6 +138,7 @@ export function MobilePageItem({
       >
         <Trash2 className="w-3.5 h-3.5" />
       </Button>
+    </div>
     </div>
   );
 }

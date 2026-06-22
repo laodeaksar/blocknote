@@ -282,11 +282,12 @@ export function MobileSidebar() {
                 items={localPages.map((p) => p._id)}
                 strategy={verticalListSortingStrategy}
               >
-                {localPages.map((page: PageData) => (
+                {localPages.map((page: PageData, index) => (
                   <MobilePageItem
                     key={page._id}
                     page={page}
                     isActive={currentId === page._id}
+                    index={index}
                     onNavigate={() => {
                       router.push(`/doc/${page._id}`);
                       setOpen(false);
