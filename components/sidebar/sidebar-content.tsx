@@ -250,11 +250,12 @@ export function SidebarContent({
               items={localPages.map((p) => p._id)}
               strategy={verticalListSortingStrategy}
             >
-              {localPages.map((page: PageData) => (
+              {localPages.map((page: PageData, index) => (
                 <PageItem
                   key={page._id}
                   page={page}
                   isActive={currentId === page._id}
+                  index={index}
                   onNavigate={() => navigate(`/doc/${page._id}`)}
                   onArchive={(e) => handleArchive(e, page._id)}
                 />

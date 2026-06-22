@@ -16,11 +16,13 @@ import { cn } from "@/lib/utils";
 export function PageItem({
   page,
   isActive,
+  index,
   onNavigate,
   onArchive,
 }: {
   page: { _id: Id<"pages">; title: string; icon?: string };
   isActive: boolean;
+  index?: number;
   onNavigate: () => void;
   onArchive: (e: React.MouseEvent) => void;
 }) {
@@ -89,16 +91,16 @@ export function PageItem({
   };
 
   return (
+    <div ref={setNodeRef} style={style}>
     <div
-      ref={setNodeRef}
-      style={style}
       onClick={!isEditing ? onNavigate : undefined}
       className={cn(
-        "group relative w-full flex items-center justify-between px-1 py-1.5 rounded-md text-sm transition-colors cursor-pointer",
+        "group relative w-full flex items-center justify-between px-1 py-1.5 rounded-md text-sm transition-colors cursor-pointer animate-page-item-in",
         isActive
           ? "bg-sidebar-hover text-foreground"
           : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
       )}
+      style={index !== undefined ? { animationDelay: `${index * 50}ms` } : undefined}
     >
       <button
         {...attributes}
@@ -153,6 +155,7 @@ export function PageItem({
           <Trash2 className="w-3 h-3" />
         </Button>
       )}
+    </div>
     </div>
   );
 }

@@ -122,6 +122,9 @@
   /* Pill bar icon swap */
   --animate-icon-spring-in: icon-spring-in 280ms var(--ease-spring);
 
+  /* Sidebar page list stagger */
+  --animate-page-item-in: page-item-in 350ms var(--ease-spring) both;
+
   --color-background:              var(--background);
   --color-foreground:              var(--foreground);
   --color-card:                    var(--card);
@@ -388,6 +391,11 @@ body {
 
 .mobile-fab:active {
   background-color: var(--color-sidebar-hover) !important;
+}
+
+@keyframes page-item-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
 @keyframes icon-spring-in {
