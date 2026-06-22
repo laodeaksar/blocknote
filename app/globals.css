@@ -112,6 +112,9 @@
 
 /* ── Tailwind v4 theme mapping ────────────────────────────────────── */
 @theme inline {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up:   accordion-up   0.2s ease-out;
+
   --color-background:              var(--background);
   --color-foreground:              var(--foreground);
   --color-card:                    var(--card);
@@ -378,6 +381,15 @@ body {
 
 .mobile-fab:active {
   background-color: var(--color-sidebar-hover) !important;
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--accordion-panel-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--accordion-panel-height); }
+  to   { height: 0; }
 }
 
 @keyframes popover-in {

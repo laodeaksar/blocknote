@@ -78,7 +78,6 @@ export function SidebarContent({
   });
 
   const [localPages, setLocalPages] = useState<PageData[]>([]);
-  const [showTrash, setShowTrash] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{
     id: Id<"pages">;
@@ -269,8 +268,6 @@ export function SidebarContent({
         <Separator className="mb-2" />
         <TrashSection
           archivedPages={archivedPages}
-          showTrash={showTrash}
-          onToggle={() => setShowTrash((v) => !v)}
           onRestore={handleRestore}
           onRemove={handleRemove}
         />

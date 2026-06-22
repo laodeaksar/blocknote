@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
@@ -93,8 +93,26 @@ export function MobileSidebar() {
       convex.mutation(api.pages.reorder, vars),
   });
 
+  const dragStartY = useRef(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragging = useRef(false);
+
+  const handleDragStart = (e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+    dragging.current = true;
+  };
+  const handleDragMove = (e: React.TouchEvent) => {
+    if (!dragging.current) return;
+    const dy = e.touches[0].clientY - dragStartY.current;
+    setDragOffset(Math.max(0, dy));
+  };
+  const handleDragEnd = () => {
+    dragging.current = false;
+    if (dragOffset > 80) setOpen(false);
+    setDragOffset(0);
+  };
+
   const [localPages, setLocalPages] = useState<PageData[]>([]);
-  const [showTrash, setShowTrash] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{
     id: Id<"pages">;
@@ -174,13 +192,20 @@ export function MobileSidebar() {
       <div
         className={cn(
           "md:hidden fixed inset-x-0 bottom-0 z-50 flex flex-col",
-          "bg-background rounded-t-2xl shadow-2xl border-t border-border",
-          "max-h-[85vh] transition-transform duration-300 ease-in-out",
+          "bg-background rounded-t-2xl shadow-2xl",
+          "max-h-[85vh]",
+          dragOffset === 0 && "transition-transform duration-300 ease-in-out",
           open ? "translate-y-0" : "translate-y-full"
         )}
+        style={dragOffset > 0 ? { transform: `translateY(${dragOffset}px)` } : undefined}
       >
         {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
+        <div
+          className="flex justify-center pt-3 pb-1 shrink-0 touch-none cursor-grab active:cursor-grabbing"
+          onTouchStart={handleDragStart}
+          onTouchMove={handleDragMove}
+          onTouchEnd={handleDragEnd}
+        >
           <div className="w-10 h-1 rounded-full bg-muted-foreground/25" />
         </div>
 
@@ -261,8 +286,6 @@ export function MobileSidebar() {
           </Button>
           <TrashSection
             archivedPages={archivedPages}
-            showTrash={showTrash}
-            onToggle={() => setShowTrash((v) => !v)}
             onRestore={handleRestore}
             onRemove={handleRemove}
             compact
