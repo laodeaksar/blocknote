@@ -119,6 +119,9 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-snap:   cubic-bezier(0.36, 0, 0.66, 0);
 
+  /* Pill bar icon swap */
+  --animate-icon-spring-in: icon-spring-in 280ms var(--ease-spring);
+
   --color-background:              var(--background);
   --color-foreground:              var(--foreground);
   --color-card:                    var(--card);
@@ -385,6 +388,11 @@ body {
 
 .mobile-fab:active {
   background-color: var(--color-sidebar-hover) !important;
+}
+
+@keyframes icon-spring-in {
+  from { opacity: 0; transform: scale(0.4) rotate(-45deg); }
+  to   { opacity: 1; transform: scale(1)   rotate(0deg); }
 }
 
 @keyframes accordion-down {

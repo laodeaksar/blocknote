@@ -320,15 +320,26 @@ export function MobileSidebar() {
       </div>
 
       {/* Pill bar */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar">
+      <div
+        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
+        style={{
+          transform: `translateX(-50%) scale(${open ? 0.92 : 1})`,
+          transition: open
+            ? "transform 320ms var(--ease-spring)"
+            : "transform 260ms var(--ease-snap)",
+        }}
+      >
         <Button
           variant="ghost"
           size="icon"
           onClick={() => { vibrate(10); setOpen((v) => !v); }}
-          className={cn("rounded-full", open && "bg-muted")}
+          className={cn("rounded-full overflow-hidden", open && "bg-muted")}
           aria-label="Toggle menu"
         >
-          {open ? <X className="size-4" /> : <Menu className="size-4" />}
+          {open
+            ? <X key="x" className="size-4 animate-icon-spring-in" />
+            : <Menu key="menu" className="size-4 animate-icon-spring-in" />
+          }
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
         <Button
