@@ -72,6 +72,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
   const [open, setOpen] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDragging = useRef(false);
+  const isTouchActive = useRef(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const clearHide = useCallback(() => {
@@ -81,10 +82,27 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
     }
   }, []);
 
-  const scheduleHide = useCallback(() => {
+  const scheduleHide = useCallback((delay = 400) => {
     clearHide();
-    hideTimer.current = setTimeout(() => setBlock(null), 400);
+    hideTimer.current = setTimeout(() => setBlock(null), delay);
   }, [clearHide]);
+
+  const resolveBlockFromPoint = useCallback((clientX: number, clientY: number) => {
+    const editorDom = editor.view.dom as HTMLElement;
+    const el = document.elementFromPoint(clientX, clientY);
+    if (!el) return null;
+    let node: Element | null = el;
+    while (node && node.parentElement !== editorDom) {
+      node = node.parentElement;
+    }
+    if (!node || !(node instanceof HTMLElement)) return null;
+    try {
+      const pmPos = editor.view.posAtDOM(node, 0);
+      return { dom: node, rect: node.getBoundingClientRect(), pmPos };
+    } catch {
+      return null;
+    }
+  }, [editor]);
 
   useEffect(() => {
     const editorDom = editor.view.dom as HTMLElement;
@@ -92,39 +110,48 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
     if (!container) return;
 
     const onMouseMove = (e: MouseEvent) => {
-      if (isDragging.current || open) return;
+      if (isDragging.current || open || isTouchActive.current) return;
       clearHide();
-
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      if (!el) return;
-
-      let node: Element | null = el;
-      while (node && node.parentElement !== editorDom) {
-        node = node.parentElement;
-      }
-      if (!node || !(node instanceof HTMLElement)) { scheduleHide(); return; }
-
-      let pmPos = 0;
-      try { pmPos = editor.view.posAtDOM(node, 0); } catch { scheduleHide(); return; }
-
-      setBlock({ dom: node, rect: node.getBoundingClientRect(), pmPos });
+      const info = resolveBlockFromPoint(e.clientX, e.clientY);
+      if (info) setBlock(info);
+      else scheduleHide();
     };
 
     const onMouseLeave = (e: MouseEvent) => {
-      if (open) return;
+      if (open || isTouchActive.current) return;
       const related = e.relatedTarget as Node | null;
       if (triggerRef.current?.contains(related)) return;
       scheduleHide();
     };
 
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      isTouchActive.current = true;
+      clearHide();
+      const info = resolveBlockFromPoint(touch.clientX, touch.clientY);
+      if (info) {
+        setBlock(info);
+        scheduleHide(4000);
+      }
+    };
+
+    const onTouchEnd = () => {
+      setTimeout(() => { isTouchActive.current = false; }, 300);
+    };
+
     container.addEventListener("mousemove", onMouseMove);
     container.addEventListener("mouseleave", onMouseLeave);
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       container.removeEventListener("mousemove", onMouseMove);
       container.removeEventListener("mouseleave", onMouseLeave);
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchend", onTouchEnd);
       clearHide();
     };
-  }, [editor, open, clearHide, scheduleHide]);
+  }, [editor, open, clearHide, scheduleHide, resolveBlockFromPoint]);
 
   const focusBlock = useCallback(() => {
     if (!block) return;
@@ -237,6 +264,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
         onMouseEnter={clearHide}
         onMouseLeave={() => { if (!open) scheduleHide(); }}
         onMouseDown={(e) => { e.preventDefault(); focusBlock(); }}
+        onTouchStart={(e) => { clearHide(); focusBlock(); }}
         onDragStart={(e) => {
           isDragging.current = true;
           focusBlock();
@@ -244,7 +272,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
         }}
         onDragEnd={() => { isDragging.current = false; }}
         style={{ position: "fixed", top, left, zIndex: 50 }}
-        className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground/40 hover:bg-accent hover:text-accent-foreground transition-colors cursor-grab active:cursor-grabbing"
+        className="flex h-7 w-7 md:h-6 md:w-6 items-center justify-center rounded text-muted-foreground/40 hover:bg-accent hover:text-accent-foreground transition-colors cursor-grab active:cursor-grabbing touch-manipulation"
         title="Geser atau klik untuk opsi"
       >
         <GripVertical className="size-4" />
