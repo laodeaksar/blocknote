@@ -188,14 +188,14 @@ export function MobileSidebar() {
         onClick={() => setOpen(false)}
       />
 
-      {/* Bottom sheet */}
+      {/* Floating sheet */}
       <div
         className={cn(
-          "md:hidden fixed inset-x-0 bottom-0 z-50 flex flex-col",
-          "bg-background rounded-t-2xl shadow-2xl",
+          "md:hidden fixed inset-x-3 bottom-3 z-50 flex flex-col",
+          "bg-background rounded-2xl shadow-2xl border border-border/60",
           "max-h-[85vh]",
           dragOffset === 0 && "transition-transform duration-300 ease-in-out",
-          open ? "translate-y-0" : "translate-y-full"
+          open ? "translate-y-0" : "translate-y-[calc(100%+12px)]"
         )}
         style={dragOffset > 0 ? { transform: `translateY(${dragOffset}px)` } : undefined}
       >
@@ -274,7 +274,7 @@ export function MobileSidebar() {
         </ScrollArea>
 
         {/* Footer actions */}
-        <div className="shrink-0 border-t border-border p-1.5 space-y-0.5 pb-6">
+        <div className="shrink-0 border-t border-border p-1.5 space-y-0.5">
           <Button
             variant="ghost"
             size="sm"
