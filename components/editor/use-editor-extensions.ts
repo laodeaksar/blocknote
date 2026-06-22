@@ -13,6 +13,8 @@ import Typography from "@tiptap/extension-typography";
 import { SlashExtension } from "@/lib/slash-extension";
 import { CommentHighlight } from "./comment-highlight-extension";
 import { ImageUploadExtension } from "@/lib/image-upload-extension";
+import { ImageDropPasteExtension } from "@/lib/image-drop-paste-extension";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export function buildEditorExtensions(
   syncExtension: AnyExtension,
@@ -39,6 +41,7 @@ export function buildEditorExtensions(
     SlashExtension,
     CommentHighlight,
     ImageUploadExtension.configure({ onTrigger: onImageUpload ?? null }),
+    ImageDropPasteExtension.configure({ onUpload: uploadToCloudinary }),
     syncExtension,
   ];
 }
