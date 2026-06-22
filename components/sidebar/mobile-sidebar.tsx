@@ -96,15 +96,28 @@ export function MobileSidebar() {
   const dragStartY = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
   const dragging = useRef(false);
+  const didVibrate = useRef(false);
+
+  const vibrate = (pattern: number | number[]) => {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(pattern);
+    }
+  };
 
   const handleDragStart = (e: React.TouchEvent) => {
     dragStartY.current = e.touches[0].clientY;
     dragging.current = true;
+    didVibrate.current = false;
   };
   const handleDragMove = (e: React.TouchEvent) => {
     if (!dragging.current) return;
     const dy = e.touches[0].clientY - dragStartY.current;
-    setDragOffset(Math.max(0, dy));
+    const offset = Math.max(0, dy);
+    if (offset > 80 && !didVibrate.current) {
+      vibrate(15);
+      didVibrate.current = true;
+    }
+    setDragOffset(offset);
   };
   const handleDragEnd = () => {
     dragging.current = false;
@@ -311,7 +324,7 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => { vibrate(10); setOpen((v) => !v); }}
           className={cn("rounded-full", open && "bg-muted")}
           aria-label="Toggle menu"
         >
@@ -321,7 +334,7 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => { setOpen(false); setSearchOpen(true); }}
+          onClick={() => { vibrate(10); setOpen(false); setSearchOpen(true); }}
           className="rounded-full"
           aria-label="Cari halaman"
         >
@@ -331,7 +344,7 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleCreate}
+          onClick={() => { vibrate(10); handleCreate(); }}
           className="rounded-full"
           aria-label="Halaman baru"
         >
