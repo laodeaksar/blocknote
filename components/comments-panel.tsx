@@ -361,11 +361,10 @@ function ThreadItem({
       )}
     >
       <Accordion
-        value={!resolved && expanded ? thread.id : undefined}
+        value={!resolved && expanded ? [thread.id] : []}
         onValueChange={(val) => {
           if (resolved) return;
-          const isOpen = val === thread.id ||
-            (Array.isArray(val) && val.includes(thread.id));
+          const isOpen = Array.isArray(val) && val.includes(thread.id);
           setExpanded(isOpen);
           if (isOpen) onActivate();
         }}
