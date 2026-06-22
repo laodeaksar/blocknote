@@ -72,11 +72,17 @@ export function CommentCompose({
   }, []);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) onClose();
+    let handler: (e: MouseEvent) => void;
+    const timer = setTimeout(() => {
+      handler = (e: MouseEvent) => {
+        if (!containerRef.current?.contains(e.target as Node)) onClose();
+      };
+      document.addEventListener("mousedown", handler);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      if (handler) document.removeEventListener("mousedown", handler);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
   }, [onClose]);
 
   const createThreadFn = useConvexMutation(api.comments.createThread);
