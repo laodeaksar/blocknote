@@ -25,8 +25,8 @@ export default function NotFound() {
         </EmptyHeader>
         <EmptyContent>
           <Button size="sm" render={
-            <Link href="/">Ke beranda</Link>
-          </Button>
+            <Link href="/">Ke beranda</Link>}
+          />
         </EmptyContent>
       </Empty>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
@@ -39,8 +39,6 @@ import type { PageData } from "./types";
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
   const { collapsed: desktopCollapsed } = useSidebar();
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
@@ -55,6 +53,18 @@ export function MobileSidebar() {
       setOpen(false);
     }
   }, [desktopCollapsed]);
+
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const { data: pages, isPending: pagesPending } = useQuery(
     convexQuery(api.pages.list, {})
@@ -149,111 +159,119 @@ export function MobileSidebar() {
     setPageToDelete(null);
   };
 
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent | TouchEvent) => {
-      const target = e.target as Node;
-      if (
-        popoverRef.current?.contains(target) ||
-        barRef.current?.contains(target)
-      )
-        return;
-      setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    document.addEventListener("touchstart", handler, { passive: true });
-    return () => {
-      document.removeEventListener("mousedown", handler);
-      document.removeEventListener("touchstart", handler);
-    };
-  }, [open]);
-
   return (
     <>
-      {open && (
-        <div
-          ref={popoverRef}
-          className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl shadow-2xl border border-border overflow-hidden bg-background mobile-popover"
-          style={{ animation: "popover-in 0.15s ease" }}
-        >
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
-                <span className="text-background text-[10px] font-bold">N</span>
-              </div>
-              <span className="text-sm font-semibold text-foreground">
-                Workspace
-              </span>
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        onClick={() => setOpen(false)}
+      />
+
+      {/* Bottom sheet */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-x-0 bottom-0 z-50 flex flex-col",
+          "bg-background rounded-t-2xl shadow-2xl border-t border-border",
+          "max-h-[85vh] transition-transform duration-300 ease-in-out",
+          open ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1 shrink-0">
+          <div className="w-10 h-1 rounded-full bg-muted-foreground/25" />
+        </div>
+
+        {/* Header */}
+        <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-border">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
+              <span className="text-background text-[10px] font-bold">N</span>
             </div>
-            <ThemeToggle />
+            <span className="text-sm font-semibold text-foreground">
+              Workspace
+            </span>
           </div>
-
-          <ScrollArea className="max-h-56">
-            <div className="py-1">
-              {(pagesPending || pages === undefined) && (
-                <div className="space-y-1.5 px-3 py-2">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-7 w-full" />
-                  ))}
-                </div>
-              )}
-              {pages !== undefined && pages.length === 0 && (
-                <p className="text-xs text-muted-foreground px-4 py-3">
-                  No pages yet.
-                </p>
-              )}
-              <DndContext
-                sensors={mobileSensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleMobileDragEnd}
-              >
-                <SortableContext
-                  items={localPages.map((p) => p._id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {localPages.map((page: PageData) => (
-                    <MobilePageItem
-                      key={page._id}
-                      page={page}
-                      isActive={currentId === page._id}
-                      onNavigate={() => {
-                        router.push(`/doc/${page._id}`);
-                        setOpen(false);
-                      }}
-                      onArchive={(e) => handleArchive(e, page._id)}
-                    />
-                  ))}
-                </SortableContext>
-              </DndContext>
-            </div>
-          </ScrollArea>
-
-          <div className="border-t border-border p-1.5 space-y-0.5">
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
             <Button
               variant="ghost"
-              size="sm"
-              onClick={handleCreate}
-              className="w-full justify-start gap-2"
+              size="icon-sm"
+              onClick={() => setOpen(false)}
+              aria-label="Tutup menu"
             >
-              <Plus className="size-4" />
-              New Page
+              <X className="size-4" />
             </Button>
-            <TrashSection
-              archivedPages={archivedPages}
-              showTrash={showTrash}
-              onToggle={() => setShowTrash((v) => !v)}
-              onRestore={handleRestore}
-              onRemove={handleRemove}
-              compact
-            />
           </div>
         </div>
-      )}
 
-      <div
-        ref={barRef}
-        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
-      >
+        {/* Page list */}
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="py-1">
+            {(pagesPending || pages === undefined) && (
+              <div className="space-y-1.5 px-3 py-2">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-7 w-full" />
+                ))}
+              </div>
+            )}
+            {pages !== undefined && pages.length === 0 && (
+              <p className="text-xs text-muted-foreground px-4 py-3">
+                No pages yet.
+              </p>
+            )}
+            <DndContext
+              sensors={mobileSensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleMobileDragEnd}
+            >
+              <SortableContext
+                items={localPages.map((p) => p._id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {localPages.map((page: PageData) => (
+                  <MobilePageItem
+                    key={page._id}
+                    page={page}
+                    isActive={currentId === page._id}
+                    onNavigate={() => {
+                      router.push(`/doc/${page._id}`);
+                      setOpen(false);
+                    }}
+                    onArchive={(e) => handleArchive(e, page._id)}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        </ScrollArea>
+
+        {/* Footer actions */}
+        <div className="shrink-0 border-t border-border p-1.5 space-y-0.5 pb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCreate}
+            className="w-full justify-start gap-2"
+          >
+            <Plus className="size-4" />
+            New Page
+          </Button>
+          <TrashSection
+            archivedPages={archivedPages}
+            showTrash={showTrash}
+            onToggle={() => setShowTrash((v) => !v)}
+            onRestore={handleRestore}
+            onRemove={handleRemove}
+            compact
+          />
+        </div>
+      </div>
+
+      {/* Pill bar */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar">
         <Button
           variant="ghost"
           size="icon"
