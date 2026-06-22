@@ -15,13 +15,11 @@ export default function DocLoading() {
       {/* Editor skeleton */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto py-8 px-4 md:py-16 space-y-6">
-          {/* Cover / icon area */}
           <div className="space-y-3">
             <Skeleton className="h-8 w-8 rounded-md" />
             <Skeleton className="h-9 w-2/3" />
           </div>
 
-          {/* Paragraph lines */}
           <div className="space-y-2.5 pt-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
@@ -33,7 +31,6 @@ export default function DocLoading() {
             <Skeleton className="h-4 w-3/4" />
           </div>
 
-          {/* Heading */}
           <Skeleton className="h-6 w-1/3 mt-4" />
 
           <div className="space-y-2.5">
