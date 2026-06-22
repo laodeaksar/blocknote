@@ -177,7 +177,7 @@ export function SidebarContent({
               title="Collapse sidebar"
               className="h-6 w-6 text-muted-foreground"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="size-3.5" />
             </Button>
           )}
           <UserMenu />
@@ -191,7 +191,7 @@ export function SidebarContent({
           className="w-full justify-start gap-2 text-muted-foreground"
           onClick={() => setSearchOpen(true)}
         >
-          <Search className="w-4 h-4" />
+          <Search className="size-4" />
           <span className="flex-1 text-left">Search</span>
           <Kbd className="hidden sm:inline-flex">
             <span>⌘</span>
@@ -204,7 +204,7 @@ export function SidebarContent({
             size="sm"
             className="flex-1 justify-start gap-2 text-muted-foreground"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="size-4" />
             Settings
           </Button>
           <ThemeToggle />
@@ -223,7 +223,7 @@ export function SidebarContent({
             title="New page"
             className="h-5 w-5"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="size-4" />
           </Button>
         </div>
 
@@ -280,7 +280,7 @@ export function SidebarContent({
           onClick={handleCreate}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="size-4" />
           New page
         </Button>
       </div>

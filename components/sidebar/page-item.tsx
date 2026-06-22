@@ -11,6 +11,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export function PageItem({
   page,
@@ -92,11 +93,12 @@ export function PageItem({
       ref={setNodeRef}
       style={style}
       onClick={!isEditing ? onNavigate : undefined}
-      className={`group relative w-full flex items-center justify-between px-1 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
+      className={cn(
+        "group relative w-full flex items-center justify-between px-1 py-1.5 rounded-md text-sm transition-colors cursor-pointer",
         isActive
           ? "bg-sidebar-hover text-foreground"
           : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
-      }`}
+      )}
     >
       <button
         {...attributes}

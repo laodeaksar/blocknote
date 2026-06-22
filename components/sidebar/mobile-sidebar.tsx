@@ -23,6 +23,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useSidebar } from "@/lib/sidebar-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -234,7 +235,7 @@ export function MobileSidebar() {
               onClick={handleCreate}
               className="w-full justify-start gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="size-4" />
               New Page
             </Button>
             <TrashSection
@@ -257,10 +258,10 @@ export function MobileSidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setOpen((v) => !v)}
-          className={`rounded-full ${open ? "bg-muted" : ""}`}
+          className={cn("rounded-full", open && "bg-muted")}
           aria-label="Toggle menu"
         >
-          {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {open ? <X className="size-4" /> : <Menu className="size-4" />}
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
         <Button
@@ -270,7 +271,7 @@ export function MobileSidebar() {
           className="rounded-full"
           aria-label="Cari halaman"
         >
-          <Search className="w-4 h-4" />
+          <Search className="size-4" />
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
         <Button
@@ -280,7 +281,7 @@ export function MobileSidebar() {
           className="rounded-full"
           aria-label="Halaman baru"
         >
-          <FilePlus className="w-4 h-4" />
+          <FilePlus className="size-4" />
         </Button>
       </div>
 

@@ -148,7 +148,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                 className="hidden md:inline-flex shrink-0"
               />
             }>
-              <PanelLeft className={`w-4 h-4 transition-colors ${collapsed ? "text-foreground" : "text-muted-foreground"}`} />
+              <PanelLeft className={cn("size-4 transition-colors", collapsed ? "text-foreground" : "text-muted-foreground")} />
             </TooltipTrigger>
             <TooltipContent side="bottom">
               Toggle sidebar <Kbd data-icon="inline-end">[</Kbd>
@@ -177,7 +177,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
             <span className="text-sm font-medium text-foreground truncate">
               {page.title || "Untitled"}
             </span>
-            <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 shrink-0 transition-opacity" />
+            <Pencil className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 shrink-0 transition-opacity" />
           </button>
         )}
       </div>
@@ -185,13 +185,13 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
       <div className="flex items-center gap-2 shrink-0">
         {saveStatus === "saving" && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+            <Loader2 className="size-3 animate-spin shrink-0" />
             <span className="hidden sm:inline">Menyimpan…</span>
           </span>
         )}
         {saveStatus === "saved" && lastSavedAt && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+            <Check className="size-3 text-success shrink-0" />
             <span className="hidden sm:inline">{formatRelativeTime(lastSavedAt)}</span>
           </span>
         )}
@@ -201,7 +201,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
             <PopoverTrigger
             render={
             <Button variant="ghost" size="icon-sm" aria-label={page.isPublished ? "Published" : "Share"}>
-              <Share2 className={cn("w-3 h-3", page.isPublished ? "text-emerald-700" : "text-foreground")} />
+              <Share2 className={cn("size-3", page.isPublished ? "text-success" : "text-foreground")} />
               </Button>
             }
             />
@@ -226,9 +226,9 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                     className={cn("relative", commentsOpen ? "bg-accent text-foreground" : "")}
                   />
                 }>
-                  <MessageSquare className={`w-4 h-4 ${commentsOpen ? "text-foreground" : "text-muted-foreground"}`} />
+                  <MessageSquare className={cn("size-4", commentsOpen ? "text-foreground" : "text-muted-foreground")} />
                   {activeThreadCount > 0 && (
-                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-amber-500 px-0.5 text-[9px] font-bold leading-none text-white ring-1 ring-background">
+                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-warning px-0.5 text-[9px] font-bold leading-none text-warning-foreground ring-1 ring-background">
                       {activeThreadCount > 99 ? "99+" : activeThreadCount}
                     </span>
                   )}
@@ -243,7 +243,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Favorite" />}>
-                <Star className="w-4 h-4 text-muted-foreground" />
+                <Star className="size-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent side="bottom">Favorite</TooltipContent>
             </Tooltip>
@@ -252,7 +252,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="More options" />}>
-                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                <MoreHorizontal className="size-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent side="bottom">More options</TooltipContent>
             </Tooltip>

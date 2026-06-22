@@ -129,13 +129,13 @@ function PanelBody({
     <ScrollArea className="flex-1">
       {isPending && (
         <div className="flex items-center justify-center py-10">
-          <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
+          <div className="size-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
         </div>
       )}
 
       {!isPending && threadList.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
-          <MessageSquare className="w-8 h-8 text-muted" />
+          <MessageSquare className="size-8 text-muted" />
           <p className="text-sm text-muted-foreground">Belum ada komentar</p>
           <p className="text-xs text-muted-foreground/60">
             Pilih teks di dokumen lalu klik ikon 💬 untuk memulai.
@@ -232,7 +232,7 @@ export function CommentsPanel({
 
   const headerContent = (
     <div className="flex items-center gap-2">
-      <MessageSquare className="w-4 h-4 text-muted-foreground" />
+      <MessageSquare className="size-4 text-muted-foreground" />
       <span className="text-sm font-medium">Komentar</span>
       {active.length > 0 && (
         <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
@@ -382,9 +382,9 @@ function ThreadItem({
             }}
           >
             {resolved ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 hover:text-emerald-600 transition-colors" />
+              <CheckCircle2 className="size-3.5 text-success hover:text-success/80 transition-colors" />
             ) : (
-              <Circle className="w-3.5 h-3.5 text-primary/50 hover:text-primary transition-colors" />
+              <Circle className="size-3.5 text-primary/50 hover:text-primary transition-colors" />
             )}
           </button>
 
@@ -405,9 +405,9 @@ function ThreadItem({
               {!resolved && (
                 <span className="ml-auto shrink-0">
                   {expanded ? (
-                    <ChevronUp className="w-3 h-3 text-muted-foreground" />
+                    <ChevronUp className="size-3 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                    <ChevronDown className="size-3 text-muted-foreground" />
                   )}
                 </span>
               )}
@@ -434,7 +434,7 @@ function ThreadItem({
                     disabled={unresolving}
                     onClick={(e) => { e.stopPropagation(); unresolve({ threadId }); }}
                   >
-                    <RotateCcw className="w-2.5 h-2.5 mr-0.5" />
+                    <RotateCcw className="size-2.5 mr-0.5" />
                     Buka
                   </Button>
                 )}
@@ -551,7 +551,7 @@ function CommentRow({
           onClick={onDelete}
           className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive mt-0.5"
         >
-          <Trash2 className="w-3 h-3" />
+          <Trash2 className="size-3" />
         </button>
       )}
     </div>
