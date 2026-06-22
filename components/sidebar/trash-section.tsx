@@ -19,7 +19,7 @@ export function TrashSection({
   compact?: boolean;
 }) {
   return (
-    <Accordion type="single" collapsible>
+    <Accordion>
       <AccordionItem value="trash" className="border-0">
         <AccordionPrimitive.Header className="flex">
           <AccordionPrimitive.Trigger
