@@ -36,6 +36,7 @@ export function buildEditorExtensions(
         return {
           ...this.parent?.(),
           style: { default: null },
+          align: { default: "left" },
         };
       },
       addNodeView() {
