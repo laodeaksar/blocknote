@@ -361,7 +361,7 @@ function ThreadItem({
       )}
     >
       <Accordion
-        value={!resolved && expanded ? thread.id : null}
+        value={!resolved && expanded ? thread.id : undefined}
         onValueChange={(val) => {
           if (resolved) return;
           const isOpen = val === thread.id ||
