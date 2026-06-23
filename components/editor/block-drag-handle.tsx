@@ -279,57 +279,63 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="right" align="start" sideOffset={4} className="w-52">
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider">
-          Blok
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-[10px] uppercase tracking-wider">
+            Blok
+          </DropdownMenuLabel>
 
-        <DropdownMenuItem onSelect={handleInsertAbove}>
-          <ArrowUp />
-          Sisipkan di atas
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleInsertBelow}>
-          <ArrowDown />
-          Sisipkan di bawah
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem onSelect={handleMoveUp}>
-          <ArrowUp />
-          Pindah ke atas
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleMoveDown}>
-          <ArrowDown />
-          Pindah ke bawah
-        </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleInsertAbove}>
+            <ArrowUp />
+            Sisipkan di atas
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleInsertBelow}>
+            <ArrowDown />
+            Sisipkan di bawah
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onSelect={handleDuplicate}>
-          <Copy />
-          Duplikat
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem onSelect={handleMoveUp}>
+            <ArrowUp />
+            Pindah ke atas
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleMoveDown}>
+            <ArrowDown />
+            Pindah ke bawah
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
 
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Type />
-            Ubah jadi
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {TURN_INTO_ITEMS.map(({ label, icon: Icon, command }) => (
-              <DropdownMenuItem
-                key={label}
-                onSelect={() => {
-                  focusBlock();
-                  command(editor);
-                }}
-              >
-                <Icon />
-                {label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem onSelect={handleDuplicate}>
+            <Copy />
+            Duplikat
+          </DropdownMenuItem>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Type />
+              Ubah jadi
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              {TURN_INTO_ITEMS.map(({ label, icon: Icon, command }) => (
+                <DropdownMenuItem
+                  key={label}
+                  onSelect={() => {
+                    focusBlock();
+                    command(editor);
+                  }}
+                >
+                  <Icon />
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 

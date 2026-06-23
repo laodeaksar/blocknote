@@ -2,3 +2,4 @@
 - [BlockNote comments API](blocknote-comments-api.md) — CommentsExtension is a function, not class; FloatingComposerController+FloatingThreadController go inside BlockNoteView
 - [BlockNote TipTap internals](blocknote-tiptap-internals.md) — access ProseMirror/TipTap from BlockNote via editor._tiptapEditor (private but usable)
 - [@tiptap/pm direct dep](tiptap-pm-dep.md) — must be added as direct dep via pnpm add @tiptap/pm for TypeScript to resolve it; already a transitive dep of @blocknote
+- [base-ui context requirements](base-ui-context-requirements.md) — base-ui primitives must be inside their parent context or they silently fail to render
