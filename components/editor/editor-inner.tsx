@@ -6,7 +6,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-import { usePresence } from "@/lib/use-presence";
+import { usePresence } from "./use-presence";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useEditorContext } from "@/lib/editor-context";
@@ -14,7 +14,7 @@ import { EditorBubbleMenu } from "./bubble-menu";
 import { BlockDragHandle } from "./block-drag-handle";
 import { CommentCompose } from "./comment-compose";
 import { CommentContextMenu } from "./comment-context-menu";
-import { buildEditorExtensions } from "./use-editor-extensions";
+import { buildEditorExtensions } from "./extensions";
 import { ImageUploadButton, type ImageUploadButtonRef } from "./image-upload-button";
 
 interface ComposeState {

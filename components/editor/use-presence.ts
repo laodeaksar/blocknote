@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
 import { Transaction } from "@tiptap/pm/state";
-import { createCursorPlugin, remoteCursorsKey, RemoteCursor } from "./cursor-plugin";
+import { createCursorPlugin, remoteCursorsKey, RemoteCursor } from "./extensions/cursor-plugin";
 
 const CURSOR_COLORS = [
   "#E57373",

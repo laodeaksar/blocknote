@@ -11,12 +11,12 @@ import TaskItem from "@tiptap/extension-task-item";
 import Image from "@tiptap/extension-image";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import Typography from "@tiptap/extension-typography";
-import { SlashExtension } from "@/lib/slash-extension";
-import { CommentHighlight } from "./comment-highlight-extension";
-import { ImageUploadExtension } from "@/lib/image-upload-extension";
-import { ImageDropPasteExtension } from "@/lib/image-drop-paste-extension";
+import { SlashExtension } from "./slash-extension";
+import { CommentHighlight } from "./comment-highlight";
+import { ImageUploadExtension } from "./image-upload";
+import { ImageDropPasteExtension } from "./image-drop-paste";
 import { uploadToCloudinary } from "@/lib/cloudinary";
-import { ImageNodeView } from "./image-node-view";
+import { ImageNodeView } from "../image-node-view";
 
 export function buildEditorExtensions(
   syncExtension: AnyExtension,
@@ -51,3 +51,10 @@ export function buildEditorExtensions(
     syncExtension,
   ];
 }
+
+export { CommentHighlight } from "./comment-highlight";
+export { SlashExtension } from "./slash-extension";
+export { ImageUploadExtension } from "./image-upload";
+export { ImageDropPasteExtension } from "./image-drop-paste";
+export { createCursorPlugin, remoteCursorsKey } from "./cursor-plugin";
+export type { RemoteCursor } from "./cursor-plugin";
