@@ -558,7 +558,7 @@ function CommentRow({
           className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive mt-0.5"
         >
           <Trash2 className="size-3" />
-        </button>
+        </Button>
       )}
     </div>
   );
