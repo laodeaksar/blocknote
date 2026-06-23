@@ -143,7 +143,7 @@ export function ImageNodeView({
               </Button>
             ))}
 
-      <Separator orientation="vertical" />
+      <div className="w-px h-4 bg-border mx-0.5 shrink-0" />
 
             <Button
               variant="ghost"
@@ -161,7 +161,7 @@ export function ImageNodeView({
               <Maximize2 className="size-3.5" />
             </Button>
 
-      <Separator orientation="vertical" />
+      <div className="w-px h-4 bg-border mx-0.5 shrink-0" />
 
             <Button
               variant="ghost"
