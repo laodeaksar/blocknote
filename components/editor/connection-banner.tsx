@@ -43,13 +43,13 @@ export function ConnectionBanner({
         <Button
           onClick={onRetry}
           disabled={isRetrying}
-          size="xs"
+          size="sm"
           variant="ghost"
-          className={`shrink-0 ${
+          className={
             syncError
               ? "bg-red-100 hover:bg-red-200 text-red-700"
               : "bg-amber-100 hover:bg-amber-200 text-amber-700"
-          }`}
+          }
         >
           <RefreshCw className={`w-3 h-3 ${isRetrying ? "animate-spin" : ""}`} />
           {isRetrying ? "Memuat ulang…" : "Coba lagi"}
@@ -60,7 +60,7 @@ export function ConnectionBanner({
 
   if (isDisconnected) {
     return (
-      <div className="mb-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 text-gray-500">
+      <div className="mb-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm bg-muted border-border text-muted-foreground">
         <Spinner className="size-4" />
         Menghubungkan ke server…
       </div>

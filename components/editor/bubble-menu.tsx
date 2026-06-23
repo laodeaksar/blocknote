@@ -16,6 +16,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { ToolbarButton } from "./toolbar-button";
+import { Separator } from "@/components/ui/separator";
 
 interface EditorBubbleMenuProps {
   editor: Editor;
@@ -107,7 +108,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         <Code className="size-3.5" />
       </ToolbarButton>
 
-      <div className="mx-0.5 h-4 w-px bg-border" />
+      <Separator orientation="vertical" />
 
       <ToolbarButton
         title="Tautan"
@@ -117,7 +118,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         <Link className="size-3.5" />
       </ToolbarButton>
 
-      <div className="mx-0.5 h-4 w-px bg-border" />
+      <Separator orientation="vertical" />
 
       <ToolbarButton
         title="Rata kiri"
@@ -145,7 +146,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
 
       {onComment && (
         <>
-          <div className="mx-0.5 h-4 w-px bg-border" />
+      <Separator orientation="vertical" />
           <ToolbarButton
             title="Tambah komentar"
             active={false}

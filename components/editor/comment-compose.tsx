@@ -119,16 +119,16 @@ export function CommentCompose({
         className="z-[9999] w-72 rounded-xl border border-border bg-background shadow-2xl p-3 animate-in fade-in-0 zoom-in-95 duration-150"
       >
         {/* Header */}
-        <div className="flex items-center gap-2 mb-2.5">
-          <MessageSquare className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <MessageSquare className="size-3.5 text-muted-foreground shrink-0" />
           <span className="text-xs font-medium text-foreground">Komentar baru</span>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={onClose}
-            className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
+            className="ml-auto"
           >
-            <X className="w-3.5 h-3.5" />
-          </button>
+            <X className="size-3.5" />
+          </Button>
         </div>
 
         {/* Input group: textarea + bottom action bar */}
@@ -160,20 +160,19 @@ export function CommentCompose({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-xs"
                 onClick={onClose}
                 disabled={isPending}
               >
                 Batal
               </Button>
               <InputGroupButton
-                size="xs"
+                size="sm"
                 variant="default"
                 disabled={!text.trim() || isPending}
                 onClick={handleSubmit}
-                className="gap-1 px-2"
+                className="gap-1"
               >
-                <Send className="size-3" />
+                <Send className="size-3.5" />
                 Kirim
               </InputGroupButton>
             </div>

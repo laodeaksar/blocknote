@@ -228,7 +228,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                 }>
                   <MessageSquare className={cn("size-4", commentsOpen ? "text-foreground" : "text-muted-foreground")} />
                   {activeThreadCount > 0 && (
-                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-warning px-0.5 text-[9px] font-bold leading-none text-warning-foreground ring-1 ring-background">
+                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-warning px-0.5 text-[9px] font-bold leading-none text-warning-foreground ring-1 ring-background ">
                       {activeThreadCount > 99 ? "99+" : activeThreadCount}
                     </span>
                   )}

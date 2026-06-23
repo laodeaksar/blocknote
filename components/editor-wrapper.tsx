@@ -2,16 +2,14 @@
 
 import dynamic from "next/dynamic";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Spinner } from "@/components/ui/spinner";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 
 const Editor = dynamic(
   () => import("@/components/editor/index").then((m) => m.Editor),
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center py-12">
-        <Spinner className="size-5" />
-      </div>
+      <LoadingScreen />
     ),
   }
 );

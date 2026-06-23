@@ -149,7 +149,7 @@ export function PageItem({
             e.stopPropagation();
             onArchive(e);
           }}
-          className="opacity-0 group-hover:opacity-100 shrink-0 h-5 w-5"
+          className="opacity-0 group-hover:opacity-100"
           title="Move to trash"
         >
           <Trash2 className="w-3 h-3" />

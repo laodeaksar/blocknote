@@ -16,7 +16,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
 import { CheckCircle2, MessageSquare, Highlighter } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface CommentContextMenuProps {
   threadId: string;
@@ -41,9 +41,6 @@ export function removeCommentMark(editor: Editor, threadId: string) {
   });
   if (modified) editor.view.dispatch(tr);
 }
-
-const itemClass =
-  "w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors text-left cursor-default select-none outline-none hover:bg-accent focus-visible:bg-accent disabled:pointer-events-none disabled:opacity-50";
 
 export function CommentContextMenu({
   threadId,
@@ -106,35 +103,36 @@ export function CommentContextMenu({
           Komentar
         </div>
 
-        <button
-          type="button"
-          className={cn(itemClass, "text-emerald-600 dark:text-emerald-400")}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full text-success"
           onClick={() => resolveThread({ threadId: threadId as Id<"threads"> })}
           disabled={isPending}
         >
           <CheckCircle2 className="size-4" />
           Tandai selesai
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          className={itemClass}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full"
           onClick={() => { onViewComments(threadId); onClose(); }}
         >
-          <MessageSquare className="size-4 text-muted-foreground" />
+          <MessageSquare className="size-4" />
           Lihat komentar
-        </button>
+        </Button>
 
         <div className="-mx-1 my-1 h-px bg-border" />
 
-        <button
-          type="button"
-          className={cn(itemClass, "text-muted-foreground")}
+        <Button
+          variant="ghost"
+          className="w-full"
           onClick={() => { removeCommentMark(editor, threadId); onClose(); }}
         >
           <Highlighter className="size-4" />
-          Hapus highlight
-        </button>
+        </Button>
       </div>
     </FloatingPortal>
   );

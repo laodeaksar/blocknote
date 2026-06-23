@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { Label } from "@/components/ui/label";
 import { UserAvatar } from "@/components/ui/avatar";
 import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
@@ -142,20 +143,21 @@ export function UserSettingsDialog({ open, onClose }: Props) {
             title="Ganti foto profil"
           >
             {uploading ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <Spinner className="size-4" /> 
             ) : (
-              <Camera className="w-4 h-4 text-white" />
+              <Camera className="size-4 text-white" />
             )}
           </button>
         </div>
 
         {avatarUrl && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleRemovePhoto}
-            className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+            className="text-[11px] hover:text-destructive transition-colors"
           >
-            <X className="w-3 h-3" />
+            <X className="size-3" />
             Hapus foto
           </button>
         )}

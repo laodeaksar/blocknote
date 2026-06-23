@@ -22,6 +22,7 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import {
   InputGroup,
   InputGroupAddon,
@@ -133,16 +134,14 @@ function PanelBody({
   return (
     <ScrollArea className="flex-1">
       {isPending && (
-        <div className="flex items-center justify-center py-10">
-          <div className="size-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
-        </div>
+        <LoadingScreen />
       )}
 
       {!isPending && threadList.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 gap-2 px-4 text-center">
           <MessageSquare className="size-8 text-muted" />
-          <p className="text-sm text-muted-foreground">Belum ada komentar</p>
-          <p className="text-xs text-muted-foreground/60">
+          <p className="text-sm">Belum ada komentar</p>
+          <p className="text-xs">
             Pilih teks di dokumen lalu klik ikon 💬 untuk memulai.
           </p>
         </div>
@@ -165,7 +164,7 @@ function PanelBody({
 
       {resolved.length > 0 && (
         <div className="py-1">
-          <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+          <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide">
             Selesai ({resolved.length})
           </div>
           {resolved.map((thread) => (
@@ -379,9 +378,10 @@ function ThreadItem({
               )}
             >
               <div className="flex items-start gap-2.5">
-                <button
-                  type="button"
-                  className="mt-0.5 shrink-0"
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="mt-0.5"
                   title={resolved ? "Buka kembali" : "Tandai selesai"}
                   disabled={resolving || unresolving}
                   onClick={(e) => {
@@ -394,7 +394,7 @@ function ThreadItem({
                   ) : (
                     <Circle className="size-3.5 text-primary/50 hover:text-primary transition-colors" />
                   )}
-                </button>
+                </Button>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 mb-1">
@@ -426,7 +426,7 @@ function ThreadItem({
                   {!expanded && (replies.length > 0 || resolved) && (
                     <div className="flex items-center gap-2 mt-1.5">
                       {replies.length > 0 && (
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-[10px]">
                           {replies.length} balasan
                         </span>
                       )}
@@ -434,7 +434,7 @@ function ThreadItem({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground ml-auto"
+                          className="h-5 px-1.5 text-[10px] ml-auto" 
                           disabled={unresolving}
                           onClick={(e) => { e.stopPropagation(); unresolve({ threadId }); }}
                         >
@@ -495,19 +495,17 @@ function ThreadItem({
                   align="block-end"
                   className="justify-between border-t border-border px-2 py-1"
                 >
-                  <InputGroupText className="text-[10px] text-muted-foreground/60">
+                  <InputGroupText className="text-[10px]">
                     Ctrl+Enter
                   </InputGroupText>
                   <InputGroupButton
-                    size="xs"
-                    variant="default"
+                    size="icon-xs"
                     disabled={!replyText.trim() || sending}
                     onClick={handleReply}
                     className="gap-1 px-2"
                   >
                     <Send className="size-3" />
-                    Kirim
-                  </InputGroupButton>
+                    </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>
             </div>
@@ -545,18 +543,19 @@ function CommentRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-1.5">
           <span className="text-[11px] font-medium text-foreground">{author?.username ?? "User"}</span>
-          <span className="text-[10px] text-muted-foreground">{formatTime(comment.createdAt)}</span>
+          <span className="text-[10px]">{formatTime(comment.createdAt)}</span>
         </div>
         <p className="text-sm text-foreground leading-snug mt-0.5">
           {text || <span className="italic text-muted-foreground text-xs">Komentar kosong</span>}
         </p>
       </div>
       {isOwn && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-xs"
           title={isOnly ? "Hapus thread" : "Hapus komentar"}
           onClick={onDelete}
-          className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive mt-0.5"
+          className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive mt-0.5"
         >
           <Trash2 className="size-3" />
         </button>

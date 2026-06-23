@@ -54,7 +54,7 @@ export function PublishPopover({
         <div
           className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
             isPublished
-              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+              ? "bg-success-foreground text-success"
               : "bg-muted text-muted-foreground"
           }`}
         >

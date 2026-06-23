@@ -174,7 +174,6 @@ export function SidebarContent({
               size="icon-xs"
               onClick={onCollapse}
               title="Collapse sidebar"
-              className="h-6 w-6 text-muted-foreground"
             >
               <X className="size-3.5" />
             </Button>

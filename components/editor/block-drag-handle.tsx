@@ -272,7 +272,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
         }}
         onDragEnd={() => { isDragging.current = false; }}
         style={{ position: "fixed", top, left, zIndex: 50 }}
-        className="flex h-7 w-7 md:h-6 md:w-6 items-center justify-center rounded text-muted-foreground/40 hover:bg-accent hover:text-accent-foreground transition-colors cursor-grab active:cursor-grabbing touch-manipulation"
+        className="flex size-7 md:size-6 items-center justify-center rounded hover:bg-accent hover:text-accent-foreground transition-colors cursor-grab active:cursor-grabbing touch-manipulation"
         title="Geser atau klik untuk opsi"
       >
         <GripVertical className="size-4" />

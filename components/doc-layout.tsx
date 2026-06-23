@@ -43,7 +43,7 @@ export function DocLayout({ pageId }: DocLayoutProps) {
       />
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto pb-24 md:pb-0">
-          <div className="max-w-4xl mx-auto py-8 pl-10 pr-4 md:py-16 md:pl-20 md:pr-10">
+          <div className="max-w-4xl mx-auto p-7 md:p-15">
             <EditorWrapper
               pageId={pageId}
               onCommentsOpen={handleCommentsOpen}
@@ -58,7 +58,6 @@ export function DocLayout({ pageId }: DocLayoutProps) {
           onActiveThreadChange={setActiveThreadId}
         />
       </div>
-
     </div>
   );
 }

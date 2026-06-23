@@ -57,7 +57,6 @@ export function UserMenu() {
                 avatarColor={avatarUrl ? undefined : avatarColor}
                 avatarUrl={avatarUrl}
                 size="sm"
-                className="shrink-0"
               />
               <div className="min-w-0">
                 {displayName && (
@@ -73,7 +72,7 @@ export function UserMenu() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-            <Settings className="w-4 h-4" />
+            <Settings className="size-4" />
             Profile settings
           </DropdownMenuItem>
 
@@ -83,7 +82,7 @@ export function UserMenu() {
             className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
             onClick={handleSignOut}
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="size-4" />
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>

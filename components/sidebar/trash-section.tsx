@@ -24,8 +24,8 @@ export function TrashSection({
         <AccordionPrimitive.Header className="flex">
           <AccordionPrimitive.Trigger
             className={cn(
-              "group/trash-trigger flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm font-normal text-muted-foreground transition-colors hover:bg-accent outline-none",
-              compact && "h-8 py-1"
+              "w-full rounded-md px-2 py-1.5 hover:bg-accent outline-none",
+              compact ? "h-8 py-1 **:data-[slot=accordion-trigger-icon]:size-3.5" : "**:data-[slot=accordion-trigger-icon]:size-4"
             )}
           >
             <span className="flex items-center gap-2">
@@ -37,13 +37,6 @@ export function TrashSection({
                 </span>
               )}
             </span>
-            <ChevronDown
-              className={cn(
-                "text-muted-foreground transition-transform duration-200",
-                "group-aria-expanded/trash-trigger:rotate-180",
-                compact ? "size-3.5" : "size-4"
-              )}
-            />
           </AccordionPrimitive.Trigger>
         </AccordionPrimitive.Header>
 
@@ -73,22 +66,18 @@ export function TrashSection({
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
-                    size="icon-xs"
+                    size={ compact ? "icon-sm" : "icon-xs" }
                     onClick={(e) => onRestore(e, page._id)}
                     title="Restore"
-                    className={cn(compact ? "shrink-0 h-7 w-7" : "h-6 w-6")}
                   >
                     <RotateCcw className={cn(compact ? "size-3.5" : "size-3")} />
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon-xs"
+                    size={ compact? "icon-sm" : "icon-xs" }
                     onClick={(e) => onRemove(e, page._id, page.title)}
                     title="Delete permanently"
-                    className={cn(
-                      "hover:text-destructive hover:bg-destructive/10",
-                      compact ? "shrink-0 h-7 w-7" : "h-6 w-6"
-                    )}
+                    className="hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className={cn(compact ? "size-3.5" : "size-3")} />
                   </Button>

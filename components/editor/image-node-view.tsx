@@ -4,9 +4,9 @@ import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import {
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
+  AlignStartVertical,
+  AlignCenterCertical,
+  AlignEndVertical,
   Maximize2,
   Trash2,
 } from "lucide-react";
@@ -24,9 +24,9 @@ function parseWidthFromStyle(style: string | null): number | null {
 }
 
 const ALIGN_BUTTONS: { value: ImageAlign; icon: React.ReactNode; label: string }[] = [
-  { value: "left", icon: <AlignLeft className="size-3.5" />, label: "Rata kiri" },
-  { value: "center", icon: <AlignCenter className="size-3.5" />, label: "Rata tengah" },
-  { value: "right", icon: <AlignRight className="size-3.5" />, label: "Rata kanan" },
+  { value: "left", icon: <AlignStartVertical className="size-3.5" />, label: "Rata kiri" },
+  { value: "center", icon: <AlignCenterVertical className="size-3.5" />, label: "Rata tengah" },
+  { value: "right", icon: <AlignEndVertical className="size-3.5" />, label: "Rata kanan" },
 ];
 
 export function ImageNodeView({
@@ -125,7 +125,7 @@ export function ImageNodeView({
             onMouseDown={(e) => e.preventDefault()}
           >
             {ALIGN_BUTTONS.map(({ value, icon, label }) => (
-              <button
+              <Button
                 key={value}
                 type="button"
                 title={label}
@@ -133,49 +133,47 @@ export function ImageNodeView({
                   e.preventDefault();
                   handleAlignClick(value);
                 }}
-                className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors",
-                  align === value && !isFullWidth
+                className={align === value && !isFullWidth
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                )}
+                }
               >
                 {icon}
-              </button>
+              </Button>
             ))}
 
-            <div className="mx-0.5 h-4 w-px bg-border" />
+      <Separator orientation="vertical" />
 
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               title="Lebar penuh"
               onMouseDown={(e) => {
                 e.preventDefault();
                 setFullWidth();
               }}
-              className={cn(
-                "flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors",
-                isFullWidth
+              className={isFullWidth
                   ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              )}
+              }
             >
               <Maximize2 className="size-3.5" />
-            </button>
+            </Button>
 
-            <div className="mx-0.5 h-4 w-px bg-border" />
+      <Separator orientation="vertical" />
 
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               title="Hapus gambar"
               onMouseDown={(e) => {
                 e.preventDefault();
                 deleteNode();
               }}
-              className="flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors text-muted-foreground hover:bg-destructive hover:text-destructive-foreground"
+              className="hover:bg-destructive hover:text-destructive-foreground"
             >
               <Trash2 className="size-3.5" />
-            </button>
+            </Button>
           </div>
         )}
 

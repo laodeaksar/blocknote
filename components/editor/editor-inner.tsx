@@ -4,8 +4,10 @@ import { useEditor, EditorContent, type AnyExtension } from "@tiptap/react";
 import type { Content } from "@tiptap/react";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
+import { cn } from "@/lib/utils";
+
 import { usePresence } from "@/lib/use-presence";
-import { Spinner } from "@/components/ui/spinner";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { useState, useCallback, useRef } from "react";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { BlockDragHandle } from "./block-drag-handle";
@@ -113,14 +115,16 @@ export function EditorInner({
 
   if (!editor) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner className="size-5" />
-      </div>
+      <LoadingScreen />
     );
   }
 
   return (
-    <div className={`tiptap-editor ${resolvedTheme === "dark" ? "dark" : ""} group`}>
+    <div className={cn(
+    "tiptap-editor",
+    resolvedTheme === "dark" ? "dark" : "",
+    "group"
+    )}>
       <ImageUploadButton ref={imageUploadRef} editor={editor} />
       <EditorBubbleMenu
         editor={editor}

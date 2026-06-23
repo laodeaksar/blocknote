@@ -15,6 +15,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
+import{ Badge } from "@/components/ui/badge";
 
 interface SearchModalProps {
   open: boolean;
@@ -68,7 +69,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                 {page.title || "Untitled"}
               </span>
               {page.isPublished && (
-                <span className="ml-auto shrink-0 text-[10px] text-emerald-600 font-medium bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
+                <Badge className="ml-auto text-success bg-success-foreground">
                   publik
                 </span>
               )}

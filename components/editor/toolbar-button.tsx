@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ToolbarButtonProps {
   children: React.ReactNode;
@@ -11,21 +11,20 @@ interface ToolbarButtonProps {
 
 export function ToolbarButton({ children, active, onClick, title }: ToolbarButtonProps) {
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon-sm"
       title={title}
       onMouseDown={(e) => {
         e.preventDefault();
         onClick();
       }}
-      className={cn(
-        "flex items-center justify-center size-7 rounded-md text-sm transition-colors",
-        active
+      className={active
           ? "bg-accent text-accent-foreground"
           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      )}
+      }
     >
       {children}
-    </button>
+    </Button>
   );
 }

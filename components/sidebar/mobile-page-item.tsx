@@ -134,7 +134,7 @@ export function MobilePageItem({
         size="icon-xs"
         onClick={onArchive}
         title="Move to trash"
-        className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        className="hover:text-destructive hover:bg-destructive/10"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </Button>
