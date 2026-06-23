@@ -119,6 +119,7 @@ export function CommentCompose({
         className="z-[9999] w-72 rounded-xl border border-border bg-background shadow-2xl p-3 animate-in fade-in-0 zoom-in-95 duration-150"
       >
         {/* Header */}
+        <div className="flex items-center gap-1.5 mb-2">
           <MessageSquare className="size-3.5 text-muted-foreground shrink-0" />
           <span className="text-xs font-medium text-foreground">Komentar baru</span>
           <Button
