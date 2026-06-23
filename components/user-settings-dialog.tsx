@@ -159,7 +159,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
           >
             <X className="size-3" />
             Hapus foto
-          </button>
+          </Button>
         )}
 
         <input
