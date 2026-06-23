@@ -3,6 +3,7 @@
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   AlignStartVertical,
   AlignCenterVertical,
