@@ -71,7 +71,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
               {page.isPublished && (
                 <Badge className="ml-auto text-success bg-success-foreground">
                   publik
-                </span>
+                </Badge>
               )}
             </CommandItem>
           ))}
