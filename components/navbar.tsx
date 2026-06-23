@@ -7,9 +7,10 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare } from "lucide-react";
+import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare, Undo2, Redo2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSidebar } from "@/lib/sidebar-context";
+import { useEditorContext } from "@/lib/editor-context";
 import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ function formatRelativeTime(date: Date): string {
 
 export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) {
   const { toggle, collapsed } = useSidebar();
+  const { editor } = useEditorContext();
   const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId }));
@@ -197,6 +199,42 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
         )}
 
         <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Undo"
+                  disabled={!editor?.can().undo()}
+                  onClick={() => editor?.chain().focus().undo().run()}
+                />
+              }>
+                <Undo2 className="size-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Undo <Kbd>Ctrl+Z</Kbd></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Redo"
+                  disabled={!editor?.can().redo()}
+                  onClick={() => editor?.chain().focus().redo().run()}
+                />
+              }>
+                <Redo2 className="size-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Redo <Kbd>Ctrl+Y</Kbd></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <div className="mx-0.5 h-4 w-px bg-border" />
+
           <Popover open={showPublish} onOpenChange={setShowPublish}>
             <PopoverTrigger
             render={

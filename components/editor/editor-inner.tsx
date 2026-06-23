@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 
 import { usePresence } from "@/lib/use-presence";
 import { LoadingScreen } from "@/components/ui/loading-screen";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useEditorContext } from "@/lib/editor-context";
 import { EditorBubbleMenu } from "./bubble-menu";
 import { BlockDragHandle } from "./block-drag-handle";
 import { CommentCompose } from "./comment-compose";
@@ -54,12 +55,19 @@ export function EditorInner({
     imageUploadRef.current?.trigger();
   }, []);
 
+  const { setEditor } = useEditorContext();
+
   const editor = useEditor({
     extensions: buildEditorExtensions(extension, handleImageUpload),
     content: initialContent,
     editable,
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    setEditor(editor ?? null);
+    return () => setEditor(null);
+  }, [editor, setEditor]);
 
   usePresence(editor ?? null, pageId, userId, userName, editable && !!userId);
 
