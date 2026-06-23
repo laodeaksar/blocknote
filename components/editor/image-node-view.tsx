@@ -4,6 +4,7 @@ import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   AlignStartVertical,
   AlignCenterVertical,
@@ -143,7 +144,7 @@ export function ImageNodeView({
               </Button>
             ))}
 
-      <div className="w-px h-4 bg-border mx-0.5 shrink-0" />
+      <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
               variant="ghost"
@@ -161,7 +162,7 @@ export function ImageNodeView({
               <Maximize2 className="size-3.5" />
             </Button>
 
-      <div className="w-px h-4 bg-border mx-0.5 shrink-0" />
+      <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
               variant="ghost"
