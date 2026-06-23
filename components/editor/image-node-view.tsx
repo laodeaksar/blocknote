@@ -5,7 +5,7 @@ import { useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import {
   AlignStartVertical,
-  AlignCenterCertical,
+  AlignCenterVertical,
   AlignEndVertical,
   Maximize2,
   Trash2,
