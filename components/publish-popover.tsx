@@ -5,7 +5,7 @@ import { useConvex } from "convex/react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Globe, Lock, IconCopy, IconCheck, ExternalLink } from "lucide-react";
+import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
@@ -103,7 +103,7 @@ export function PublishPopover({
             size="icon-xs"
             onClick={handleCopy}
           >
-            {copied ? <IconCheck /> : <IconCopy />}
+            {copied ? <Check /> : <Copy />}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>

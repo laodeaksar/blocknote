@@ -504,7 +504,7 @@ function ThreadItem({
                     onClick={handleReply}
                     className="gap-1 px-2"
                   >
-                    <Send data - icon = "inline-start" / >
+                    <Send data-icon="inline-start" />
                       Kirim
                       </InputGroupButton>
                 </InputGroupAddon>
