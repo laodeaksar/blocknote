@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Circle,
   RotateCcw,
-  Send,
   Trash2,
   ChevronDown,
 } from "lucide-react";
@@ -23,13 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { LoadingScreen } from "@/components/ui/loading-screen";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { CommentInput } from "@/components/comment-input";
 import { UserAvatar } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -476,39 +469,17 @@ function ThreadItem({
                 </div>
               )}
 
-              <InputGroup className="mt-3 rounded-lg">
-                <InputGroupTextarea
-                  ref={replyRef}
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Tulis balasan…"
-                  rows={2}
-                  className="text-sm min-h-13 py-2 px-3"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                      e.preventDefault();
-                      handleReply();
-                    }
-                  }}
-                />
-                <InputGroupAddon
-                  align="block-end"
-                  className="justify-between border-t border-border px-2 py-1"
-                >
-                  <InputGroupText className="text-xxs">
-                    Ctrl+Enter
-                  </InputGroupText>
-                  <InputGroupButton
-                    size="xs"
-                    disabled={!replyText.trim() || sending}
-                    onClick={handleReply}
-                    className="gap-1 px-2"
-                  >
-                    <Send data-icon="inline-start" />
-                      Kirim
-                      </InputGroupButton>
-                </InputGroupAddon>
-              </InputGroup>
+              <CommentInput
+                className="mt-3"
+                value={replyText}
+                onChange={setReplyText}
+                onSubmit={handleReply}
+                placeholder="Tulis balasan…"
+                disabled={sending}
+                rows={2}
+                textareaClassName="min-h-13"
+                textareaRef={replyRef}
+              />
             </div>
           </AccordionContent>
         </AccordionItem>

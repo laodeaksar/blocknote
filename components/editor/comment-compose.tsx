@@ -14,14 +14,8 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
-import { MessageSquare, Send, X } from "lucide-react";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { MessageSquare, X } from "lucide-react";
+import { CommentInput } from "@/components/comment-input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -132,53 +126,17 @@ export function CommentCompose({
           </Button>
         </div>
 
-        {/* Input group: textarea + bottom action bar */}
-        <InputGroup className="rounded-lg">
-          <InputGroupTextarea
-            ref={textareaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Tulis komentar…"
-            rows={3}
-            className="text-sm min-h-18 py-2.5 px-3"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault();
-                handleSubmit();
-              }
-              if (e.key === "Escape") onClose();
-            }}
-          />
-          <InputGroupAddon
-            align="block-end"
-            className="justify-between border-t border-border px-2 py-1.5"
-          >
-            <InputGroupText className="text-xxs text-muted-foreground/60">
-              Ctrl+Enter
-            </InputGroupText>
-            <div className="flex items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="xs"
-                onClick={onClose}
-                disabled={isPending}
-              >
-                Batal
-              </Button>
-              <InputGroupButton
-              variant="secondary"
-                size="xs"
-                disabled={!text.trim() || isPending}
-                onClick={handleSubmit}
-                className="gap-1"
-              >
-                <Send data-icon="inline-start" />
-                Kirim
-              </InputGroupButton>
-            </div>
-          </InputGroupAddon>
-        </InputGroup>
+        <CommentInput
+          value={text}
+          onChange={setText}
+          onSubmit={handleSubmit}
+          onCancel={onClose}
+          placeholder="Tulis komentar…"
+          disabled={isPending}
+          rows={3}
+          textareaClassName="min-h-18 py-2.5"
+          textareaRef={textareaRef}
+        />
       </div>
     </FloatingPortal>
   );
