@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
-import { CheckIcon, SearchIcon } from "lucide-react"
+import { CheckIcon, SearchIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -65,8 +65,26 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  value: valueProp,
+  onValueChange,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  const [internalValue, setInternalValue] = React.useState(
+    (valueProp as string) ?? ""
+  )
+  const isControlled = valueProp !== undefined
+  const currentValue = isControlled ? (valueProp as string) : internalValue
+  const hasValue = currentValue.length > 0
+
+  const handleValueChange = (val: string) => {
+    if (!isControlled) setInternalValue(val)
+    onValueChange?.(val)
+  }
+
+  const handleClear = () => {
+    handleValueChange("")
+  }
+
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
       <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
@@ -76,10 +94,23 @@ function CommandInput({
             "w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
+          value={currentValue}
+          onValueChange={handleValueChange}
           {...props}
         />
         <InputGroupAddon>
-          <SearchIcon className="size-4 shrink-0 opacity-50" />
+          {hasValue ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="size-4 shrink-0 flex items-center justify-center rounded-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+              aria-label="Hapus pencarian"
+            >
+              <XIcon className="size-3" />
+            </button>
+          ) : (
+            <SearchIcon className="size-4 shrink-0 opacity-50" />
+          )}
         </InputGroupAddon>
       </InputGroup>
     </div>
