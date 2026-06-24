@@ -137,6 +137,23 @@ export const reorder = mutation({
   },
 });
 
+export const clearTrash = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const pages = await ctx.db
+      .query("pages")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .filter((q) => q.eq(q.field("isArchived"), true))
+      .collect();
+
+    await Promise.all(pages.map((p) => ctx.db.delete(p._id)));
+    return pages.length;
+  },
+});
+
 export const getArchived = query({
   args: {},
   handler: async (ctx) => {

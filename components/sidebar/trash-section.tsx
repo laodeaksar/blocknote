@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { FileText, Trash2, RotateCcw } from "lucide-react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +12,35 @@ export function TrashSection({
   archivedPages,
   onRestore,
   onRemove,
+  onClearAll,
   compact = false,
 }: {
   archivedPages: PageData[] | undefined;
   onRestore: (e: React.MouseEvent, id: PageData["_id"]) => void;
   onRemove: (e: React.MouseEvent, id: PageData["_id"], title: string) => void;
+  onClearAll?: () => void;
   compact?: boolean;
 }) {
+  const [confirming, setConfirming] = useState(false);
+
+  const hasItems = (archivedPages?.length ?? 0) > 0;
+
+  const handleClearClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirming(true);
+  };
+
+  const handleConfirm = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirming(false);
+    onClearAll?.();
+  };
+
+  const handleCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirming(false);
+  };
+
   return (
     <Accordion>
       <AccordionItem value="trash" className="border-0">
@@ -29,13 +52,47 @@ export function TrashSection({
               : ""
           )}
         >
-          <span className="flex items-center gap-2">
-            <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
+          <span className="flex items-center gap-2 flex-1 min-w-0">
+            <Trash2 className={cn("shrink-0", compact ? "size-3.5" : "size-4")} />
             Trash
-            {compact && (archivedPages?.length ?? 0) > 0 && (
+            {compact && hasItems && (
               <Badge size="label" variant="secondary">{archivedPages!.length}</Badge>
             )}
           </span>
+
+          {hasItems && onClearAll && (
+            confirming ? (
+              <span className="flex items-center gap-1 shrink-0 mr-1" onClick={(e) => e.stopPropagation()}>
+                <span className="text-xxs text-muted-foreground">Hapus semua?</span>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  className="h-5 px-1.5 text-xxs text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={handleConfirm}
+                >
+                  Ya
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  className="h-5 px-1.5 text-xxs"
+                  onClick={handleCancel}
+                >
+                  Batal
+                </Button>
+              </span>
+            ) : (
+              <Button
+                variant="ghost"
+                size="xs"
+                className="h-5 px-1.5 text-xxs text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 mr-1"
+                onClick={handleClearClick}
+                title="Hapus semua"
+              >
+                Hapus semua
+              </Button>
+            )
+          )}
         </AccordionTrigger>
 
         <AccordionContent className="!pb-0">
@@ -64,7 +121,7 @@ export function TrashSection({
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
-                    size={ compact ? "icon-sm" : "icon-xs" }
+                    size={compact ? "icon-sm" : "icon-xs"}
                     onClick={(e) => onRestore(e, page._id)}
                     title="Restore"
                   >
@@ -72,7 +129,7 @@ export function TrashSection({
                   </Button>
                   <Button
                     variant="ghost"
-                    size={ compact? "icon-sm" : "icon-xs" }
+                    size={compact ? "icon-sm" : "icon-xs"}
                     onClick={(e) => onRemove(e, page._id, page.title)}
                     title="Delete permanently"
                     className="hover:text-destructive hover:bg-destructive/10"

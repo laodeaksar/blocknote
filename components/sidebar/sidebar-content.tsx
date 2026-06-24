@@ -72,6 +72,9 @@ export function SidebarContent({
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.remove, vars),
   });
+  const { mutateAsync: clearTrashPages } = useMutation({
+    mutationFn: () => convex.mutation(api.pages.clearTrash, {}),
+  });
   const { mutateAsync: reorderPages } = useMutation({
     mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
       convex.mutation(api.pages.reorder, vars),
@@ -151,6 +154,11 @@ export function SidebarContent({
     await removePage({ id: pageToDelete.id });
     toast.success("Page permanently deleted");
     setPageToDelete(null);
+  };
+
+  const handleClearAll = async () => {
+    const count = await clearTrashPages();
+    toast.success(`${count} halaman dihapus permanen`);
   };
 
   const navigate = (path: string) => {
@@ -270,6 +278,7 @@ export function SidebarContent({
           archivedPages={archivedPages}
           onRestore={handleRestore}
           onRemove={handleRemove}
+          onClearAll={handleClearAll}
         />
         <Button
           variant="ghost"
