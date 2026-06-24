@@ -110,7 +110,7 @@ export function PublishPopover({
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className={buttonVariants({ variant="link", size="xs"})} >
+            className={buttonVariants({ variant:"link", size:"xs"})} >
             <ExternalLink data-icon="inline-start" />
             Open public page
           </a>
