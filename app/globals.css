@@ -57,59 +57,57 @@
   --chart-5: oklch(0.769 0.188 70.08);
 }
 
-/* ── Dark mode — v4 pattern via @variant dark ─────────────────────── */
-@variant dark {
-  :root {
-    --background:          #191919;
-    --foreground:          #e8e8e7;
+/* ── Dark mode — class-based (.dark on <html>) ────────────────────── */
+.dark {
+  --background:          #191919;
+  --foreground:          #e8e8e7;
 
-    --card:                #1f1f1f;
-    --card-foreground:     #e8e8e7;
+  --card:                #1f1f1f;
+  --card-foreground:     #e8e8e7;
 
-    --popover:             #1f1f1f;
-    --popover-foreground:  #e8e8e7;
+  --popover:             #1f1f1f;
+  --popover-foreground:  #e8e8e7;
 
-    --primary:             #e8e8e7;
-    --primary-foreground:  #191919;
+  --primary:             #e8e8e7;
+  --primary-foreground:  #191919;
 
-    --secondary:           #2a2a2a;
-    --secondary-foreground:#9b9a97;
+  --secondary:           #2a2a2a;
+  --secondary-foreground:#9b9a97;
 
-    --muted:               #2a2a2a;
-    --muted-foreground:    #6b6b6b;
+  --muted:               #2a2a2a;
+  --muted-foreground:    #6b6b6b;
 
-    --accent:              #2e2e2e;
-    --accent-foreground:   #e8e8e7;
+  --accent:              #2e2e2e;
+  --accent-foreground:   #e8e8e7;
 
-    --destructive:         #e5534b;
-    --destructive-foreground: #ffffff;
+  --destructive:         #e5534b;
+  --destructive-foreground: #ffffff;
 
-    --success:             #22c55e;
-    --success-foreground:  #ffffff;
+  --success:             #22c55e;
+  --success-foreground:  #ffffff;
 
-    --warning:             #f59e0b;
-    --warning-foreground:  #ffffff;
+  --warning:             #f59e0b;
+  --warning-foreground:  #ffffff;
 
-    --border:              #2e2e2e;
-    --input:               #2e2e2e;
-    --ring:                #2383e2;
+  --border:              #2e2e2e;
+  --input:               #2e2e2e;
+  --ring:                #2383e2;
 
-    --sidebar:             #1f1f1f;
-    --sidebar-hover:       #2e2e2e;
-    --sidebar-foreground:  #e8e8e7;
-    --sidebar-primary:     #e8e8e7;
-    --sidebar-primary-foreground: #191919;
-    --sidebar-accent:      #2e2e2e;
-    --sidebar-accent-foreground: #e8e8e7;
-    --sidebar-border:      #2e2e2e;
-    --sidebar-ring:        #2383e2;
+  --sidebar:             #1f1f1f;
+  --sidebar-hover:       #2e2e2e;
+  --sidebar-foreground:  #e8e8e7;
+  --sidebar-primary:     #e8e8e7;
+  --sidebar-primary-foreground: #191919;
+  --sidebar-accent:      #2e2e2e;
+  --sidebar-accent-foreground: #e8e8e7;
+  --sidebar-border:      #2e2e2e;
+  --sidebar-ring:        #2383e2;
 
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-  }
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
 }
 
 /* ── Tailwind v4 theme mapping ────────────────────────────────────── */
@@ -730,12 +728,10 @@ mark.comment-highlight {
 mark.comment-highlight:hover {
   background-color: var(--color-comment-highlight-hover);
 }
-@variant dark {
-  mark.comment-highlight {
-    background-color: var(--color-comment-highlight-dk);
-    color: var(--color-comment-highlight-dk-tx);
-  }
-  mark.comment-highlight:hover {
-    background-color: var(--color-comment-highlight-dk-hv);
-  }
+.dark mark.comment-highlight {
+  background-color: var(--color-comment-highlight-dk);
+  color: var(--color-comment-highlight-dk-tx);
+}
+.dark mark.comment-highlight:hover {
+  background-color: var(--color-comment-highlight-dk-hv);
 }
