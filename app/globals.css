@@ -195,20 +195,38 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ── Base ─────────────────────────────────────────────────────────── */
-* {
-  box-sizing: border-box;
-}
+/* ── Base layer — font utilities registered here so every component  ──
+   can use className="font-sans" or className="font-mono" directly,   ──
+   without any additional imports.                                     ── */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: var(--font-sans);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  html {
+    @apply font-sans;
+    height: 100%;
+  }
+
+  body {
+    @apply font-sans;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Monospace elements — className="font-mono" available on any element */
+  code,
+  pre,
+  kbd,
+  samp {
+    @apply font-mono;
+  }
 }
 
 /* ── TipTap editor content styles ────────────────────────────────── */
