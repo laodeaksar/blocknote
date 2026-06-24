@@ -13,7 +13,6 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { LoadingButton } from "@/components/ui/loading-button";
 import { CommentInput } from "@/components/ui/comment-input";
 import { UserAvatar } from "@/components/ui/avatar";
 import { CommentRow } from "./comment-row";
@@ -105,6 +104,74 @@ export function ThreadItem({
     }
   };
 
+  const authorRow = (
+    <div className="flex items-center gap-1.5 mb-1">
+      <UserAvatar
+        name={author?.username}
+        avatarUrl={author?.avatarUrl}
+        size="sm"
+        className="size-5"
+      />
+      <span className="text-xs2 font-medium text-foreground truncate">
+        {author?.username ?? "User"}
+      </span>
+      <span className="text-xxs text-muted-foreground shrink-0">
+        · {formatTime(first?.createdAt ?? thread.createdAt)}
+      </span>
+    </div>
+  );
+
+  const textPreview = (clamp: boolean) => (
+    <p className={cn("text-sm text-foreground leading-snug", clamp && "line-clamp-2")}>
+      {extractText(first?.body) || (
+        <span className="italic text-muted-foreground">Komentar kosong</span>
+      )}
+    </p>
+  );
+
+  const accordionContent = (
+    <AccordionContent className="!pb-0">
+      <div className="px-4 pb-3" onClick={(e) => e.stopPropagation()}>
+        {first && (
+          <CommentRow
+            comment={first}
+            author={author}
+            currentUserId={currentUserId}
+            isOnly={activeComments.length === 1}
+            onDelete={() => handleDeleteComment(first.id, activeComments.length === 1)}
+          />
+        )}
+
+        {replies.length > 0 && (
+          <div className="mt-2 pl-2 border-l-2 border-border space-y-1">
+            {replies.map((c) => (
+              <CommentRow
+                key={c.id}
+                comment={c}
+                author={usersMap.get(c.userId)}
+                currentUserId={currentUserId}
+                isOnly={false}
+                onDelete={() => handleDeleteComment(c.id, false)}
+              />
+            ))}
+          </div>
+        )}
+
+        <CommentInput
+          className="mt-3"
+          value={replyText}
+          onChange={setReplyText}
+          onSubmit={handleReply}
+          placeholder="Tulis balasan…"
+          disabled={sending}
+          rows={2}
+          textareaClassName="min-h-13"
+          textareaRef={replyRef}
+        />
+      </div>
+    </AccordionContent>
+  );
+
   return (
     <div
       ref={itemRef}
@@ -114,134 +181,88 @@ export function ThreadItem({
         resolved ? "opacity-60" : ""
       )}
     >
-      <Accordion
-        value={!resolved && expanded ? [thread.id] : []}
-        onValueChange={(val) => {
-          if (resolved) return;
-          const isOpen = Array.isArray(val) && val.includes(thread.id);
-          setExpanded(isOpen);
-          if (isOpen) onActivate();
-        }}
-      >
-        <AccordionItem value={thread.id} className="border-0">
-          <AccordionTrigger
-            disabled={resolved}
-            className={cn(
-              "w-full px-4 py-3 text-left outline-none items-start gap-0",
-              !resolved
-                ? "hover:bg-accent/30 cursor-pointer transition-colors"
-                : "aria-disabled:opacity-100 **:data-[slot=accordion-trigger-icon]:hidden"
-            )}
+      {resolved ? (
+        /* ── Resolved thread: plain div layout — no AccordionTrigger wrapping
+           buttons, which would block pointer events via aria-disabled ── */
+        <div className="flex items-start gap-2.5 px-4 py-3">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="mt-0.5 shrink-0"
+            title="Buka kembali"
+            disabled={unresolving}
+            onClick={() => unresolve({ threadId })}
           >
-            <div className="flex items-start gap-2.5 flex-1 min-w-0">
+            <CheckCircle2 className="text-success hover:text-success/80 transition-colors" />
+          </Button>
+
+          <div className="min-w-0 flex-1">
+            {authorRow}
+            {textPreview(true)}
+
+            <div className="flex items-center gap-2 mt-1.5">
+              {replies.length > 0 && (
+                <span className="text-xxs">{replies.length} balasan</span>
+              )}
               <Button
                 variant="ghost"
-                size="icon-sm"
-                className="mt-0.5 shrink-0"
-                title={resolved ? "Buka kembali" : "Tandai selesai"}
-                disabled={resolving || unresolving}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  resolved ? unresolve({ threadId }) : resolve({ threadId });
-                }}
+                size="xs"
+                className="h-5 px-1.5 text-xxs ml-auto"
+                disabled={unresolving}
+                onClick={() => unresolve({ threadId })}
               >
-                {resolved ? (
-                  <CheckCircle2 className="text-success hover:text-success/80 transition-colors" />
-                ) : (
-                  <Circle className="text-primary/50 hover:text-primary transition-colors" />
-                )}
+                <RotateCcw data-icon="inline-start" />
+                Buka
               </Button>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <UserAvatar
-                    name={author?.username}
-                    avatarUrl={author?.avatarUrl}
-                    size="sm"
-                    className="size-5"
-                  />
-                  <span className="text-xs2 font-medium text-foreground truncate">
-                    {author?.username ?? "User"}
-                  </span>
-                  <span className="text-xxs text-muted-foreground shrink-0">
-                    · {formatTime(first?.createdAt ?? thread.createdAt)}
-                  </span>
-                </div>
-
-                <p className={cn("text-sm text-foreground leading-snug", !expanded && "line-clamp-2")}>
-                  {extractText(first?.body) || (
-                    <span className="italic text-muted-foreground">Komentar kosong</span>
-                  )}
-                </p>
-
-                {!expanded && (replies.length > 0 || resolved) && (
-                  <div className="flex items-center gap-2 mt-1.5">
-                    {replies.length > 0 && (
-                      <span className="text-xxs">{replies.length} balasan</span>
-                    )}
-                    {resolved && (
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="h-5 px-1.5 text-xxs ml-auto"
-                        disabled={unresolving}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          unresolve({ threadId });
-                        }}
-                      >
-                        <RotateCcw data-icon="inline-start" />
-                        Buka
-                      </Button>
-                    )}
-                  </div>
-                )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── Active thread: accordion layout ── */
+        <Accordion
+          value={expanded ? [thread.id] : []}
+          onValueChange={(val) => {
+            const isOpen = Array.isArray(val) && val.includes(thread.id);
+            setExpanded(isOpen);
+            if (isOpen) onActivate();
+          }}
+        >
+          <AccordionItem value={thread.id} className="border-0">
+            {/* Circle resolve button sits outside AccordionTrigger to keep
+                valid HTML (no button-inside-button) and preserve pointer events */}
+            <div className="flex items-start">
+              <div className="pl-4 pt-3 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  title="Tandai selesai"
+                  disabled={resolving}
+                  onClick={() => resolve({ threadId })}
+                >
+                  <Circle className="text-primary/50 hover:text-primary transition-colors" />
+                </Button>
               </div>
-            </div>
-          </AccordionTrigger>
 
-          <AccordionContent className="!pb-0">
-            <div className="px-4 pb-3" onClick={(e) => e.stopPropagation()}>
-              {first && (
-                <CommentRow
-                  comment={first}
-                  author={author}
-                  currentUserId={currentUserId}
-                  isOnly={activeComments.length === 1}
-                  onDelete={() => handleDeleteComment(first.id, activeComments.length === 1)}
-                />
-              )}
+              <AccordionTrigger
+                className="flex-1 pr-4 py-3 text-left outline-none items-start gap-0 hover:bg-accent/30 cursor-pointer transition-colors"
+              >
+                <div className="min-w-0 flex-1">
+                  {authorRow}
+                  {textPreview(!expanded)}
 
-              {replies.length > 0 && (
-                <div className="mt-2 pl-2 border-l-2 border-border space-y-1">
-                  {replies.map((c) => (
-                    <CommentRow
-                      key={c.id}
-                      comment={c}
-                      author={usersMap.get(c.userId)}
-                      currentUserId={currentUserId}
-                      isOnly={false}
-                      onDelete={() => handleDeleteComment(c.id, false)}
-                    />
-                  ))}
+                  {!expanded && replies.length > 0 && (
+                    <div className="mt-1.5">
+                      <span className="text-xxs">{replies.length} balasan</span>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              <CommentInput
-                className="mt-3"
-                value={replyText}
-                onChange={setReplyText}
-                onSubmit={handleReply}
-                placeholder="Tulis balasan…"
-                disabled={sending}
-                rows={2}
-                textareaClassName="min-h-13"
-                textareaRef={replyRef}
-              />
+              </AccordionTrigger>
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+
+            {accordionContent}
+          </AccordionItem>
+        </Accordion>
+      )}
     </div>
   );
 }
