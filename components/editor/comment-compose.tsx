@@ -15,7 +15,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
 import { MessageSquare, X } from "lucide-react";
-import { CommentInput } from "@/components/comment-input";
+import { CommentInput } from "@/components/ui/comment-input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";

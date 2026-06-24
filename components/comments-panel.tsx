@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { LoadingScreen } from "@/components/ui/loading-screen";
-import { CommentInput } from "@/components/comment-input";
+import { CommentInput } from "@/components/ui/comment-input";
 import { UserAvatar } from "@/components/ui/avatar";
 import {
   Sheet,
