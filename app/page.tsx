@@ -66,9 +66,11 @@ export default async function HomePage() {
               key={f.title}
               className="p-4 rounded-xl border border-border bg-muted"
             >
-              <div className="text-2xl mb-2">{f.icon}</div>
-              <h3 className="font-semibold text-foreground text-sm">{f.title}</h3>
-              <p className="text-muted-foreground text-sm mt-1">{f.desc}</p>
+              <div className="text-2xl mb-3">{f.icon}</div>
+              <div className="prose prose-sm prose-full">
+                <h3>{f.title}</h3>
+                <p className="text-muted-foreground">{f.desc}</p>
+              </div>
             </div>
           ))}
         </div>
