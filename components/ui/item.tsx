@@ -74,6 +74,11 @@ const itemMediaVariants = cva(
         icon: "rounded-md [&_svg]:size-4",
         image: "overflow-hidden rounded-md [&_img]:h-full [&_img]:w-full [&_img]:object-cover",
       },
+      size: {
+        sm: "size-5",
+        md: "size-7",
+        lg: "size-9",
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -84,12 +89,13 @@ const itemMediaVariants = cva(
 function ItemMedia({
   className,
   variant,
+  size,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof itemMediaVariants>) {
   return (
     <div
       data-slot="item-media"
-      className={cn(itemMediaVariants({ variant }), className)}
+      className={cn(itemMediaVariants({ variant, size }), className)}
       {...props}
     />
   );

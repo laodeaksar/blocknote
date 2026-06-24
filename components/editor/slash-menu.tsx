@@ -240,7 +240,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                             command(item);
                           }}
                         >
-                          <ItemMedia variant="icon" className="size-7 border border-border bg-muted text-muted-foreground">
+                          <ItemMedia variant="icon" size="md" className="border border-border bg-muted text-muted-foreground">
                             {item.icon}
                           </ItemMedia>
                           <ItemContent>
