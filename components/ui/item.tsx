@@ -37,7 +37,7 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "flex w-full flex-wrap items-center gap-2 rounded-md transition-colors duration-100 outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-default select-none",
+  "flex w-full flex-wrap items-center rounded-md transition-colors duration-100 outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-default select-none",
   {
     variants: {
       variant: {
@@ -46,9 +46,9 @@ const itemVariants = cva(
         muted: "bg-muted/30 hover:bg-muted/60",
       },
       size: {
-        default: "px-2 py-1.5 text-sm",
-        sm: "px-2 py-1 text-xs",
-        xs: "px-1.5 py-0.5 text-xs",
+        default: "px-2 py-1.5 gap-2 text-sm",
+        sm: "px-2 py-1 gap-1.5 text-xs",
+        xs: "px-1.5 py-0.5 gap-1 text-xs",
       },
     },
     defaultVariants: {
