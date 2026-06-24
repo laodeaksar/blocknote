@@ -5,6 +5,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { MessageSquare } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -86,9 +87,9 @@ export function CommentsPanel({
       <MessageSquare className="size-4 text-muted-foreground" />
       <span className="text-sm font-medium">Komentar</span>
       {active.length > 0 && (
-        <span className="text-xxs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
+        <Badge size="label" className="bg-primary text-primary-foreground">
           {active.length}
-        </span>
+        </Badge>
       )}
     </div>
   );
