@@ -20,7 +20,7 @@ const badgeVariants = cva(
       size: {
         default: "px-2 py-0.5 text-xs",
         label:   "px-1.5 py-0 h-4 text-xxs",
-        count:   "px-1 py-0 h-3.5 min-w-3.5 text-badge leading-none",
+        count:   "px-1 py-0 h-3.5 min-w-3.5 text-[8px] leading-none",
       },
     },
     defaultVariants: {

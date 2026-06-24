@@ -133,11 +133,11 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* ── Custom text sizes ───────────────────────────────────────────── */
-  --text-xxs:              0.625rem;                   /* 10px — labels, timestamps, badges */
+  --text-xxs: 0.625rem;                   /* 10px — labels, timestamps, badges */
   --text-xxs--line-height: calc(1 / 0.625);
-  --text-xs2:              0.6875rem;                  /* 11px — author names, hints        */
+  --text-xs2: 0.6875rem;                  /* 11px — author names, hints        */
   --text-xs2--line-height: calc(1 / 0.6875);
-  --text-badge:            0.5625rem;                  /* 9px  — notification dot counters  */
+  --text-badge: 0.5625rem;                  /* 9px  — notification dot counters  */
   --text-badge--line-height: calc(1 / 0.5625);
 
   /* ── Colors ──────────────────────────────────────────────────────── */
