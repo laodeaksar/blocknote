@@ -81,11 +81,10 @@ export function CommentInput({
             </Button>
           )}
           <InputGroupButton
-            variant="secondary"
+            variant="default"
             size="xs"
             disabled={!value.trim() || disabled}
             onClick={onSubmit}
-            className="gap-1 px-2"
           >
             <Send data-icon="inline-start" />
             Kirim

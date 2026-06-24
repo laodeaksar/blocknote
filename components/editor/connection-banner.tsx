@@ -24,36 +24,33 @@ export function ConnectionBanner({
 
   if (syncError || isReconnecting) {
     return (
-      <Alert variant="destructive" className="mb-3 py-2.5">
+      <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mb-3 py-2.5">
         {syncError ? (
-          <AlertCircle className="size-4 shrink-0" />
+          <AlertCircle />
         ) : (
-          <WifiOff className="size-4 shrink-0" />
+          <WifiOff />
         )}
-        <div className="flex flex-1 items-start justify-between gap-3">
-          <div className="min-w-0">
-            <AlertTitle>
-              {syncError
-                ? "Gagal menyinkronkan perubahan."
-                : "Koneksi terputus. Mencoba menghubungkan kembali…"}
-            </AlertTitle>
-            {syncError?.message && (
-              <AlertDescription className="text-destructive/75 truncate">
-                {syncError.message}
-              </AlertDescription>
-            )}
-          </div>
+        <AlertTitle>
+          {syncError
+            ? "Gagal menyinkronkan perubahan."
+            : "Koneksi terputus. Mencoba menghubungkan kembali…"
+          }
+        </AlertTitle>
+        {syncError?.message && (
+          <AlertDescription>
+            {syncError.message}
+          </AlertDescription>
+        )}
+        <AlertAction>
           <Button
             onClick={onRetry}
             disabled={isRetrying}
-            size="sm"
-            variant="ghost"
-            className="bg-destructive/10 hover:bg-destructive/20 text-destructive"
+            size="xs"
           >
             <RefreshCw className={isRetrying ? "animate-spin" : ""} />
             {isRetrying ? "Memuat ulang…" : "Coba lagi"}
           </Button>
-        </div>
+        </AlertAction>
       </Alert>
     );
   }
