@@ -7,7 +7,7 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare, Undo2, Redo2 } from "lucide-react";
+import { MoreHorizontal, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useSidebar } from "@/lib/sidebar-context";
 import { useEditorContext } from "@/lib/editor-context";
@@ -199,42 +199,6 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
         )}
 
         <div className="flex items-center gap-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Undo"
-                  disabled={!editor?.can().undo()}
-                  onClick={() => editor?.chain().focus().undo().run()}
-                />
-              }>
-                <Undo2 className="size-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Undo <Kbd>Ctrl+Z</Kbd></TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Redo"
-                  disabled={!editor?.can().redo()}
-                  onClick={() => editor?.chain().focus().redo().run()}
-                />
-              }>
-                <Redo2 className="size-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Redo <Kbd>Ctrl+Y</Kbd></TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <div className="mx-0.5 h-4 w-px bg-border" />
-
           <Popover open={showPublish} onOpenChange={setShowPublish}>
             <PopoverTrigger
             render={
@@ -277,15 +241,6 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
               </Tooltip>
             </TooltipProvider>
           )}
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Favorite" />}>
-                <Star className="size-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Favorite</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
           <TooltipProvider>
             <Tooltip>
