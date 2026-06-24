@@ -2,6 +2,7 @@ import { EditorWrapper } from "@/components/editor-wrapper";
 import type { Id } from "@/convex/_generated/dataModel";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -19,9 +20,9 @@ export default async function PublicPage({ params }: Props) {
         </div>
         <Link
           href="/sign-in"
-          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-accent"
+          className={buttonVariants({ variant: "link", size: "xs" })}
         >
-          <ExternalLink className="w-3 h-3" />
+          <ExternalLink data-icon="inline-start" />
           Open in app
         </Link>
       </header>

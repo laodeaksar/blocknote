@@ -499,7 +499,7 @@ function ThreadItem({
                     Ctrl+Enter
                   </InputGroupText>
                   <InputGroupButton
-                    size="icon-xs"
+                    size="xs"
                     disabled={!replyText.trim() || sending}
                     onClick={handleReply}
                     className="gap-1 px-2"

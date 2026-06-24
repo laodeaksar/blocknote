@@ -53,7 +53,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Teks Dasar",
     title: "Teks",
     description: "Paragraf teks biasa",
-    icon: <Type className="size-4" />,
+    icon: <Type />,
     command: (editor) =>
       editor.chain().focus().setParagraph().run(),
   },
@@ -61,7 +61,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Teks Dasar",
     title: "Heading 1",
     description: "Judul besar",
-    icon: <Heading1 className="size-4" />,
+    icon: <Heading1 />,
     command: (editor) =>
       editor.chain().focus().toggleHeading({ level: 1 }).run(),
   },
@@ -69,7 +69,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Teks Dasar",
     title: "Heading 2",
     description: "Judul medium",
-    icon: <Heading2 className="size-4" />,
+    icon: <Heading2 />,
     command: (editor) =>
       editor.chain().focus().toggleHeading({ level: 2 }).run(),
   },
@@ -77,7 +77,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Teks Dasar",
     title: "Heading 3",
     description: "Judul kecil",
-    icon: <Heading3 className="size-4" />,
+    icon: <Heading3 />,
     command: (editor) =>
       editor.chain().focus().toggleHeading({ level: 3 }).run(),
   },
@@ -85,7 +85,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "List",
     title: "Bullet List",
     description: "Daftar tidak berurutan",
-    icon: <List className="size-4" />,
+    icon: <List />,
     command: (editor) =>
       editor.chain().focus().toggleBulletList().run(),
   },
@@ -93,7 +93,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "List",
     title: "Numbered List",
     description: "Daftar berurutan",
-    icon: <ListOrdered className="size-4" />,
+    icon: <ListOrdered />,
     command: (editor) =>
       editor.chain().focus().toggleOrderedList().run(),
   },
@@ -101,7 +101,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "List",
     title: "Task List",
     description: "Daftar tugas dengan centang",
-    icon: <CheckSquare className="size-4" />,
+    icon: <CheckSquare />,
     command: (editor) =>
       editor.chain().focus().toggleTaskList().run(),
   },
@@ -109,7 +109,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Blok",
     title: "Kutipan",
     description: "Blok kutipan teks",
-    icon: <Quote className="size-4" />,
+    icon: <Quote />,
     command: (editor) =>
       editor.chain().focus().toggleBlockquote().run(),
   },
@@ -117,7 +117,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Blok",
     title: "Kode",
     description: "Blok kode dengan syntax",
-    icon: <Code className="size-4" />,
+    icon: <Code />,
     command: (editor) =>
       editor.chain().focus().toggleCodeBlock().run(),
   },
@@ -125,7 +125,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Blok",
     title: "Pemisah",
     description: "Garis horizontal pemisah",
-    icon: <Minus className="size-4" />,
+    icon: <Minus />,
     command: (editor) =>
       editor.chain().focus().setHorizontalRule().run(),
   },
@@ -133,7 +133,7 @@ export const SLASH_ITEMS: SlashMenuItem[] = [
     group: "Media",
     title: "Upload Gambar",
     description: "Unggah gambar dari perangkat",
-    icon: <Image className="size-4" />,
+    icon: <Image />,
     command: (editor) => {
       editor.commands.uploadImage();
     },
@@ -242,7 +242,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                             command(item);
                           }}
                         >
-                          <ItemMedia className="size-7 shrink-0 rounded-md border border-border bg-muted text-muted-foreground">
+                          <ItemMedia className="size-7 rounded-md border border-border bg-muted text-muted-foreground">
                             {item.icon}
                           </ItemMedia>
                           <ItemContent>
