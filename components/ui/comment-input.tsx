@@ -19,6 +19,7 @@ interface CommentInputProps {
   onCancel?: () => void;
   placeholder?: string;
   disabled?: boolean;
+  autoFocus?: boolean;
   rows?: number;
   className?: string;
   textareaClassName?: string;
@@ -32,6 +33,7 @@ export function CommentInput({
   onCancel,
   placeholder = "Tulis komentar…",
   disabled = false,
+  autoFocus = false,
   rows = 3,
   className,
   textareaClassName,
@@ -55,6 +57,7 @@ export function CommentInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
+        autoFocus={autoFocus}
         className={cn("text-sm py-2 px-3", textareaClassName)}
         onKeyDown={handleKeyDown}
       />

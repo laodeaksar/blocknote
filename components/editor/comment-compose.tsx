@@ -133,6 +133,7 @@ export function CommentCompose({
           onCancel={onClose}
           placeholder="Tulis komentar…"
           disabled={isPending}
+          autoFocus
           rows={3}
           textareaClassName="min-h-18 py-2.5"
           textareaRef={textareaRef}
