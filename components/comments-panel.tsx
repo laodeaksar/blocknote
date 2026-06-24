@@ -390,9 +390,9 @@ function ThreadItem({
                   }}
                 >
                   {resolved ? (
-                    <CheckCircle2 className="size-3.5 text-success hover:text-success/80 transition-colors" />
+                    <CheckCircle2 className="text-success hover:text-success/80 transition-colors" />
                   ) : (
-                    <Circle className="size-3.5 text-primary/50 hover:text-primary transition-colors" />
+                    <Circle className="text-primary/50 hover:text-primary transition-colors" />
                   )}
                 </Button>
 
@@ -433,12 +433,12 @@ function ThreadItem({
                       {resolved && (
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="xs"
                           className="h-5 px-1.5 text-[10px] ml-auto" 
                           disabled={unresolving}
                           onClick={(e) => { e.stopPropagation(); unresolve({ threadId }); }}
                         >
-                          <RotateCcw className="size-2.5 mr-0.5" />
+                          <RotateCcw data-icon="inline-start" />
                           Buka
                         </Button>
                       )}
@@ -504,7 +504,7 @@ function ThreadItem({
                     onClick={handleReply}
                     className="gap-1 px-2"
                   >
-                    <Send className="size-3" />
+                    <Send />
                     </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>
@@ -557,7 +557,7 @@ function CommentRow({
           onClick={onDelete}
           className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive mt-0.5"
         >
-          <Trash2 className="size-3" />
+          <Trash2 />
         </Button>
       )}
     </div>

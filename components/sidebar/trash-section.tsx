@@ -70,7 +70,7 @@ export function TrashSection({
                     onClick={(e) => onRestore(e, page._id)}
                     title="Restore"
                   >
-                    <RotateCcw className={cn(compact ? "size-3.5" : "size-3")} />
+                    <RotateCcw />
                   </Button>
                   <Button
                     variant="ghost"
@@ -79,7 +79,7 @@ export function TrashSection({
                     title="Delete permanently"
                     className="hover:text-destructive hover:bg-destructive/10"
                   >
-                    <Trash2 className={cn(compact ? "size-3.5" : "size-3")} />
+                    <Trash />
                   </Button>
                 </div>
               </div>

@@ -124,11 +124,11 @@ export function CommentCompose({
           <span className="text-xs font-medium text-foreground">Komentar baru</span>
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon-xs"
             onClick={onClose}
             className="ml-auto"
           >
-            <X className="size-3.5" />
+            <X />
           </Button>
         </div>
 
@@ -160,20 +160,19 @@ export function CommentCompose({
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
+                size="xs"
                 onClick={onClose}
                 disabled={isPending}
               >
                 Batal
               </Button>
               <InputGroupButton
-                size="sm"
-                variant="default"
+                size="xs"
                 disabled={!text.trim() || isPending}
                 onClick={handleSubmit}
                 className="gap-1"
               >
-                <Send className="size-3.5" />
+                <Send data-icon="inline-start" />
                 Kirim
               </InputGroupButton>
             </div>

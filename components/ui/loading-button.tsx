@@ -33,12 +33,7 @@ function LoadingButton({
       {...props}
     >
       {isPending && (
-        <Spinner
-          className={cn(
-            "shrink-0",
-            size === "xs" ? "size-3" : size === "sm" ? "size-3.5" : "size-4",
-          )}
-        />
+        <Spinner data-icon="inline-start" />
       )}
       {isPending && loadingText !== undefined ? loadingText : children}
     </Button>

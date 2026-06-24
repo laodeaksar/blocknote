@@ -7,7 +7,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 
 interface PublishPopoverProps {
@@ -99,9 +99,9 @@ export function PublishPopover({
               title="Copy link"
             >
               {copied ? (
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                <Check className=" text-emerald-500" />
               ) : (
-                <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                <Copy className="text-muted-foreground" />
               )}
             </Button>
           </div>
@@ -110,9 +110,8 @@ export function PublishPopover({
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ExternalLink className="w-3 h-3" />
+            className={buttonVariants({ variant="link", size="xs"})} >
+            <ExternalLink data-icon="inline-start" />
             Open public page
           </a>
         </div>

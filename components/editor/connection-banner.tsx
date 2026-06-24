@@ -61,7 +61,7 @@ export function ConnectionBanner({
   if (isDisconnected) {
     return (
       <div className="mb-3 flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm bg-muted border-border text-muted-foreground">
-        <Spinner className="size-4" />
+        <Spinner className="size-4" data-icon="inline-start" />
         Menghubungkan ke server…
       </div>
     );

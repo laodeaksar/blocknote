@@ -13,7 +13,7 @@ export function ToolbarButton({ children, active, onClick, title }: ToolbarButto
   return (
     <Button
       variant="ghost"
-      size="icon-sm"
+      size="icon-xs"
       title={title}
       onMouseDown={(e) => {
         e.preventDefault();

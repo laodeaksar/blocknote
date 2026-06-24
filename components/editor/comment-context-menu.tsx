@@ -100,7 +100,7 @@ export function CommentContextMenu({
       >
         {/* Label */}
         <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 select-none">
-          Komentar
+          Komentar 
         </div>
 
         <Button
@@ -110,7 +110,7 @@ export function CommentContextMenu({
           onClick={() => resolveThread({ threadId: threadId as Id<"threads"> })}
           disabled={isPending}
         >
-          <CheckCircle2 className="size-4" />
+          <CheckCircle2 data-icon="inline-start" />
           Tandai selesai
         </Button>
 
@@ -120,7 +120,7 @@ export function CommentContextMenu({
           className="w-full"
           onClick={() => { onViewComments(threadId); onClose(); }}
         >
-          <MessageSquare className="size-4" />
+          <MessageSquare data-icon="inline-start" />
           Lihat komentar
         </Button>
 
@@ -128,10 +128,11 @@ export function CommentContextMenu({
 
         <Button
           variant="ghost"
+          size="sm"
           className="w-full"
           onClick={() => { removeCommentMark(editor, threadId); onClose(); }}
         >
-          <Highlighter className="size-4" />
+          <Highlighter />
         </Button>
       </div>
     </FloatingPortal>

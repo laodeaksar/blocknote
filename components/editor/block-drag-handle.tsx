@@ -281,16 +281,16 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
 
       <DropdownMenuContent side="right" align="start" sideOffset={4} className="w-52">
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="text-[10px] uppercase tracking-wider">
+          <DropdownMenuLabel className="text-[10px] uppercase tracking-wide">
             Blok
           </DropdownMenuLabel>
 
           <DropdownMenuItem onSelect={handleInsertAbove}>
-            <ArrowUp />
+            <ArrowUp data-icon="inline-start" />
             Sisipkan di atas
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleInsertBelow}>
-            <ArrowDown />
+            <ArrowDown data-icon="inline-start" />
             Sisipkan di bawah
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -299,11 +299,11 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
 
         <DropdownMenuGroup>
           <DropdownMenuItem onSelect={handleMoveUp}>
-            <ArrowUp />
+            <ArrowUp data-icon="inline-start" />
             Pindah ke atas
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleMoveDown}>
-            <ArrowDown />
+            <ArrowDown data-icon="inline-start" />
             Pindah ke bawah
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -312,13 +312,13 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
 
         <DropdownMenuGroup>
           <DropdownMenuItem onSelect={handleDuplicate}>
-            <Copy />
+            <Copy data-icon="inline-start" />
             Duplikat
           </DropdownMenuItem>
 
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <Type />
+              <Type data-icon="inline-start" />
               Ubah jadi
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -341,7 +341,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem variant="destructive" onSelect={handleDelete}>
-          <Trash2 />
+          <Trash2 data-icon="inline-start" />
           Hapus blok
         </DropdownMenuItem>
       </DropdownMenuContent>

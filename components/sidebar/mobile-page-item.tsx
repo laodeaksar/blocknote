@@ -136,7 +136,7 @@ export function MobilePageItem({
         title="Move to trash"
         className="hover:text-destructive hover:bg-destructive/10"
       >
-        <Trash2 className="w-3.5 h-3.5" />
+        <Trash2 />
       </Button>
     </div>
     </div>

@@ -26,9 +26,9 @@ function parseWidthFromStyle(style: string | null): number | null {
 }
 
 const ALIGN_BUTTONS: { value: ImageAlign; icon: React.ReactNode; label: string }[] = [
-  { value: "left", icon: <AlignStartVertical className="size-3.5" />, label: "Rata kiri" },
-  { value: "center", icon: <AlignCenterVertical className="size-3.5" />, label: "Rata tengah" },
-  { value: "right", icon: <AlignEndVertical className="size-3.5" />, label: "Rata kanan" },
+  { value: "left", icon: <AlignStartVertical />, label: "Rata kiri" },
+  { value: "center", icon: <AlignCenterVertical />, label: "Rata tengah" },
+  { value: "right", icon: <AlignEndVertical />, label: "Rata kanan" },
 ];
 
 export function ImageNodeView({
@@ -129,7 +129,8 @@ export function ImageNodeView({
             {ALIGN_BUTTONS.map(({ value, icon, label }) => (
               <Button
                 key={value}
-                type="button"
+                variant="ghost"
+                size="icon-xs"
                 title={label}
                 onMouseDown={(e) => {
                   e.preventDefault();
@@ -148,7 +149,7 @@ export function ImageNodeView({
 
             <Button
               variant="ghost"
-              size="icon-sm"
+              size="icon-xs"
               title="Lebar penuh"
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -159,14 +160,14 @@ export function ImageNodeView({
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }
             >
-              <Maximize2 className="size-3.5" />
+              <Maximize2 />
             </Button>
 
       <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
               variant="ghost"
-              size="icon-sm"
+              size="icon-xs"
               title="Hapus gambar"
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -174,7 +175,7 @@ export function ImageNodeView({
               }}
               className="hover:bg-destructive hover:text-destructive-foreground"
             >
-              <Trash2 className="size-3.5" />
+              <Trash2 />
             </Button>
           </div>
         )}

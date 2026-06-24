@@ -152,7 +152,7 @@ export function PageItem({
           className="opacity-0 group-hover:opacity-100"
           title="Move to trash"
         >
-          <Trash2 className="w-3 h-3" />
+          <Trash2 />
         </Button>
       )}
     </div>

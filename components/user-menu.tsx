@@ -72,7 +72,7 @@ export function UserMenu() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-            <Settings className="size-4" />
+            <Settings className="size-4" data-icon="inline-start" />
             Profile settings
           </DropdownMenuItem>
 
@@ -82,7 +82,7 @@ export function UserMenu() {
             className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
             onClick={handleSignOut}
           >
-            <LogOut className="size-4" />
+            <LogOut className="size-4" data-icon="inline-start" />
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -175,7 +175,7 @@ export function SidebarContent({
               onClick={onCollapse}
               title="Collapse sidebar"
             >
-              <X className="size-3.5" />
+              <X />
             </Button>
           )}
           <UserMenu />
@@ -277,7 +277,7 @@ export function SidebarContent({
           onClick={handleCreate}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
-          <Plus className="size-4" />
+          <Plus data-icon="inline-start" />
           New page
         </Button>
       </div>

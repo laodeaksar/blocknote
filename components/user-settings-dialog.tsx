@@ -157,7 +157,7 @@ export function UserSettingsDialog({ open, onClose }: Props) {
             onClick={handleRemovePhoto}
             className="text-[11px] hover:text-destructive transition-colors"
           >
-            <X className="size-3" />
+            <X data-icon="inline-start"/>
             Hapus foto
           </Button>
         )}

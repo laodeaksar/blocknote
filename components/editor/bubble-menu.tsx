@@ -73,7 +73,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("bold")}
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
-        <Bold className="size-3.5" />
+        <Bold />
       </ToolbarButton>
 
       <ToolbarButton
@@ -81,7 +81,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("italic")}
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
-        <Italic className="size-3.5" />
+        <Italic />
       </ToolbarButton>
 
       <ToolbarButton
@@ -89,7 +89,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("underline")}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
       >
-        <Underline className="size-3.5" />
+        <Underline />
       </ToolbarButton>
 
       <ToolbarButton
@@ -97,7 +97,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("strike")}
         onClick={() => editor.chain().focus().toggleStrike().run()}
       >
-        <Strikethrough className="size-3.5" />
+        <Strikethrough />
       </ToolbarButton>
 
       <ToolbarButton
@@ -105,7 +105,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("code")}
         onClick={() => editor.chain().focus().toggleCode().run()}
       >
-        <Code className="size-3.5" />
+        <Code />
       </ToolbarButton>
 
       <Separator orientation="vertical" />
@@ -115,7 +115,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive("link")}
         onClick={handleLink}
       >
-        <Link className="size-3.5" />
+        <Link />
       </ToolbarButton>
 
       <Separator orientation="vertical" />
@@ -125,7 +125,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive({ textAlign: "left" })}
         onClick={() => editor.chain().focus().setTextAlign("left").run()}
       >
-        <AlignLeft className="size-3.5" />
+        <AlignLeft />
       </ToolbarButton>
 
       <ToolbarButton
@@ -133,7 +133,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive({ textAlign: "center" })}
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
       >
-        <AlignCenter className="size-3.5" />
+        <AlignCenter />
       </ToolbarButton>
 
       <ToolbarButton
@@ -141,7 +141,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         active={editor.isActive({ textAlign: "right" })}
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
       >
-        <AlignRight className="size-3.5" />
+        <AlignRight />
       </ToolbarButton>
 
       {onComment && (
@@ -152,7 +152,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
             active={false}
             onClick={handleComment}
           >
-            <MessageSquare className="size-3.5" />
+            <MessageSquare />
           </ToolbarButton>
         </>
       )}

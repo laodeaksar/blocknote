@@ -253,7 +253,7 @@ export function MobileSidebar() {
               onClick={() => setOpen(false)}
               aria-label="Tutup menu"
             >
-              <X className="size-4" />
+              <X />
             </Button>
           </div>
         </div>
@@ -308,7 +308,7 @@ export function MobileSidebar() {
             onClick={handleCreate}
             className="w-full justify-start gap-2"
           >
-            <Plus className="size-4" />
+            <Plus data-icon="inline-start" />
             New Page
           </Button>
           <TrashSection
