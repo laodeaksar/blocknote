@@ -79,7 +79,7 @@ export function TrashSection({
                     title="Delete permanently"
                     className="hover:text-destructive hover:bg-destructive/10"
                   >
-                    <Trash />
+                    <Trash2 />
                   </Button>
                 </div>
               </div>
