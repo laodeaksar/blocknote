@@ -5,10 +5,11 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useConvexConnectionState } from "convex/react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Spinner } from "@/components/ui/spinner";
 import { ConnectionBanner } from "./connection-banner";
+import { toast } from "sonner";
 import { EditorInner } from "./editor-inner";
 
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
@@ -47,11 +48,17 @@ export function Editor({ pageId, editable = true, onCommentsOpen }: EditorProps)
   const isDisconnected = !connectionState.isWebSocketConnected;
   const isReconnecting = isDisconnected && connectionState.hasEverConnected;
 
+  const wasDisconnected = useRef(false);
+
   useEffect(() => {
-    if (connectionState.isWebSocketConnected && syncError) {
-      setSyncError(null);
+    if (connectionState.isWebSocketConnected) {
+      if (syncError) setSyncError(null);
+      if (wasDisconnected.current) {
+        toast.success("Koneksi pulih. Dokumen tersinkronkan kembali.");
+      }
     }
-  }, [connectionState.isWebSocketConnected, syncError]);
+    wasDisconnected.current = isDisconnected;
+  }, [connectionState.isWebSocketConnected, isDisconnected, syncError]);
 
   useEffect(() => {
     if (!sync.isLoading && sync.initialContent === null) {
