@@ -5,10 +5,16 @@ import { useConvex } from "convex/react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
+import { Globe, Lock, IconCopy, IconCheck, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 
 interface PublishPopoverProps {
   pageId: Id<"pages">;
@@ -88,29 +94,25 @@ export function PublishPopover({
 
       {isPublished && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2 p-2 bg-muted rounded-lg border border-border">
-            <span className="text-xs text-muted-foreground truncate flex-1 font-mono">
-              {publicUrl}
-            </span>
-            <Button
-              onClick={handleCopy}
-              variant="ghost"
-              size="icon-xs"
-              title="Copy link"
-            >
-              {copied ? (
-                <Check className=" text-emerald-500" />
-              ) : (
-                <Copy className="text-muted-foreground" />
-              )}
-            </Button>
-          </div>
+                <InputGroup>
+        <InputGroupInput placeholder={publicUrl} readOnly />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton
+            aria-label="Copy link"
+            title="Copy link"
+            size="icon-xs"
+            onClick={handleCopy}
+          >
+            {copied ? <IconCheck /> : <IconCopy />}
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
           <a
             href={publicUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className={buttonVariants({ variant:"link", size:"xs"})} >
+            className={buttonVariants({ variant:"link", size:"xs"})} >(())
             <ExternalLink data-icon="inline-start" />
             Open public page
           </a>

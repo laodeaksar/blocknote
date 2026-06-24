@@ -7,7 +7,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useConvexConnectionState } from "convex/react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { authClient } from "@/lib/auth-client";
-import { Spinner } from "@/components/ui/spinner";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { ConnectionBanner } from "./connection-banner";
 import { toast } from "sonner";
 import { EditorInner } from "./editor-inner";
@@ -86,9 +86,7 @@ export function Editor({ pageId, editable = true, onCommentsOpen }: EditorProps)
     return (
       <div className="relative">
         {banners}
-        <div className="flex items-center justify-center py-12">
-          <Spinner className="size-5" />
-        </div>
+        <LoadingScreen />
       </div>
     );
   }

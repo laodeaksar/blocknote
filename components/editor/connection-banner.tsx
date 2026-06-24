@@ -48,9 +48,9 @@ export function ConnectionBanner({
             disabled={isRetrying}
             size="sm"
             variant="ghost"
-            className="shrink-0 bg-destructive/10 hover:bg-destructive/20 text-destructive"
+            className="bg-destructive/10 hover:bg-destructive/20 text-destructive"
           >
-            <RefreshCw className={`w-3 h-3 ${isRetrying ? "animate-spin" : ""}`} />
+            <RefreshCw className={isRetrying ? "animate-spin" : ""} />
             {isRetrying ? "Memuat ulang…" : "Coba lagi"}
           </Button>
         </div>

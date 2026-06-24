@@ -504,8 +504,9 @@ function ThreadItem({
                     onClick={handleReply}
                     className="gap-1 px-2"
                   >
-                    <Send />
-                    </InputGroupButton>
+                    <Send data - icon = "inline-start" / >
+                      Kirim
+                      </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>
             </div>
@@ -551,11 +552,11 @@ function CommentRow({
       </div>
       {isOwn && (
         <Button
-          variant="ghost"
+          variant="destructive"
           size="icon-xs"
           title={isOnly ? "Hapus thread" : "Hapus komentar"}
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive mt-0.5"
+          className="opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
         >
           <Trash2 />
         </Button>
