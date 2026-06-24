@@ -231,7 +231,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                 }>
                   <MessageSquare className={cn("size-4", commentsOpen ? "text-foreground" : "text-muted-foreground")} />
                   {activeThreadCount > 0 && (
-                    <Badge size="label" className="pointer-events-none absolute -top-0.5 -right-0.5 bg-warning text-white ring-1 ring-background">
+                    <Badge size="count" className="pointer-events-none absolute -top-0.5 -right-0.5 bg-warning text-white ring-1 ring-background">
                       {activeThreadCount > 99 ? "99+" : activeThreadCount}
                     </Badge>
                   )}
