@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Trash2, RotateCcw, ChevronDown } from "lucide-react";
+import { FileText, Trash2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { Accordion, AccordionItem, AccordionContent } from "@/components/ui/accordion";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +25,8 @@ export function TrashSection({
         <AccordionPrimitive.Header className="flex">
           <AccordionPrimitive.Trigger
             className={cn(
-              "rounded-md px-2 py-1.5 hover:bg-accent outline-none",
-              compact ? "h-8 py-1 **:data-[slot=accordion-trigger-icon]:size-3.5" : "**:data-[slot=accordion-trigger-icon]:size-4"
+              "group/trash-trigger flex w-full items-center justify-between rounded-md px-2 py-1.5 hover:bg-accent outline-none",
+              compact ? "h-8 py-1" : ""
             )}
           >
             <span className="flex items-center gap-2">
@@ -38,6 +38,20 @@ export function TrashSection({
                 </Badge>
               )}
             </span>
+            <ChevronDown
+              data-slot="accordion-trigger-icon"
+              className={cn(
+                "pointer-events-none shrink-0 text-muted-foreground group-aria-expanded/trash-trigger:hidden",
+                compact ? "size-3.5" : "size-4"
+              )}
+            />
+            <ChevronUp
+              data-slot="accordion-trigger-icon"
+              className={cn(
+                "pointer-events-none hidden shrink-0 text-muted-foreground group-aria-expanded/trash-trigger:inline",
+                compact ? "size-3.5" : "size-4"
+              )}
+            />
           </AccordionPrimitive.Trigger>
         </AccordionPrimitive.Header>
 
