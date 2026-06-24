@@ -65,24 +65,23 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  clearable = false,
   value: valueProp,
   onValueChange,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+  clearable?: boolean
+}) {
   const [internalValue, setInternalValue] = React.useState(
     (valueProp as string) ?? ""
   )
   const isControlled = valueProp !== undefined
   const currentValue = isControlled ? (valueProp as string) : internalValue
-  const hasValue = currentValue.length > 0
+  const showClear = clearable && currentValue.length > 0
 
   const handleValueChange = (val: string) => {
     if (!isControlled) setInternalValue(val)
     onValueChange?.(val)
-  }
-
-  const handleClear = () => {
-    handleValueChange("")
   }
 
   return (
@@ -99,10 +98,10 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          {hasValue ? (
+          {showClear ? (
             <button
               type="button"
-              onClick={handleClear}
+              onClick={() => handleValueChange("")}
               className="size-4 shrink-0 flex items-center justify-center rounded-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
               aria-label="Hapus pencarian"
             >

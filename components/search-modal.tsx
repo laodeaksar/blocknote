@@ -49,7 +49,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       title="Cari halaman"
       description="Ketik untuk mencari halaman"
     >
-      <CommandInput placeholder="Cari halaman..." />
+      <CommandInput placeholder="Cari halaman..." clearable />
       <CommandList>
         <CommandEmpty>Tidak ada hasil ditemukan.</CommandEmpty>
         <CommandGroup heading="Halaman">
