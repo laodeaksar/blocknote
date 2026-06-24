@@ -1,6 +1,6 @@
 # Tailwind v4 Migration Rules — Wajib Diikuti
 
-> Generated dari audit codebase. 7 aturan wajib untuk konsistensi Tailwind CSS v4 di project ini.
+> Generated dari audit codebase. 8 aturan wajib untuk konsistensi Tailwind CSS v4 di project ini.
 
 ---
 
@@ -186,16 +186,71 @@ mark.comment-highlight {
 
 ---
 
+## Rule 8 — Jangan Campur Tailwind Transform Utility + Inline `style={{ transform }}`
+
+**Aturan:** Jika sebuah elemen sudah punya inline `style={{ transform: '...' }}`, **jangan** tambahkan Tailwind `translate-*`, `rotate-*`, atau `scale-*` di `className`. Pilih salah satu jalur saja.
+
+**Why:** Di Tailwind **v3**, `translate-*` menghasilkan property `transform: translateX(...)` — sehingga inline style akan menimpanya dan hanya satu yang aktif. Di Tailwind **v4**, utility ini berubah menjadi CSS *individual transform property* terpisah:
+
+| Utility | v3 output | v4 output |
+|---------|-----------|-----------|
+| `-translate-x-1/2` | `transform: translateX(-50%)` | `translate: -50% 0` |
+| `rotate-45` | `transform: rotate(45deg)` | `rotate: 45deg` |
+| `scale-95` | `transform: scale(0.95)` | `scale: 0.95` |
+
+Karena `translate` dan `transform` adalah **CSS property berbeda**, keduanya aktif bersamaan. Contoh nyata yang sudah terjadi di project ini:
+
+```tsx
+/* ❌ SALAH — double-transform: offset = -50% - 50% = -100% → lari ke kiri */
+<div
+  className="left-1/2 -translate-x-1/2"
+  style={{ transform: `translateX(-50%) scale(${open ? 0.92 : 1})` }}
+/>
+
+/* ✅ BENAR — hapus class, biarkan inline style saja yang handle */
+<div
+  className="left-1/2"
+  style={{ transform: `translateX(-50%) scale(${open ? 0.92 : 1})` }}
+/>
+
+/* ✅ BENAR — atau pakai class saja tanpa inline style (untuk animasi statik) */
+<div className="left-1/2 -translate-x-1/2" />
+```
+
+**How to apply:**
+- Elemen dengan animasi JS (scale, spring, drag offset) → gunakan **inline style saja**, hapus Tailwind transform class.
+- Elemen statis tanpa animasi JS → gunakan **Tailwind class saja**, tidak perlu inline style.
+- Sebelum menambah `translate-*` ke elemen yang sudah ada `style={{ transform }}`, periksa dulu apakah inline style sudah ada.
+
+---
+
 ## Referensi Cepat — Token @theme yang Sudah Ada
 
 | Kategori | Token | Tailwind Class |
 |----------|-------|----------------|
-| Warna UI | `--color-background` ... `--color-ring` | `bg-background`, `text-foreground`, dll |
-| Sidebar | `--color-sidebar` ... `--color-sidebar-ring` | `bg-sidebar`, `text-sidebar-foreground`, dll |
-| Charts | `--color-chart-1` ... `--color-chart-5` | `bg-chart-1`, `text-chart-2`, dll |
+| Warna UI | `--color-background` … `--color-ring` | `bg-background`, `text-foreground`, dll |
+| Sidebar | `--color-sidebar` … `--color-sidebar-ring` | `bg-sidebar`, `text-sidebar-foreground`, dll |
+| Charts | `--color-chart-1` … `--color-chart-5` | `bg-chart-1`, `text-chart-2`, dll |
 | Radius | `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl` | `rounded-sm`, `rounded-md`, dll |
 | Animasi | `--animate-accordion-*`, `--animate-icon-spring-in`, `--animate-page-item-in` | `animate-accordion-down`, dll |
 | Easing | `--ease-spring`, `--ease-snap` | `ease-spring`, `ease-snap` |
-| **BELUM ADA** | `--font-sans`, `--font-mono` | Perlu ditambah |
-| **BELUM ADA** | `--text-xxs`, `--text-xs2`, `--text-badge` | Perlu ditambah |
-| **BELUM ADA** | `--color-comment-highlight`, `--color-selection-bg` | Perlu ditambah |
+| Font | `--font-sans`, `--font-mono` | `font-sans`, `font-mono` |
+| Tipografi kustom | `--text-xxs` (10px), `--text-xs2` (11px), `--text-badge` (9px) | `text-xxs`, `text-xs2`, `text-badge` |
+| Komentar | `--color-comment-highlight`, `--color-comment-highlight-hover`, `--color-comment-highlight-dk` | `bg-comment-highlight`, dll |
+| Seleksi tabel | `--color-selection-bg` | `bg-selection-bg` |
+
+## Rule Ringkas — Cara Deteksi Double-Transform
+
+Jalankan perintah ini sebelum PR review untuk cek konflik:
+
+```bash
+# Temukan elemen yang punya SEKALIGUS Tailwind translate/rotate/scale DAN inline style transform
+grep -rn "translate-x-\|translate-y-\|-rotate-\|scale-x-\|scale-y-" \
+  --include="*.tsx" components/ app/ | grep "className" \
+  > /tmp/tw-transforms.txt
+
+grep -rn "style={{" --include="*.tsx" components/ app/ \
+  | grep "transform" >> /tmp/tw-transforms.txt
+
+# File yang muncul di kedua hasil = kandidat konflik — periksa manual
+```
