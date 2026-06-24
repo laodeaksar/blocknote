@@ -65,14 +65,31 @@ function Item({
   );
 }
 
+const itemMediaVariants = cva(
+  "flex shrink-0 items-center justify-center [&_svg]:pointer-events-none",
+  {
+    variants: {
+      variant: {
+        default: "[&_svg]:size-4",
+        icon: "rounded-md [&_svg]:size-4",
+        image: "overflow-hidden rounded-md [&_img]:h-full [&_img]:w-full [&_img]:object-cover",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
 function ItemMedia({
   className,
+  variant,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & VariantProps<typeof itemMediaVariants>) {
   return (
     <div
       data-slot="item-media"
-      className={cn("flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:size-4", className)}
+      className={cn(itemMediaVariants({ variant }), className)}
       {...props}
     />
   );
