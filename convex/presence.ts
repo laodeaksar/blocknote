@@ -16,7 +16,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("presence")
-      .withIndex("by_page_session", (q) =>
+      .withIndex("by_page_session", (q: any) =>
         q.eq("pageId", args.pageId).eq("sessionId", args.sessionId)
       )
       .unique();
@@ -65,7 +65,7 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("presence")
-      .withIndex("by_page_session", (q) =>
+      .withIndex("by_page_session", (q: any) =>
         q.eq("pageId", args.pageId).eq("sessionId", args.sessionId)
       )
       .unique();

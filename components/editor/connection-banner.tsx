@@ -3,7 +3,7 @@
 import { AlertCircle, WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert";
 
 interface ConnectionBannerProps {
   syncError: Error | null;

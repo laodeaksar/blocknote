@@ -81,7 +81,7 @@ export function CommentCompose({
 
   const createThreadFn = useConvexMutation(api.comments.createThread);
   const { mutate: createThread, isPending } = useMutation({
-    mutationFn: createThreadFn,
+    mutationFn: (args: Parameters<typeof createThreadFn>[0]) => createThreadFn(args),
     onSuccess: (result) => {
       const threadId = (result as { id: string }).id;
       editor

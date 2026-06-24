@@ -71,19 +71,23 @@ export function ThreadItem({
   const deleteCommentFn = useConvexMutation(api.comments.deleteComment);
   const deleteThreadFn = useConvexMutation(api.comments.deleteThread);
 
-  const { mutate: resolve, isPending: resolving } = useMutation({ mutationFn: resolveThread });
-  const { mutate: unresolve, isPending: unresolving } = useMutation({ mutationFn: unresolveThread });
+  const { mutate: resolve, isPending: resolving } = useMutation({
+    mutationFn: (args: Parameters<typeof resolveThread>[0]) => resolveThread(args),
+  });
+  const { mutate: unresolve, isPending: unresolving } = useMutation({
+    mutationFn: (args: Parameters<typeof unresolveThread>[0]) => unresolveThread(args),
+  });
   const { mutate: addComment, isPending: sending } = useMutation({
-    mutationFn: addCommentFn,
+    mutationFn: (args: Parameters<typeof addCommentFn>[0]) => addCommentFn(args),
     onSuccess: () => setReplyText(""),
     onError: () => toast.error("Gagal mengirim balasan"),
   });
   const { mutate: deleteComment } = useMutation({
-    mutationFn: deleteCommentFn,
+    mutationFn: (args: Parameters<typeof deleteCommentFn>[0]) => deleteCommentFn(args),
     onError: () => toast.error("Gagal menghapus komentar"),
   });
   const { mutate: deleteThread } = useMutation({
-    mutationFn: deleteThreadFn,
+    mutationFn: (args: Parameters<typeof deleteThreadFn>[0]) => deleteThreadFn(args),
     onError: () => toast.error("Gagal menghapus thread"),
   });
 

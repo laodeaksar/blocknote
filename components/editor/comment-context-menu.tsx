@@ -79,7 +79,7 @@ export function CommentContextMenu({
 
   const resolveThreadFn = useConvexMutation(api.comments.resolveThread);
   const { mutate: resolveThread, isPending } = useMutation({
-    mutationFn: resolveThreadFn,
+    mutationFn: (args: Parameters<typeof resolveThreadFn>[0]) => resolveThreadFn(args),
     onSuccess: () => {
       removeCommentMark(editor, threadId);
       toast.success("Thread ditandai selesai");
