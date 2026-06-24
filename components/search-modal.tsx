@@ -69,7 +69,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                 {page.title || "Untitled"}
               </span>
               {page.isPublished && (
-                <Badge className="ml-auto text-xxs px-1.5 py-0 h-4 text-success bg-success-foreground">
+                <Badge size="label" className="ml-auto text-success bg-success-foreground">
                   publik
                 </Badge>
               )}
