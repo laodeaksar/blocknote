@@ -57,61 +57,64 @@
   --chart-5: oklch(0.769 0.188 70.08);
 }
 
-/* ── Dark mode — Notion-like palette ─────────────────────────────── */
-.dark {
-  --background:          #191919;
-  --foreground:          #e8e8e7;
+/* ── Dark mode — v4 pattern via @variant dark ─────────────────────── */
+@variant dark {
+  :root {
+    --background:          #191919;
+    --foreground:          #e8e8e7;
 
-  --card:                #1f1f1f;
-  --card-foreground:     #e8e8e7;
+    --card:                #1f1f1f;
+    --card-foreground:     #e8e8e7;
 
-  --popover:             #1f1f1f;
-  --popover-foreground:  #e8e8e7;
+    --popover:             #1f1f1f;
+    --popover-foreground:  #e8e8e7;
 
-  --primary:             #e8e8e7;
-  --primary-foreground:  #191919;
+    --primary:             #e8e8e7;
+    --primary-foreground:  #191919;
 
-  --secondary:           #2a2a2a;
-  --secondary-foreground:#9b9a97;
+    --secondary:           #2a2a2a;
+    --secondary-foreground:#9b9a97;
 
-  --muted:               #2a2a2a;
-  --muted-foreground:    #6b6b6b;
+    --muted:               #2a2a2a;
+    --muted-foreground:    #6b6b6b;
 
-  --accent:              #2e2e2e;
-  --accent-foreground:   #e8e8e7;
+    --accent:              #2e2e2e;
+    --accent-foreground:   #e8e8e7;
 
-  --destructive:         #e5534b;
-  --destructive-foreground: #ffffff;
+    --destructive:         #e5534b;
+    --destructive-foreground: #ffffff;
 
-  --success:             #22c55e;
-  --success-foreground:  #ffffff;
+    --success:             #22c55e;
+    --success-foreground:  #ffffff;
 
-  --warning:             #f59e0b;
-  --warning-foreground:  #ffffff;
+    --warning:             #f59e0b;
+    --warning-foreground:  #ffffff;
 
-  --border:              #2e2e2e;
-  --input:               #2e2e2e;
-  --ring:                #2383e2;
+    --border:              #2e2e2e;
+    --input:               #2e2e2e;
+    --ring:                #2383e2;
 
-  --sidebar:             #1f1f1f;
-  --sidebar-hover:       #2e2e2e;
-  --sidebar-foreground:  #e8e8e7;
-  --sidebar-primary:     #e8e8e7;
-  --sidebar-primary-foreground: #191919;
-  --sidebar-accent:      #2e2e2e;
-  --sidebar-accent-foreground: #e8e8e7;
-  --sidebar-border:      #2e2e2e;
-  --sidebar-ring:        #2383e2;
+    --sidebar:             #1f1f1f;
+    --sidebar-hover:       #2e2e2e;
+    --sidebar-foreground:  #e8e8e7;
+    --sidebar-primary:     #e8e8e7;
+    --sidebar-primary-foreground: #191919;
+    --sidebar-accent:      #2e2e2e;
+    --sidebar-accent-foreground: #e8e8e7;
+    --sidebar-border:      #2e2e2e;
+    --sidebar-ring:        #2383e2;
 
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+  }
 }
 
 /* ── Tailwind v4 theme mapping ────────────────────────────────────── */
 @theme inline {
+  /* ── Animations ─────────────────────────────────────────────────── */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up:   accordion-up   0.2s ease-out;
 
@@ -125,6 +128,18 @@
   /* Sidebar page list stagger */
   --animate-page-item-in: page-item-in 350ms var(--ease-spring) both;
 
+  /* ── Font families ───────────────────────────────────────────────── */
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Helvetica, "Apple Color Emoji", Arial, sans-serif,
+               "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ── Custom text sizes ───────────────────────────────────────────── */
+  --text-xxs:   0.625rem;    /* 10px — labels, timestamps, badges */
+  --text-xs2:   0.6875rem;   /* 11px — author names, hints        */
+  --text-badge: 0.5625rem;   /* 9px  — notification dot counters  */
+
+  /* ── Colors ──────────────────────────────────────────────────────── */
   --color-background:              var(--background);
   --color-foreground:              var(--foreground);
   --color-card:                    var(--card);
@@ -162,6 +177,18 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border:          var(--sidebar-border);
   --color-sidebar-ring:            var(--sidebar-ring);
+
+  /* ── Comment highlight tokens ────────────────────────────────────── */
+  --color-comment-highlight:       oklch(91% 0.12 84);
+  --color-comment-highlight-hover: oklch(84% 0.16 72);
+  --color-comment-highlight-dk:    oklch(42% 0.10 75 / 0.55);
+  --color-comment-highlight-dk-tx: oklch(90% 0.04 84);
+  --color-comment-highlight-dk-hv: oklch(50% 0.14 72 / 0.65);
+
+  /* ── Table selection token ───────────────────────────────────────── */
+  --color-selection-bg: color-mix(in oklch, var(--ring) 14%, transparent);
+
+  /* ── Radius ──────────────────────────────────────────────────────── */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -178,9 +205,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
-    "Segoe UI Symbol";
+  font-family: var(--font-sans);
   background-color: var(--color-background);
   color: var(--color-foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -270,7 +295,7 @@ body {
 .tiptap-content .ProseMirror code {
   background-color: var(--muted);
   color: var(--foreground);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.875em;
   padding: 0.1em 0.35em;
   border-radius: 0.25rem;
@@ -281,7 +306,7 @@ body {
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.6;
 }
@@ -373,7 +398,7 @@ body {
 }
 
 .tiptap-content .ProseMirror .selectedCell:after {
-  background: rgba(35, 131, 226, 0.14);
+  background: var(--color-selection-bg);
   content: "";
   left: 0;
   right: 0;
@@ -469,19 +494,21 @@ body {
 
 /* ── Comment highlight mark ─────────────────────────────────────── */
 mark.comment-highlight {
-  background-color: oklch(91% 0.12 84);   /* warm amber-yellow */
+  background-color: var(--color-comment-highlight);
   border-radius: 2px;
   padding: 1px 0;
   cursor: pointer;
   transition: background-color 150ms ease;
 }
 mark.comment-highlight:hover {
-  background-color: oklch(84% 0.16 72);
+  background-color: var(--color-comment-highlight-hover);
 }
-.dark mark.comment-highlight {
-  background-color: oklch(42% 0.10 75 / 0.55);
-  color: oklch(90% 0.04 84);
-}
-.dark mark.comment-highlight:hover {
-  background-color: oklch(50% 0.14 72 / 0.65);
+@variant dark {
+  mark.comment-highlight {
+    background-color: var(--color-comment-highlight-dk);
+    color: var(--color-comment-highlight-dk-tx);
+  }
+  mark.comment-highlight:hover {
+    background-color: var(--color-comment-highlight-dk-hv);
+  }
 }

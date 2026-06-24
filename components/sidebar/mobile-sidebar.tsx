@@ -210,7 +210,7 @@ export function MobileSidebar() {
       {/* Floating sheet */}
       <div
         className={cn(
-          "md:hidden fixed inset-x-3 bottom-[88px] z-50 flex flex-col",
+          "md:hidden fixed inset-x-3 bottom-22 z-50 flex flex-col",
           "bg-background rounded-2xl shadow-2xl border border-border/60",
           "max-h-[calc(100dvh-104px)]",
           open ? "translate-y-0" : "translate-y-[calc(100%+96px)]"
@@ -239,7 +239,7 @@ export function MobileSidebar() {
         <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
-              <span className="text-background text-[10px] font-bold">N</span>
+              <span className="text-background text-xxs font-bold">N</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
               Workspace

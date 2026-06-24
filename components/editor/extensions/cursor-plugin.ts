@@ -35,7 +35,7 @@ function createCursorWidget(cursor: RemoteCursor): HTMLElement {
     background: ${cursor.color};
     color: #fff;
     font-size: 11px;
-    font-family: sans-serif;
+    font-family: var(--font-sans);
     font-weight: 600;
     line-height: 1;
     padding: 2px 6px 3px;

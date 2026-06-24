@@ -14,7 +14,7 @@ export default async function PublicPage({ params }: Props) {
       <header className="sticky top-0 z-10 h-11 flex items-center justify-between px-4 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 bg-primary rounded flex items-center justify-center">
-            <span className="text-primary-foreground text-[10px] font-bold">N</span>
+            <span className="text-primary-foreground text-xxs font-bold">N</span>
           </div>
           <span className="text-xs text-muted-foreground">Public page</span>
         </div>

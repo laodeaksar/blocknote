@@ -99,7 +99,7 @@ export function CommentContextMenu({
         className="z-[9999] min-w-44 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 animate-in fade-in-0 zoom-in-95 duration-100"
       >
         {/* Label */}
-        <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 select-none">
+        <div className="px-2 py-1 text-xxs font-semibold uppercase tracking-wide text-muted-foreground/60 select-none">
           Komentar 
         </div>
 

@@ -164,7 +164,7 @@ function PanelBody({
 
       {resolved.length > 0 && (
         <div className="py-1">
-          <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide">
+          <div className="px-4 py-1.5 text-xxs font-semibold uppercase tracking-wide">
             Selesai ({resolved.length})
           </div>
           {resolved.map((thread) => (
@@ -239,7 +239,7 @@ export function CommentsPanel({
       <MessageSquare className="size-4 text-muted-foreground" />
       <span className="text-sm font-medium">Komentar</span>
       {active.length > 0 && (
-        <span className="text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
+        <span className="text-xxs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium leading-none">
           {active.length}
         </span>
       )}
@@ -404,10 +404,10 @@ function ThreadItem({
                       size="sm"
                       className="size-5"
                     />
-                    <span className="text-[11px] font-medium text-foreground truncate">
+                    <span className="text-xs2 font-medium text-foreground truncate">
                       {author?.username ?? "User"}
                     </span>
-                    <span className="text-[10px] text-muted-foreground shrink-0">
+                    <span className="text-xxs text-muted-foreground shrink-0">
                       · {formatTime(first?.createdAt ?? thread.createdAt)}
                     </span>
                     {!resolved && (
@@ -426,7 +426,7 @@ function ThreadItem({
                   {!expanded && (replies.length > 0 || resolved) && (
                     <div className="flex items-center gap-2 mt-1.5">
                       {replies.length > 0 && (
-                        <span className="text-[10px]">
+                        <span className="text-xxs">
                           {replies.length} balasan
                         </span>
                       )}
@@ -434,7 +434,7 @@ function ThreadItem({
                         <Button
                           variant="ghost"
                           size="xs"
-                          className="h-5 px-1.5 text-[10px] ml-auto" 
+                          className="h-5 px-1.5 text-xxs ml-auto" 
                           disabled={unresolving}
                           onClick={(e) => { e.stopPropagation(); unresolve({ threadId }); }}
                         >
@@ -483,7 +483,7 @@ function ThreadItem({
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Tulis balasan…"
                   rows={2}
-                  className="text-sm min-h-[52px] py-2 px-3"
+                  className="text-sm min-h-13 py-2 px-3"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                       e.preventDefault();
@@ -495,7 +495,7 @@ function ThreadItem({
                   align="block-end"
                   className="justify-between border-t border-border px-2 py-1"
                 >
-                  <InputGroupText className="text-[10px]">
+                  <InputGroupText className="text-xxs">
                     Ctrl+Enter
                   </InputGroupText>
                   <InputGroupButton
@@ -542,8 +542,8 @@ function CommentRow({
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-[11px] font-medium text-foreground">{author?.username ?? "User"}</span>
-          <span className="text-[10px]">{formatTime(comment.createdAt)}</span>
+          <span className="text-xs2 font-medium text-foreground">{author?.username ?? "User"}</span>
+          <span className="text-xxs">{formatTime(comment.createdAt)}</span>
         </div>
         <p className="text-sm text-foreground leading-snug mt-0.5">
           {text || <span className="italic text-muted-foreground text-xs">Komentar kosong</span>}

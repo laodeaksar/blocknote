@@ -219,7 +219,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
               return (
                 <div key={group}>
                   {gi > 0 && <ItemSeparator className="my-0.5" />}
-                  <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 select-none">
+                  <div className="px-2 py-1 text-xxs font-semibold uppercase tracking-wider text-muted-foreground/60 select-none">
                     {group}
                   </div>
                   <ItemGroup>
@@ -249,7 +249,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                             <ItemTitle className="text-xs font-medium">
                               {item.title}
                             </ItemTitle>
-                            <ItemDescription className="text-[10px] leading-tight">
+                            <ItemDescription className="text-xxs leading-tight">
                               {item.description}
                             </ItemDescription>
                           </ItemContent>

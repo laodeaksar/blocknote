@@ -140,7 +140,7 @@ export function CommentCompose({
             onChange={(e) => setText(e.target.value)}
             placeholder="Tulis komentar…"
             rows={3}
-            className="text-sm min-h-[72px] py-2.5 px-3"
+            className="text-sm min-h-18 py-2.5 px-3"
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
@@ -153,7 +153,7 @@ export function CommentCompose({
             align="block-end"
             className="justify-between border-t border-border px-2 py-1.5"
           >
-            <InputGroupText className="text-[10px] text-muted-foreground/60">
+            <InputGroupText className="text-xxs text-muted-foreground/60">
               Ctrl+Enter
             </InputGroupText>
             <div className="flex items-center gap-1">

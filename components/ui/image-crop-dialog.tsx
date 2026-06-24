@@ -150,7 +150,7 @@ export function ImageCropDialog({ src, onApply, onCancel }: Props) {
           />
 
           <div className="w-full flex items-center gap-3 px-1">
-            <span className="text-[10px] text-muted-foreground w-4 text-center">1×</span>
+            <span className="text-xxs text-muted-foreground w-4 text-center">1×</span>
             <input
               type="range"
               min={1}
@@ -160,10 +160,10 @@ export function ImageCropDialog({ src, onApply, onCancel }: Props) {
               onChange={(e) => updateState({ ...state, zoom: Number(e.target.value) })}
               className="flex-1 accent-foreground h-1"
             />
-            <span className="text-[10px] text-muted-foreground w-4 text-center">3×</span>
+            <span className="text-xxs text-muted-foreground w-4 text-center">3×</span>
           </div>
 
-          <p className="text-[11px] text-muted-foreground/70">
+          <p className="text-xs2 text-muted-foreground/70">
             Drag untuk reposisi · Scroll atau slider untuk zoom
           </p>
         </div>

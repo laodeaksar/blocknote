@@ -32,7 +32,7 @@ export function TrashSection({
               <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
               Trash
               {compact && (archivedPages?.length ?? 0) > 0 && (
-                <span className="text-[10px] bg-muted rounded-full px-1.5 py-0.5 font-medium">
+                <span className="text-xxs bg-muted rounded-full px-1.5 py-0.5 font-medium">
                   {archivedPages!.length}
                 </span>
               )}

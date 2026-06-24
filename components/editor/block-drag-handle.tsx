@@ -281,7 +281,7 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
 
       <DropdownMenuContent side="right" align="start" sideOffset={4} className="w-52">
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="text-[10px] uppercase tracking-wide">
+          <DropdownMenuLabel className="text-xxs uppercase tracking-wide">
             Blok
           </DropdownMenuLabel>
 
