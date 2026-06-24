@@ -33,7 +33,7 @@ export function TrashSection({
             <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
             Trash
             {compact && (archivedPages?.length ?? 0) > 0 && (
-              <Badge size="label">{archivedPages!.length}</Badge>
+              <Badge size="label" variant="secondary">{archivedPages!.length}</Badge>
             )}
           </span>
         </AccordionTrigger>
