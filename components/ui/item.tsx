@@ -3,6 +3,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
+type ItemSize = "default" | "sm" | "xs";
+
+const ItemContext = React.createContext<{ size: ItemSize }>({ size: "default" });
+
+function useItemSize() {
+  return React.useContext(ItemContext).size;
+}
+
 function ItemGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -57,11 +65,13 @@ function Item({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof itemVariants>) {
   return (
-    <div
-      data-slot="item"
-      className={cn(itemVariants({ variant, size, className }))}
-      {...props}
-    />
+    <ItemContext.Provider value={{ size: size ?? "default" }}>
+      <div
+        data-slot="item"
+        className={cn(itemVariants({ variant, size, className }))}
+        {...props}
+      />
+    </ItemContext.Provider>
   );
 }
 
@@ -75,13 +85,14 @@ const itemMediaVariants = cva(
         image: "overflow-hidden rounded-md [&_img]:h-full [&_img]:w-full [&_img]:object-cover",
       },
       size: {
+        default: "size-7",
         sm: "size-5",
-        md: "size-7",
-        lg: "size-9",
+        xs: "size-5",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 );
@@ -89,9 +100,11 @@ const itemMediaVariants = cva(
 function ItemMedia({
   className,
   variant,
-  size,
+  size: sizeProp,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof itemMediaVariants>) {
+  const contextSize = useItemSize();
+  const size = sizeProp ?? contextSize;
   return (
     <div
       data-slot="item-media"
@@ -111,24 +124,61 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
+const itemTitleVariants = cva(
+  "line-clamp-1 flex w-fit items-center font-medium text-foreground",
+  {
+    variants: {
+      size: {
+        default: "text-sm",
+        sm: "text-xs",
+        xs: "text-xs",
+      },
+    },
+    defaultVariants: { size: "default" },
+  }
+);
+
+function ItemTitle({
+  className,
+  size: sizeProp,
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof itemTitleVariants>) {
+  const contextSize = useItemSize();
+  const size = sizeProp ?? contextSize;
   return (
     <div
       data-slot="item-title"
-      className={cn("line-clamp-1 flex w-fit items-center text-sm font-medium text-foreground", className)}
+      className={cn(itemTitleVariants({ size }), className)}
       {...props}
     />
   );
 }
 
+const itemDescriptionVariants = cva(
+  "line-clamp-2 text-muted-foreground",
+  {
+    variants: {
+      size: {
+        default: "text-xs",
+        sm: "text-xxs",
+        xs: "text-xxs",
+      },
+    },
+    defaultVariants: { size: "default" },
+  }
+);
+
 function ItemDescription({
   className,
+  size: sizeProp,
   ...props
-}: React.ComponentProps<"p">) {
+}: React.ComponentProps<"p"> & VariantProps<typeof itemDescriptionVariants>) {
+  const contextSize = useItemSize();
+  const size = sizeProp ?? contextSize;
   return (
     <p
       data-slot="item-description"
-      className={cn("line-clamp-2 text-xs text-muted-foreground", className)}
+      className={cn(itemDescriptionVariants({ size }), className)}
       {...props}
     />
   );
