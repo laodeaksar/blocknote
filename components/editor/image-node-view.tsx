@@ -129,17 +129,13 @@ export function ImageNodeView({
             {ALIGN_BUTTONS.map(({ value, icon, label }) => (
               <Button
                 key={value}
-                variant="ghost"
-                size="icon-xs"
+                variant={align === value && !isFullWidth ? "secondary" : "ghost"}
+                size="icon-sm"
                 title={label}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   handleAlignClick(value);
                 }}
-                className={align === value && !isFullWidth
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                }
               >
                 {icon}
               </Button>
@@ -148,17 +144,13 @@ export function ImageNodeView({
       <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
-              variant="ghost"
-              size="icon-xs"
+              variant={isFullWidth ? "secondary" : "ghost" }
+              size="icon-sm"
               title="Lebar penuh"
               onMouseDown={(e) => {
                 e.preventDefault();
                 setFullWidth();
               }}
-              className={isFullWidth
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              }
             >
               <Maximize2 />
             </Button>
@@ -166,14 +158,13 @@ export function ImageNodeView({
       <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
-              variant="ghost"
-              size="icon-xs"
+              variant="destructive"
+              size="icon-sm"
               title="Hapus gambar"
               onMouseDown={(e) => {
                 e.preventDefault();
                 deleteNode();
               }}
-              className="hover:bg-destructive hover:text-destructive-foreground"
             >
               <Trash2 />
             </Button>

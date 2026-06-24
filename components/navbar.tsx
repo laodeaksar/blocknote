@@ -13,6 +13,7 @@ import { useSidebar } from "@/lib/sidebar-context";
 import { useEditorContext } from "@/lib/editor-context";
 import { UserMenu } from "@/components/user-menu";
 import { PublishPopover } from "@/components/publish-popover";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
@@ -230,9 +231,9 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                 }>
                   <MessageSquare className={cn("size-4", commentsOpen ? "text-foreground" : "text-muted-foreground")} />
                   {activeThreadCount > 0 && (
-                    <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-warning px-0.5 text-badge font-bold leading-none text-warning-foreground ring-1 ring-background ">
+                    <Badge className="pointer-events-none absolute -top-0.5 -right-0.5 bg-warning px-0.5 leading-none text-warning-foreground ring-1 ring-background">
                       {activeThreadCount > 99 ? "99+" : activeThreadCount}
-                    </span>
+                    </Badge>
                   )}
                 </TooltipTrigger>
                 <TooltipContent side="bottom">

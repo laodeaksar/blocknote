@@ -247,14 +247,14 @@ export function MobileSidebar() {
           </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Button
+            {/*<Button
               variant="ghost"
               size="icon-sm"
               onClick={() => setOpen(false)}
               aria-label="Tutup menu"
             >
               <X />
-            </Button>
+            </Button>*/}
           </div>
         </div>
 
@@ -338,8 +338,8 @@ export function MobileSidebar() {
           aria-label="Toggle menu"
         >
           {open
-            ? <X key="x" className="size-4 animate-icon-spring-in" />
-            : <Menu key="menu" className="size-4 animate-icon-spring-in" />
+            ? <X key="x" className="animate-icon-spring-in" />
+            : <Menu key="menu" className="animate-icon-spring-in" />
           }
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
@@ -350,7 +350,7 @@ export function MobileSidebar() {
           className="rounded-full"
           aria-label="Cari halaman"
         >
-          <Search className="size-4" />
+          <Search />
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
         <Button
@@ -360,7 +360,7 @@ export function MobileSidebar() {
           className="rounded-full"
           aria-label="Halaman baru"
         >
-          <FilePlus className="size-4" />
+          <FilePlus />
         </Button>
       </div>
 

@@ -3,6 +3,7 @@
 import { FileText, Trash2, RotateCcw, ChevronDown } from "lucide-react";
 import { Accordion, AccordionItem, AccordionContent } from "@/components/ui/accordion";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { PageData } from "./types";
@@ -24,7 +25,7 @@ export function TrashSection({
         <AccordionPrimitive.Header className="flex">
           <AccordionPrimitive.Trigger
             className={cn(
-              "w-full rounded-md px-2 py-1.5 hover:bg-accent outline-none",
+              "rounded-md px-2 py-1.5 hover:bg-accent outline-none",
               compact ? "h-8 py-1 **:data-[slot=accordion-trigger-icon]:size-3.5" : "**:data-[slot=accordion-trigger-icon]:size-4"
             )}
           >
@@ -32,9 +33,9 @@ export function TrashSection({
               <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
               Trash
               {compact && (archivedPages?.length ?? 0) > 0 && (
-                <span className="text-xxs bg-muted rounded-full px-1.5 py-0.5 font-medium">
+                <Badge>
                   {archivedPages!.length}
-                </span>
+                </Badge>
               )}
             </span>
           </AccordionPrimitive.Trigger>

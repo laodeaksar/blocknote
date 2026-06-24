@@ -219,6 +219,11 @@
     color: var(--color-foreground);
     transition: background-color 0.2s ease, color 0.2s ease;
   }
+  
+  button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
 
   /* Monospace elements — className="font-mono" available on any element */
   code,

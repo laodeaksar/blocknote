@@ -167,6 +167,7 @@ export function CommentCompose({
                 Batal
               </Button>
               <InputGroupButton
+              variant="secondary"
                 size="xs"
                 disabled={!text.trim() || isPending}
                 onClick={handleSubmit}

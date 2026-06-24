@@ -232,17 +232,16 @@ export const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(
                           data-slash-index={idx}
                           role="option"
                           aria-selected={isActive}
-                          className={cn(
-                            "cursor-pointer gap-2.5 px-2 py-1.5",
-                            isActive && "bg-accent text-accent-foreground"
-                          )}
+                          className=                            "cursor-pointer gap-2.5 px-2 py-1.5"
+                            variant={isActive && "muted"
+                          }
                           onMouseEnter={() => setSelectedIndex(idx)}
                           onMouseDown={(e) => {
                             e.preventDefault();
                             command(item);
                           }}
                         >
-                          <ItemMedia className="size-7 rounded-md border border-border bg-muted text-muted-foreground">
+                          <ItemMedia className="size-7 rounded-md border border-border bg-muted text-muted-foreground" variant="icon">
                             {item.icon}
                           </ItemMedia>
                           <ItemContent>

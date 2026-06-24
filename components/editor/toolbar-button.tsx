@@ -12,17 +12,13 @@ interface ToolbarButtonProps {
 export function ToolbarButton({ children, active, onClick, title }: ToolbarButtonProps) {
   return (
     <Button
-      variant="ghost"
-      size="icon-xs"
+      variant={active ? "secondary" : "ghost"}
+      size="icon-sm"
       title={title}
       onMouseDown={(e) => {
         e.preventDefault();
         onClick();
       }}
-      className={active
-          ? "bg-accent text-accent-foreground"
-          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      }
     >
       {children}
     </Button>
