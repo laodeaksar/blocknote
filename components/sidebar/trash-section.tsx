@@ -1,8 +1,7 @@
 "use client";
 
-import { FileText, Trash2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
-import { Accordion, AccordionItem, AccordionContent } from "@/components/ui/accordion";
-import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { FileText, Trash2, RotateCcw } from "lucide-react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,38 +21,22 @@ export function TrashSection({
   return (
     <Accordion>
       <AccordionItem value="trash" className="border-0">
-        <AccordionPrimitive.Header className="flex">
-          <AccordionPrimitive.Trigger
-            className={cn(
-              "group/trash-trigger flex w-full items-center justify-between rounded-md px-2 py-1.5 hover:bg-accent outline-none",
-              compact ? "h-8 py-1" : ""
+        <AccordionTrigger
+          className={cn(
+            "rounded-md px-2 py-1.5 text-sm hover:bg-accent",
+            compact
+              ? "h-8 py-1 **:data-[slot=accordion-trigger-icon]:size-3.5"
+              : ""
+          )}
+        >
+          <span className="flex items-center gap-2">
+            <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
+            Trash
+            {compact && (archivedPages?.length ?? 0) > 0 && (
+              <Badge>{archivedPages!.length}</Badge>
             )}
-          >
-            <span className="flex items-center gap-2">
-              <Trash2 className={cn(compact ? "size-3.5" : "size-4")} />
-              Trash
-              {compact && (archivedPages?.length ?? 0) > 0 && (
-                <Badge>
-                  {archivedPages!.length}
-                </Badge>
-              )}
-            </span>
-            <ChevronDown
-              data-slot="accordion-trigger-icon"
-              className={cn(
-                "pointer-events-none shrink-0 text-muted-foreground group-aria-expanded/trash-trigger:hidden",
-                compact ? "size-3.5" : "size-4"
-              )}
-            />
-            <ChevronUp
-              data-slot="accordion-trigger-icon"
-              className={cn(
-                "pointer-events-none hidden shrink-0 text-muted-foreground group-aria-expanded/trash-trigger:inline",
-                compact ? "size-3.5" : "size-4"
-              )}
-            />
-          </AccordionPrimitive.Trigger>
-        </AccordionPrimitive.Header>
+          </span>
+        </AccordionTrigger>
 
         <AccordionContent className="!pb-0">
           <div className={cn(compact ? "space-y-0.5 pb-1" : "mt-1 space-y-0.5")}>
