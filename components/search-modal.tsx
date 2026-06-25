@@ -79,7 +79,6 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       onOpenChange={(o) => { if (!o) onClose(); }}
       title="Cari halaman"
       description="Ketik untuk mencari halaman"
-      shouldFilter={false}
     >
       <CommandInput
         placeholder="Cari halaman..."

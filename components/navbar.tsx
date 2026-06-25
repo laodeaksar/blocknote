@@ -61,7 +61,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
   const { editor } = useEditorContext();
   const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
-  const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId }));
+  const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId })) as { data: number | undefined };
   const { mutateAsync: updatePage } = useMutation({
     mutationFn: (vars: FunctionArgs<typeof api.pages.update>) =>
       convex.mutation(api.pages.update, vars),
@@ -199,10 +199,10 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
       bulletListMarker: "-",
     });
     td.addRule("taskList", {
-      filter: (node) =>
+      filter: (node: HTMLElement) =>
         node.nodeName === "LI" &&
         node.querySelector('input[type="checkbox"]') !== null,
-      replacement: (_content, node) => {
+      replacement: (_content: string, node: Node) => {
         const checkbox = (node as Element).querySelector('input[type="checkbox"]') as HTMLInputElement | null;
         const checked = checkbox?.checked ? "x" : " ";
         const text = (node.textContent ?? "").replace(/^\s*\n/, "").trimEnd();
