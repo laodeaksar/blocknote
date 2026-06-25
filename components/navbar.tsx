@@ -1,17 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-
-type DebouncedFn<T extends (...args: never[]) => void> = T & { cancel: () => void };
-function debounce<T extends (...args: never[]) => void>(fn: T, opts: { wait: number; leading?: boolean; trailing?: boolean }): DebouncedFn<T> {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  const debounced = ((...args: Parameters<T>) => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => { timer = null; fn(...args); }, opts.wait);
-  }) as DebouncedFn<T>;
-  debounced.cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
-  return debounced;
-}
+import { useState, useRef, useEffect, useMemo } from "react";
+import { debounce } from "@tanstack/pacer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex, useConvexConnectionState } from "convex/react";
