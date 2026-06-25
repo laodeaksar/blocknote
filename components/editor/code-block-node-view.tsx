@@ -3,7 +3,7 @@
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Copy, Check, WrapText } from "lucide-react";
+import { Copy, Check, WrapText } from "lucide-react";
 
 const LANGUAGES = [
   { value: "plaintext",   label: "Plain text" },
@@ -40,13 +40,10 @@ export function CodeBlockNodeView({
   selected,
 }: NodeViewProps) {
   const language: string = node.attrs.language || "plaintext";
-  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [wrap, setWrap] = useState(false);
   const preRef = useRef<HTMLPreElement>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const current = LANGUAGES.find((l) => l.value === language) ?? LANGUAGES[0];
 
   const lineCount = Math.max(1, (node.textContent ?? "").split("\n").length);
   const lines = Array.from({ length: lineCount }, (_, i) => i + 1);
@@ -109,42 +106,18 @@ export function CodeBlockNodeView({
           </button>
 
           {/* Language selector */}
-          <div className="relative">
-            <button
-              type="button"
-              contentEditable={false}
-              onClick={() => setOpen((v) => !v)}
-              className="flex items-center gap-1 text-[11px] font-mono text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] transition-colors px-1.5 py-0.5 rounded hover:bg-[var(--cb-dot)] select-none"
-            >
-              {current.label}
-              <ChevronDown className="size-3 opacity-70" />
-            </button>
-
-            {open && (
-              <div
-                contentEditable={false}
-                className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-md shadow-md py-1 min-w-[140px] max-h-64 overflow-y-auto"
-                onMouseLeave={() => setOpen(false)}
-              >
-                {LANGUAGES.map((l) => (
-                  <button
-                    key={l.value}
-                    type="button"
-                    onClick={() => {
-                      updateAttributes({ language: l.value });
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "w-full text-left px-3 py-1 text-xs font-mono hover:bg-accent transition-colors",
-                      l.value === language && "text-primary font-semibold"
-                    )}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <select
+            contentEditable={false}
+            value={language}
+            onChange={(e) => updateAttributes({ language: e.target.value })}
+            className="text-[11px] font-mono text-[var(--cb-label)] bg-transparent border-0 outline-none cursor-pointer hover:text-[var(--cb-label-hover)] px-1 py-0.5 rounded hover:bg-[var(--cb-dot)] transition-colors select-none appearance-none"
+          >
+            {LANGUAGES.map((l) => (
+              <option key={l.value} value={l.value}>
+                {l.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
