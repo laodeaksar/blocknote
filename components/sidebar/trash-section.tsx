@@ -1,8 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Trash2, RotateCcw } from "lucide-react";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import {
+  Check,
+  FileText,
+  Trash2,
+  RotateCcw,
+  XIcon
+} from "lucide-react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -70,7 +81,7 @@ export function TrashSection({
                   className="h-5 px-1.5 text-xxs text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={handleConfirm}
                 >
-                  Ya
+                  <Check />
                 </Button>
                 <Button
                   variant="ghost"
@@ -78,7 +89,7 @@ export function TrashSection({
                   className="h-5 px-1.5 text-xxs"
                   onClick={handleCancel}
                 >
-                  Batal
+                  <XIcon />
                 </Button>
               </span>
             ) : (

@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group"
 
 function Command({
   className,
@@ -87,6 +87,10 @@ function CommandInput({
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
       <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+        <SearchIcon className="size-4 shrink-0 opacity-50" />
+        <InputGroupAddon>
+          <SearchIcon className="size-4 shrink-0 opacity-50" />
+        </InputGroupAddon>
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
@@ -97,20 +101,18 @@ function CommandInput({
           onValueChange={handleValueChange}
           {...props}
         />
-        <InputGroupAddon>
-          {showClear ? (
-            <button
-              type="button"
+        {showClear && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              variant="ghost"
+              size="icon-xs"
               onClick={() => handleValueChange("")}
-              className="size-4 shrink-0 flex items-center justify-center rounded-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
               aria-label="Hapus pencarian"
             >
-              <XIcon className="size-3" />
-            </button>
-          ) : (
-            <SearchIcon className="size-4 shrink-0 opacity-50" />
-          )}
-        </InputGroupAddon>
+              <XIcon />
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
       </InputGroup>
     </div>
   )
