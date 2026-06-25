@@ -3,3 +3,5 @@
 - [BlockNote TipTap internals](blocknote-tiptap-internals.md) — access ProseMirror/TipTap from BlockNote via editor._tiptapEditor (private but usable)
 - [@tiptap/pm direct dep](tiptap-pm-dep.md) — must be added as direct dep via pnpm add @tiptap/pm for TypeScript to resolve it; already a transitive dep of @blocknote
 - [base-ui context requirements](base-ui-context-requirements.md) — base-ui primitives must be inside their parent context or they silently fail to render
+- [Next.js Canary proxy middleware](nextjs-canary-proxy.md) — v16 canary uses proxy.ts (not middleware.ts); export `proxy` fn + `config`; both files existing causes fatal conflict
+- [Tailwind v4 PostCSS CSS relative colors](tailwind-postcss-relative-colors.md) — oklch(from var(...) l c h / alpha) breaks PostCSS production build silently; replace with color-mix()
