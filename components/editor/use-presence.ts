@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { Throttler } from "@tanstack/pacer";
+import { AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
@@ -47,6 +47,28 @@ export function usePresence(
   const updatePresence = useMutation(api.presence.update);
   const removePresence = useMutation(api.presence.remove);
 
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
+
+  const updatePresenceRef = useRef(updatePresence);
+  updatePresenceRef.current = updatePresence;
+
+  const presenceArgsRef = useRef({ userId, userName, enabled, pageId, sessionId, color });
+  presenceArgsRef.current = { userId, userName, enabled, pageId, sessionId, color };
+
+  const asyncThrottler = useRef(
+    new AsyncThrottler(
+      async () => {
+        const { userId, userName, enabled, pageId, sessionId, color } = presenceArgsRef.current;
+        const ed = editorRef.current;
+        if (!ed || !userId || !enabled || !ed.view) return;
+        const { from, to } = ed.view.state.selection;
+        await updatePresenceRef.current({ pageId, sessionId, userId, userName, color, from, to });
+      },
+      { wait: 500, leading: true, trailing: true }
+    )
+  ).current;
+
   const remoteCursors = useQuery(
     api.presence.list,
     enabled && userId ? { pageId, excludeSessionId: sessionId } : "skip"
@@ -78,30 +100,9 @@ export function usePresence(
     dispatch(tr);
   }, [editor, remoteCursors]);
 
-  const updatePresenceRef = useRef(updatePresence);
-  updatePresenceRef.current = updatePresence;
-
-  const throttlerRef = useRef<Throttler<() => void> | null>(null);
-
   const sendCursor = useCallback(() => {
-    if (!throttlerRef.current) {
-      throttlerRef.current = new Throttler(() => {
-        if (!editor || !userId || !enabled) return;
-        if (!editor.view) return;
-        const { from, to } = editor.view.state.selection;
-        updatePresenceRef.current({
-          pageId,
-          sessionId,
-          userId,
-          userName,
-          color,
-          from,
-          to,
-        }).catch(() => {});
-      }, { wait: 300, leading: false, trailing: true });
-    }
-    throttlerRef.current.maybeExecute();
-  }, [editor, userId, userName, enabled, pageId, sessionId, color]);
+    asyncThrottler.maybeExecute();
+  }, [asyncThrottler]);
 
   useEffect(() => {
     if (!editor || !enabled) return;
@@ -117,8 +118,7 @@ export function usePresence(
     if (!enabled || !userId) return;
     return () => {
       removePresence({ pageId, sessionId }).catch(() => {});
-      throttlerRef.current?.cancel();
-      throttlerRef.current = null;
+      asyncThrottler.cancel();
     };
-  }, [pageId, sessionId, userId, enabled, removePresence]);
+  }, [pageId, sessionId, userId, enabled, removePresence, asyncThrottler]);
 }
