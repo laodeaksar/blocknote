@@ -47,6 +47,9 @@ export function CodeBlockNodeView({
 
   const current = LANGUAGES.find((l) => l.value === language) ?? LANGUAGES[0];
 
+  const lineCount = Math.max(1, (node.textContent ?? "").split("\n").length);
+  const lines = Array.from({ length: lineCount }, (_, i) => i + 1);
+
   const handleCopy = () => {
     const text = preRef.current?.innerText ?? node.textContent ?? "";
     navigator.clipboard.writeText(text).then(() => {
@@ -63,6 +66,7 @@ export function CodeBlockNodeView({
         selected && "ring-2 ring-ring"
       )}
     >
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-[var(--cb-header)] border-b border-[var(--cb-border)]">
         <div className="flex gap-1.5 items-center">
           <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
@@ -71,6 +75,7 @@ export function CodeBlockNodeView({
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Copy button */}
           <button
             type="button"
             contentEditable={false}
@@ -83,13 +88,10 @@ export function CodeBlockNodeView({
                 : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
             )}
           >
-            {copied ? (
-              <Check className="size-3" />
-            ) : (
-              <Copy className="size-3" />
-            )}
+            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
           </button>
 
+          {/* Language selector */}
           <div className="relative">
             <button
               type="button"
@@ -129,12 +131,29 @@ export function CodeBlockNodeView({
         </div>
       </div>
 
-      <pre
-        ref={preRef}
-        className="code-block-pre m-0 rounded-none border-0 bg-[var(--cb-bg)] overflow-x-auto p-4 font-mono text-sm leading-relaxed"
-      >
-        <NodeViewContent as="code" className="hljs !bg-transparent !p-0 !font-mono" />
-      </pre>
+      {/* ── Body: line numbers + code ───────────────────────────────── */}
+      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">
+        {/* Line numbers — sticky so they don't scroll horizontally */}
+        <div
+          contentEditable={false}
+          aria-hidden="true"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono text-sm leading-relaxed"
+        >
+          {lines.map((n) => (
+            <span key={n} className="tabular-nums leading-relaxed opacity-50 text-xs">
+              {n}
+            </span>
+          ))}
+        </div>
+
+        {/* Code content */}
+        <pre
+          ref={preRef}
+          className="m-0 flex-1 p-4 overflow-visible font-mono text-sm leading-relaxed bg-transparent border-0 rounded-none min-w-0"
+        >
+          <NodeViewContent as="code" className="hljs !bg-transparent !p-0 !font-mono" />
+        </pre>
+      </div>
     </NodeViewWrapper>
   );
 }
