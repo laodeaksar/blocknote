@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { debounce } from "@tanstack/pacer";
+import { Debouncer } from "@tanstack/pacer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex, useConvexConnectionState } from "convex/react";
@@ -111,7 +111,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
 
   const debouncedWordCount = useMemo(
     () =>
-      debounce((text: string) => {
+      new Debouncer((text: string) => {
         const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
         setWordCount(words);
       }, { wait: 300, leading: false, trailing: true }),
@@ -120,12 +120,12 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
 
   useEffect(() => {
     if (!editor) return;
-    const update = () => debouncedWordCount(editor.getText());
+    const update = () => debouncedWordCount.maybeExecute(editor.getText());
     update();
     editor.on("update", update);
     return () => {
       editor.off("update", update);
-      debouncedWordCount.cancel?.();
+      debouncedWordCount.cancel();
     };
   }, [editor, debouncedWordCount]);
 

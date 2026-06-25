@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useMemo, useEffect, useRef } from "react";
-import { debounce } from "@tanstack/pacer";
+import { Debouncer } from "@tanstack/pacer";
 import { FileText } from "lucide-react";
 import {
   CommandDialog,
@@ -39,7 +39,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
   const debouncedSet = useMemo(
-    () => debounce((val: string) => setDebouncedQuery(val), { wait: 200, leading: false, trailing: true }),
+    () => new Debouncer((val: string) => setDebouncedQuery(val), { wait: 200, leading: false, trailing: true }),
     []
   );
 
@@ -47,14 +47,14 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   debouncedSetRef.current = debouncedSet;
 
   useEffect(() => {
-    debouncedSetRef.current(inputValue);
+    debouncedSetRef.current.maybeExecute(inputValue);
   }, [inputValue]);
 
   useEffect(() => {
     if (!open) {
       setInputValue("");
       setDebouncedQuery("");
-      debouncedSetRef.current.cancel?.();
+      debouncedSetRef.current.cancel();
     }
   }, [open]);
 
