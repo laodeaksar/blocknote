@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useConvex } from "convex/react";
 import { useMutation } from "@tanstack/react-query";
+import { RateLimiter } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
@@ -38,12 +39,32 @@ export function PublishPopover({
     },
   });
 
+  const rateLimiterRef = useRef<RateLimiter<() => void> | null>(null);
+  if (!rateLimiterRef.current) {
+    rateLimiterRef.current = new RateLimiter(
+      () => {},
+      { limit: 3, window: 30_000 }
+    );
+  }
+
   const publicUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/p/${pageId}`
       : `/p/${pageId}`;
 
   const handleToggle = () => {
+    const limiter = rateLimiterRef.current!;
+    const prevRejections = limiter.store.state.rejectionCount;
+    limiter.maybeExecute();
+
+    if (limiter.store.state.rejectionCount > prevRejections) {
+      const times = limiter.store.state.executionTimes;
+      const oldest = times.length > 0 ? times[0] : Date.now();
+      const retryIn = Math.max(1, Math.ceil((oldest + 30_000 - Date.now()) / 1000));
+      toast.error(`Terlalu sering. Coba lagi dalam ${retryIn} detik.`);
+      return;
+    }
+
     updatePage({ id: pageId, isPublished: !isPublished });
   };
 
