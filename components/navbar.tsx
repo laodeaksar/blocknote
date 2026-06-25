@@ -276,23 +276,6 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
         )}
 
         <div className="flex items-center gap-1">
-          <Popover open={showPublish} onOpenChange={setShowPublish}>
-            <PopoverTrigger
-            render={
-            <Button variant="ghost" size="icon-sm" aria-label={page.isPublished ? "Published" : "Share"}>
-              <Share2 className={cn("size-3", page.isPublished ? "text-success" : "text-foreground")} />
-              </Button>
-            }
-            />
-            <PopoverContent align="end" className="w-auto p-0">
-              <PublishPopover
-                pageId={pageId}
-                isPublished={page.isPublished ?? false}
-                onClose={() => setShowPublish(false)}
-              />
-            </PopoverContent>
-          </Popover>
-
           {onToggleComments && (
             <TooltipProvider>
               <Tooltip>
@@ -319,36 +302,63 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
             </TooltipProvider>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <Button variant="ghost" size="icon-sm" aria-label="More options" />
-            }>
-              <MoreHorizontal className="size-4 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <FileDown className="size-3.5" />
-                Export
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                disabled={!editor}
-                onClick={exportHTML}
-                className="gap-2 text-sm cursor-pointer"
-              >
-                <FileCode className="size-4 text-muted-foreground" />
-                Export as HTML
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={!editor}
-                onClick={exportMarkdown}
-                className="gap-2 text-sm cursor-pointer"
-              >
-                <FileText className="size-4 text-muted-foreground" />
-                Export as Markdown
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* More options — Share + Export dalam satu dropdown */}
+          <div className="relative">
+            {/* Invisible anchor untuk PublishPopover */}
+            <Popover open={showPublish} onOpenChange={setShowPublish}>
+              <PopoverTrigger
+                render={<span className="absolute inset-0 pointer-events-none" />}
+              />
+              <PopoverContent align="end" className="w-auto p-0">
+                <PublishPopover
+                  pageId={pageId}
+                  isPublished={page.isPublished ?? false}
+                  onClose={() => setShowPublish(false)}
+                />
+              </PopoverContent>
+            </Popover>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger render={
+                <Button variant="ghost" size="icon-sm" aria-label="More options" />
+              }>
+                <MoreHorizontal className="size-4 text-muted-foreground" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                  Halaman ini
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setShowPublish(true)}
+                  className="gap-2 text-sm cursor-pointer"
+                >
+                  <Share2 className={cn("size-4", page.isPublished ? "text-success" : "text-muted-foreground")} />
+                  {page.isPublished ? "Kelola publikasi" : "Publikasikan ke web"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                  Export
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  disabled={!editor}
+                  onClick={exportHTML}
+                  className="gap-2 text-sm cursor-pointer"
+                >
+                  <FileCode className="size-4 text-muted-foreground" />
+                  Export as HTML
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={!editor}
+                  onClick={exportMarkdown}
+                  className="gap-2 text-sm cursor-pointer"
+                >
+                  <FileText className="size-4 text-muted-foreground" />
+                  Export as Markdown
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           <UserMenu />
         </div>
