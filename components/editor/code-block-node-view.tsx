@@ -3,13 +3,12 @@
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { Copy, Check, WrapText } from "lucide-react";
+import { Copy, Check, WrapText, ChevronDown } from "lucide-react";
+import { Select as SelectPrimitive } from "@base-ui/react/select";
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 
 const LANGUAGES = [
@@ -118,13 +117,11 @@ export function CodeBlockNodeView({
               value={language}
               onValueChange={(val) => updateAttributes({ language: val })}
             >
-              <SelectTrigger
-                size="sm"
-                className="h-6 border-0 bg-transparent shadow-none text-[11px] font-mono text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] px-1.5 gap-1 focus-visible:ring-0 focus-visible:border-0"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent align="end" className="text-xs font-mono min-w-36">
+              <SelectPrimitive.Trigger className="flex items-center gap-1 text-[11px] font-mono text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] transition-colors px-1.5 py-0.5 rounded hover:bg-[var(--cb-dot)] select-none outline-none cursor-pointer">
+                <SelectPrimitive.Value />
+                <ChevronDown className="size-3 opacity-70 shrink-0" />
+              </SelectPrimitive.Trigger>
+              <SelectContent align="end" className="font-mono">
                 {LANGUAGES.map((l) => (
                   <SelectItem key={l.value} value={l.value} className="text-xs font-mono">
                     {l.label}
