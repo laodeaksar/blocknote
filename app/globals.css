@@ -535,8 +535,69 @@
   border-radius: 0.25rem;
 }
 
+/* ── Code block node view ──────────────────────────────────────────── */
+
+/* Light mode tokens */
+:root {
+  --cb-bg:           oklch(97% 0.005 250);
+  --cb-header:       oklch(93% 0.006 250);
+  --cb-border:       oklch(87% 0.008 250);
+  --cb-dot:          oklch(80% 0.01 250);
+  --cb-label:        oklch(55% 0.02 250);
+  --cb-label-hover:  oklch(35% 0.03 250);
+
+  --hl-comment:      oklch(60% 0.01 250);
+  --hl-keyword:      oklch(45% 0.20 290);
+  --hl-string:       oklch(48% 0.15 150);
+  --hl-number:       oklch(50% 0.18 35);
+  --hl-function:     oklch(48% 0.17 245);
+  --hl-class:        oklch(52% 0.18 55);
+  --hl-tag:          oklch(48% 0.18 20);
+  --hl-attr:         oklch(48% 0.16 290);
+  --hl-punctuation:  oklch(45% 0.01 250);
+  --hl-operator:     oklch(45% 0.20 290);
+  --hl-variable:     oklch(40% 0.01 250);
+  --hl-builtin:      oklch(50% 0.18 35);
+  --hl-deleted:      oklch(48% 0.18 20);
+  --hl-inserted:     oklch(48% 0.15 150);
+}
+
+/* Dark mode tokens */
+.dark {
+  --cb-bg:           oklch(18% 0.005 260);
+  --cb-header:       oklch(22% 0.007 260);
+  --cb-border:       oklch(28% 0.008 260);
+  --cb-dot:          oklch(35% 0.01 260);
+  --cb-label:        oklch(65% 0.02 260);
+  --cb-label-hover:  oklch(85% 0.03 260);
+
+  --hl-comment:      oklch(60% 0.02 260);
+  --hl-keyword:      oklch(72% 0.20 300);
+  --hl-string:       oklch(74% 0.15 145);
+  --hl-number:       oklch(74% 0.16 60);
+  --hl-function:     oklch(72% 0.17 220);
+  --hl-class:        oklch(75% 0.16 80);
+  --hl-tag:          oklch(70% 0.18 20);
+  --hl-attr:         oklch(72% 0.15 300);
+  --hl-punctuation:  oklch(72% 0.01 260);
+  --hl-operator:     oklch(72% 0.20 300);
+  --hl-variable:     oklch(82% 0.01 260);
+  --hl-builtin:      oklch(74% 0.16 60);
+  --hl-deleted:      oklch(70% 0.18 20);
+  --hl-inserted:     oklch(74% 0.15 145);
+}
+
+/* Node view wrapper resets */
+.tiptap-content .ProseMirror .code-block-wrapper pre {
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Fallback: plain pre (no node view) */
 .tiptap-content .ProseMirror pre {
-  background-color: var(--muted);
+  background-color: var(--cb-bg);
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   overflow-x: auto;
@@ -551,6 +612,51 @@
   font-size: inherit;
   color: inherit;
 }
+
+/* ── Highlight.js token colours ───────────────────────────────────── */
+.hljs-comment,
+.hljs-quote             { color: var(--hl-comment); font-style: italic; }
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type              { color: var(--hl-keyword); font-weight: 500; }
+
+.hljs-string,
+.hljs-doctag,
+.hljs-regexp            { color: var(--hl-string); }
+
+.hljs-number,
+.hljs-meta              { color: var(--hl-number); }
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_   { color: var(--hl-function); font-weight: 600; }
+
+.hljs-class .hljs-title,
+.hljs-title.class_      { color: var(--hl-class); }
+
+.hljs-tag               { color: var(--hl-tag); }
+.hljs-name              { color: var(--hl-keyword); }
+.hljs-attr              { color: var(--hl-attr); }
+
+.hljs-operator,
+.hljs-punctuation       { color: var(--hl-punctuation); }
+
+.hljs-variable,
+.hljs-template-variable { color: var(--hl-variable); }
+
+.hljs-built_in,
+.hljs-builtin-name      { color: var(--hl-builtin); }
+
+.hljs-symbol,
+.hljs-bullet            { color: var(--hl-number); }
+
+.hljs-addition          { color: var(--hl-inserted); background: oklch(from var(--hl-inserted) l c h / 0.12); }
+.hljs-deletion          { color: var(--hl-deleted);  background: oklch(from var(--hl-deleted)  l c h / 0.12); }
+
+.hljs-emphasis          { font-style: italic; }
+.hljs-strong            { font-weight: bold; }
 
 .tiptap-content .ProseMirror blockquote {
   border-left: 3px solid var(--border);

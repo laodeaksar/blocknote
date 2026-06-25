@@ -11,19 +11,29 @@ import TaskItem from "@tiptap/extension-task-item";
 import Image from "@tiptap/extension-image";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import Typography from "@tiptap/extension-typography";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { createLowlight, common } from "lowlight";
 import { SlashExtension } from "./slash-extension";
 import { CommentHighlight } from "./comment-highlight";
 import { ImageUploadExtension } from "./image-upload";
 import { ImageDropPasteExtension } from "./image-drop-paste";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { ImageNodeView } from "../image-node-view";
+import { CodeBlockNodeView } from "../code-block-node-view";
+
+const lowlight = createLowlight(common);
 
 export function buildEditorExtensions(
   syncExtension: AnyExtension,
   onImageUpload?: () => void
 ): AnyExtension[] {
   return [
-    StarterKit.configure({}),
+    StarterKit.configure({ codeBlock: false }),
+    CodeBlockLowlight.extend({
+      addNodeView() {
+        return ReactNodeViewRenderer(CodeBlockNodeView);
+      },
+    }).configure({ lowlight, defaultLanguage: "plaintext" }),
     Underline,
     TextStyle,
     Color,
