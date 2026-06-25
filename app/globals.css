@@ -208,6 +208,8 @@
   html {
     @apply font-sans;
     height: 100%;
+    font-feature-settings: "cv11", "ss01", "liga" 1, "calt" 1;
+    font-optical-sizing: auto;
   }
 
   body {
