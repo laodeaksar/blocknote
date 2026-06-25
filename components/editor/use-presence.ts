@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
+import { Throttler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
@@ -42,7 +43,6 @@ export function usePresence(
   const sessionId = useRef(makeSessionId()).current;
   const color = colorForUserId(userId || "anon");
   const pluginRegistered = useRef(false);
-  const throttleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updatePresence = useMutation(api.presence.update);
   const removePresence = useMutation(api.presence.remove);
@@ -78,24 +78,30 @@ export function usePresence(
     dispatch(tr);
   }, [editor, remoteCursors]);
 
+  const updatePresenceRef = useRef(updatePresence);
+  updatePresenceRef.current = updatePresence;
+
+  const throttlerRef = useRef<Throttler<() => void> | null>(null);
+
   const sendCursor = useCallback(() => {
-    if (throttleTimer.current !== null) return;
-    throttleTimer.current = setTimeout(() => {
-      throttleTimer.current = null;
-      if (!editor || !userId || !enabled) return;
-      if (!editor.view) return;
-      const { from, to } = editor.view.state.selection;
-      updatePresence({
-        pageId,
-        sessionId,
-        userId,
-        userName,
-        color,
-        from,
-        to,
-      }).catch(() => {});
-    }, 300);
-  }, [editor, userId, userName, enabled, pageId, sessionId, color, updatePresence]);
+    if (!throttlerRef.current) {
+      throttlerRef.current = new Throttler(() => {
+        if (!editor || !userId || !enabled) return;
+        if (!editor.view) return;
+        const { from, to } = editor.view.state.selection;
+        updatePresenceRef.current({
+          pageId,
+          sessionId,
+          userId,
+          userName,
+          color,
+          from,
+          to,
+        }).catch(() => {});
+      }, { wait: 300, leading: false, trailing: true });
+    }
+    throttlerRef.current.maybeExecute();
+  }, [editor, userId, userName, enabled, pageId, sessionId, color]);
 
   useEffect(() => {
     if (!editor || !enabled) return;
@@ -111,10 +117,8 @@ export function usePresence(
     if (!enabled || !userId) return;
     return () => {
       removePresence({ pageId, sessionId }).catch(() => {});
-      if (throttleTimer.current !== null) {
-        clearTimeout(throttleTimer.current);
-        throttleTimer.current = null;
-      }
+      throttlerRef.current?.cancel();
+      throttlerRef.current = null;
     };
   }, [pageId, sessionId, userId, enabled, removePresence]);
 }

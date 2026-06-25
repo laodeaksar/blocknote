@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { debounce } from "@tanstack/pacer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex, useConvexConnectionState } from "convex/react";
@@ -108,17 +109,25 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
     }
   }, [isEditingTitle]);
 
+  const debouncedWordCount = useMemo(
+    () =>
+      debounce((text: string) => {
+        const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+        setWordCount(words);
+      }, { wait: 300, leading: false, trailing: true }),
+    []
+  );
+
   useEffect(() => {
     if (!editor) return;
-    const update = () => {
-      const text = editor.getText();
-      const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
-      setWordCount(words);
-    };
+    const update = () => debouncedWordCount(editor.getText());
     update();
     editor.on("update", update);
-    return () => { editor.off("update", update); };
-  }, [editor]);
+    return () => {
+      editor.off("update", update);
+      debouncedWordCount.cancel?.();
+    };
+  }, [editor, debouncedWordCount]);
 
   const startEditingTitle = () => {
     if (!page) return;
