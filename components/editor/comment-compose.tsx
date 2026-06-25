@@ -11,6 +11,7 @@ import {
 } from "@floating-ui/react";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { RateLimiter } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { Editor } from "@tiptap/react";
@@ -47,6 +48,23 @@ export function CommentCompose({
   const [text, setText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const createLimiter = useRef(
+    new RateLimiter(() => {}, { limit: 3, window: 60_000 })
+  ).current;
+
+  const checkRate = (limiter: RateLimiter<() => void>, windowMs: number): boolean => {
+    const prev = limiter.store.state.rejectionCount;
+    limiter.maybeExecute();
+    if (limiter.store.state.rejectionCount > prev) {
+      const times = limiter.store.state.executionTimes;
+      const oldest = times.length > 0 ? times[0] : Date.now();
+      const retryIn = Math.max(1, Math.ceil((oldest + windowMs - Date.now()) / 1000));
+      toast.error(`Terlalu cepat. Coba lagi dalam ${retryIn} detik.`);
+      return false;
+    }
+    return true;
+  };
 
   const { refs, floatingStyles } = useFloating({
     placement: "bottom-start",
