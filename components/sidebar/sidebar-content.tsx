@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
+import { RateLimiter } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -87,6 +88,28 @@ export function SidebarContent({
     title: string;
   } | null>(null);
 
+  const makeLimiter = (limit: number, window: number) =>
+    new RateLimiter(() => {}, { limit, window });
+
+  const createLimiter   = useRef(makeLimiter(5,  60_000)).current;
+  const archiveLimiter  = useRef(makeLimiter(10, 30_000)).current;
+  const restoreLimiter  = useRef(makeLimiter(10, 30_000)).current;
+  const deleteLimiter   = useRef(makeLimiter(5,  30_000)).current;
+  const clearAllLimiter = useRef(makeLimiter(2,  60_000)).current;
+
+  const checkRate = (limiter: RateLimiter<() => void>, windowMs: number): boolean => {
+    const prev = limiter.store.state.rejectionCount;
+    limiter.maybeExecute();
+    if (limiter.store.state.rejectionCount > prev) {
+      const times = limiter.store.state.executionTimes;
+      const oldest = times.length > 0 ? times[0] : Date.now();
+      const retryIn = Math.max(1, Math.ceil((oldest + windowMs - Date.now()) / 1000));
+      toast.error(`Terlalu cepat. Coba lagi dalam ${retryIn} detik.`);
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     if (pages) setLocalPages(pages);
   }, [pages]);
@@ -121,6 +144,7 @@ export function SidebarContent({
   }, []);
 
   const handleCreate = async () => {
+    if (!checkRate(createLimiter, 60_000)) return;
     const id = await createPage({ title: "Untitled" });
     router.push(`/doc/${id}`);
     toast.success("New page created");
@@ -129,6 +153,7 @@ export function SidebarContent({
 
   const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
     e.stopPropagation();
+    if (!checkRate(archiveLimiter, 30_000)) return;
     await archivePage({ id });
     toast.success("Page moved to trash");
     if (currentId === id) router.push("/dashboard");
@@ -136,6 +161,7 @@ export function SidebarContent({
 
   const handleRestore = async (e: React.MouseEvent, id: Id<"pages">) => {
     e.stopPropagation();
+    if (!checkRate(restoreLimiter, 30_000)) return;
     await restorePage({ id });
     toast.success("Page restored");
   };
@@ -151,12 +177,14 @@ export function SidebarContent({
 
   const confirmRemove = async () => {
     if (!pageToDelete) return;
+    if (!checkRate(deleteLimiter, 30_000)) return;
     await removePage({ id: pageToDelete.id });
     toast.success("Page permanently deleted");
     setPageToDelete(null);
   };
 
   const handleClearAll = async () => {
+    if (!checkRate(clearAllLimiter, 60_000)) return;
     const count = await clearTrashPages();
     toast.success(`${count} halaman dihapus permanen`);
   };
