@@ -322,18 +322,18 @@ export function BlockDragHandle({ editor }: BlockDragHandleProps) {
               Ubah jadi
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {TURN_INTO_ITEMS.map(({ label, icon: Icon, command }) => (
-                <DropdownMenuItem
-                  key={label}
-                  onSelect={() => {
-                    focusBlock();
-                    command(editor);
-                  }}
-                >
-                  <Icon />
-                  {label}
-                </DropdownMenuItem>
-              ))}
+                {TURN_INTO_ITEMS.map(({ label, icon: Icon, command }) => (
+                  <DropdownMenuItem
+                    key={label}
+                    onSelect={() => {
+                      focusBlock();
+                      command(editor);
+                    }}
+                  >
+                    <Icon data-icon="inline-start" />
+                    {label}
+                  </DropdownMenuItem>
+                ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         </DropdownMenuGroup>

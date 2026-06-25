@@ -94,19 +94,19 @@ export function PublishPopover({
 
       {isPublished && (
         <div className="space-y-2">
-                <InputGroup>
-        <InputGroupInput placeholder={publicUrl} readOnly />
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            aria-label="Copy link"
-            title="Copy link"
-            size="icon-xs"
-            onClick={handleCopy}
-          >
-            {copied ? <Check /> : <Copy />}
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
+          <InputGroup>
+            <InputGroupInput placeholder={publicUrl} readOnly />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                aria-label="Copy link"
+                title="Copy link"
+                size="icon-xs"
+                onClick={handleCopy}
+              >
+                {copied ? <Check /> : <Copy />}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
           <a
             href={publicUrl}
             target="_blank"

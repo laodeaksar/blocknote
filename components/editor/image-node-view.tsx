@@ -142,7 +142,7 @@ export function ImageNodeView({
               </Button>
             ))}
 
-      <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
+            <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
               variant={isFullWidth ? "secondary" : "ghost" }
@@ -156,7 +156,7 @@ export function ImageNodeView({
               <Maximize2 />
             </Button>
 
-      <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
+            <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
 
             <Button
               variant="destructive"
