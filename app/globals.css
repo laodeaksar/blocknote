@@ -234,6 +234,14 @@
   samp {
     @apply font-mono;
   }
+
+  /* Tabular numerics — angka lebar sama, tidak loncat saat nilai berubah */
+  [data-slot="badge"],
+  time,
+  [data-slot="kbd"],
+  .tabular-nums {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
 }
 
 /* ── Prose utility — opt-in typographic rhythm for non-editor pages ──
