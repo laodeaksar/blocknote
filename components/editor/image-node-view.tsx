@@ -2,6 +2,7 @@
 
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useRef, useState, useCallback } from "react";
+import NextImage from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +48,6 @@ export function ImageNodeView({
   const { src, alt, title, style, align = "left" } = attrs;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
   const liveWidthRef = useRef<number | null>(parseWidthFromStyle(style ?? null));
   const [liveWidth, setLiveWidth] = useState<number | null>(liveWidthRef.current);
   const [isResizing, setIsResizing] = useState(false);
@@ -172,14 +172,16 @@ export function ImageNodeView({
         )}
 
         {/* Image */}
-        <img
-          ref={imgRef}
+        <NextImage
           src={src}
           alt={alt ?? ""}
           title={title ?? ""}
           draggable={false}
+          width={0}
+          height={0}
+          sizes="100vw"
           className={cn(
-            "block w-full rounded-sm select-none",
+            "block w-full h-auto rounded-sm select-none",
             selected && "ring-2 ring-primary ring-offset-2",
             isResizing && "pointer-events-none"
           )}
