@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
-import { RateLimiter } from "@tanstack/pacer";
+import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -97,6 +97,18 @@ export function SidebarContent({
   const deleteLimiter   = useRef(makeLimiter(5,  30_000)).current;
   const clearAllLimiter = useRef(makeLimiter(2,  60_000)).current;
 
+  const reorderPagesRef = useRef(reorderPages);
+  reorderPagesRef.current = reorderPages;
+
+  const reorderThrottler = useRef(
+    new AsyncThrottler(
+      async (orderedIds: Id<"pages">[]) => {
+        await reorderPagesRef.current({ orderedIds });
+      },
+      { wait: 500, leading: true, trailing: true }
+    )
+  ).current;
+
   const checkRate = (limiter: RateLimiter<() => void>, windowMs: number): boolean => {
     const prev = limiter.store.state.rejectionCount;
     limiter.maybeExecute();
@@ -121,7 +133,7 @@ export function SidebarContent({
     })
   );
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = localPages.findIndex((p) => p._id === active.id);
@@ -129,7 +141,7 @@ export function SidebarContent({
     if (oldIndex === -1 || newIndex === -1) return;
     const reordered = arrayMove(localPages, oldIndex, newIndex);
     setLocalPages(reordered);
-    await reorderPages({ orderedIds: reordered.map((p) => p._id) });
+    reorderThrottler.maybeExecute(reordered.map((p) => p._id));
   };
 
   useEffect(() => {
