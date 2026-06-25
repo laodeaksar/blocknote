@@ -7,7 +7,7 @@ import { useConvex, useConvexConnectionState } from "convex/react";
 import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare } from "lucide-react";
+import { MoreHorizontal, Share2, Check, Loader2, Pencil, PanelLeft, MessageSquare, FileDown, FileCode, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { useSidebar } from "@/lib/sidebar-context";
 import { useEditorContext } from "@/lib/editor-context";
@@ -28,6 +28,14 @@ import {
   TooltipContent,
   TooltipProvider
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
@@ -116,6 +124,74 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
 
   const cancelTitle = () => {
     setIsEditingTitle(false);
+  };
+
+  const downloadFile = (content: string, filename: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportHTML = () => {
+    if (!editor) return;
+    const title = page?.title || "Untitled";
+    const body = editor.getHTML();
+    const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #111; }
+    h1,h2,h3,h4,h5,h6 { line-height: 1.25; margin: 1.5em 0 0.5em; }
+    pre { background: #f5f5f5; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    code { font-family: monospace; font-size: 0.9em; background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-left: 3px solid #ccc; margin: 0; padding-left: 1rem; color: #666; }
+    img { max-width: 100%; height: auto; }
+    a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <h1>${title}</h1>
+  ${body}
+</body>
+</html>`;
+    const slug = title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    downloadFile(html, `${slug || "untitled"}.html`, "text/html;charset=utf-8");
+    toast.success("Diekspor sebagai HTML");
+  };
+
+  const exportMarkdown = async () => {
+    if (!editor) return;
+    const title = page?.title || "Untitled";
+    const { default: TurndownService } = await import("turndown");
+    const td = new TurndownService({
+      headingStyle: "atx",
+      codeBlockStyle: "fenced",
+      bulletListMarker: "-",
+    });
+    td.addRule("taskList", {
+      filter: (node) =>
+        node.nodeName === "LI" &&
+        node.querySelector('input[type="checkbox"]') !== null,
+      replacement: (_content, node) => {
+        const checkbox = (node as Element).querySelector('input[type="checkbox"]') as HTMLInputElement | null;
+        const checked = checkbox?.checked ? "x" : " ";
+        const text = (node.textContent ?? "").replace(/^\s*\n/, "").trimEnd();
+        return `- [${checked}] ${text}\n`;
+      },
+    });
+    const html = editor.getHTML();
+    const md = `# ${title}\n\n${td.turndown(html)}`;
+    const slug = title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    downloadFile(md, `${slug || "untitled"}.md`, "text/markdown;charset=utf-8");
+    toast.success("Diekspor sebagai Markdown");
   };
 
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -243,14 +319,36 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
             </TooltipProvider>
           )}
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="More options" />}>
-                <MoreHorizontal className="size-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">More options</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <DropdownMenu>
+            <DropdownMenuTrigger render={
+              <Button variant="ghost" size="icon-sm" aria-label="More options" />
+            }>
+              <MoreHorizontal className="size-4 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <FileDown className="size-3.5" />
+                Export
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                disabled={!editor}
+                onClick={exportHTML}
+                className="gap-2 text-sm cursor-pointer"
+              >
+                <FileCode className="size-4 text-muted-foreground" />
+                Export as HTML
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={!editor}
+                onClick={exportMarkdown}
+                className="gap-2 text-sm cursor-pointer"
+              >
+                <FileText className="size-4 text-muted-foreground" />
+                Export as Markdown
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <UserMenu />
         </div>
