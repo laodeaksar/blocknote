@@ -51,6 +51,7 @@ export function ImageNodeView({
   const liveWidthRef = useRef<number | null>(parseWidthFromStyle(style ?? null));
   const [liveWidth, setLiveWidth] = useState<number | null>(liveWidthRef.current);
   const [isResizing, setIsResizing] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const isFullWidth = style?.includes("%") ?? false;
 
   const startResize = useCallback(
@@ -171,6 +172,11 @@ export function ImageNodeView({
           </div>
         )}
 
+        {/* Shimmer placeholder — hilang saat gambar selesai dimuat */}
+        {!loaded && (
+          <div className="w-full min-h-20 rounded-sm bg-muted animate-pulse" />
+        )}
+
         {/* Image */}
         <NextImage
           src={src}
@@ -180,8 +186,10 @@ export function ImageNodeView({
           width={0}
           height={0}
           sizes="100vw"
+          onLoad={() => setLoaded(true)}
           className={cn(
-            "block w-full h-auto rounded-sm select-none",
+            "block w-full h-auto rounded-sm select-none transition-opacity duration-300",
+            !loaded && "opacity-0 absolute inset-0",
             selected && "ring-2 ring-primary ring-offset-2",
             isResizing && "pointer-events-none"
           )}

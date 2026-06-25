@@ -3,7 +3,7 @@
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Copy, Check } from "lucide-react";
+import { ChevronDown, Copy, Check, WrapText } from "lucide-react";
 
 const LANGUAGES = [
   { value: "plaintext",   label: "Plain text" },
@@ -42,6 +42,7 @@ export function CodeBlockNodeView({
   const language: string = node.attrs.language || "plaintext";
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [wrap, setWrap] = useState(false);
   const preRef = useRef<HTMLPreElement>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -75,6 +76,22 @@ export function CodeBlockNodeView({
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Wrap toggle */}
+          <button
+            type="button"
+            contentEditable={false}
+            onClick={() => setWrap((v) => !v)}
+            title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
+            className={cn(
+              "flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded transition-colors select-none",
+              wrap
+                ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)]"
+                : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
+            )}
+          >
+            <WrapText className="size-3" />
+          </button>
+
           {/* Copy button */}
           <button
             type="button"
@@ -149,7 +166,10 @@ export function CodeBlockNodeView({
         {/* Code content */}
         <pre
           ref={preRef}
-          className="m-0 flex-1 p-4 overflow-visible font-mono text-sm leading-relaxed bg-transparent border-0 rounded-none min-w-0"
+          className={cn(
+            "m-0 flex-1 p-4 font-mono text-sm leading-relaxed bg-transparent border-0 rounded-none min-w-0",
+            wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
+          )}
         >
           <NodeViewContent as="code" className="hljs !bg-transparent !p-0 !font-mono" />
         </pre>
