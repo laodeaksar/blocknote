@@ -72,6 +72,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [, setTick] = useState(0);
   const [showPublish, setShowPublish] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
   const prevInflightRef = useRef(connectionState.hasInflightRequests);
   const hasEverSavedRef = useRef(false);
 
@@ -106,6 +107,18 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
       titleInputRef.current?.select();
     }
   }, [isEditingTitle]);
+
+  useEffect(() => {
+    if (!editor) return;
+    const update = () => {
+      const text = editor.getText();
+      const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+      setWordCount(words);
+    };
+    update();
+    editor.on("update", update);
+    return () => { editor.off("update", update); };
+  }, [editor]);
 
   const startEditingTitle = () => {
     if (!page) return;
@@ -262,6 +275,13 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
+        {wordCount > 0 && (
+          <span className="hidden md:inline text-xs text-muted-foreground tabular-nums">
+            {wordCount.toLocaleString("id")} kata
+            {" · "}
+            {Math.max(1, Math.ceil(wordCount / 200))} mnt baca
+          </span>
+        )}
         {saveStatus === "saving" && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Loader2 className="size-3 animate-spin shrink-0" />
