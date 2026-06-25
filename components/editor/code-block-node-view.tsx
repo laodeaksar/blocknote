@@ -171,7 +171,7 @@ export function CodeBlockNodeView({
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
-          <NodeViewContent as="code" className="hljs !bg-transparent !p-0 !font-mono" />
+          <NodeViewContent as="div" className="hljs !bg-transparent !p-0 !font-mono" />
         </pre>
       </div>
     </NodeViewWrapper>
