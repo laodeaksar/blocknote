@@ -5,7 +5,8 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState, useMemo, useEffect, useRef } from "react";
+import { debounce } from "@tanstack/pacer";
 import { FileText } from "lucide-react";
 import {
   CommandDialog,
@@ -15,7 +16,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
-import{ Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 interface SearchModalProps {
   open: boolean;
@@ -34,6 +35,36 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   const router = useRouter();
   const { data: pages } = useQuery(convexQuery(api.pages.list, {}));
 
+  const [inputValue, setInputValue] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  const debouncedSet = useMemo(
+    () => debounce((val: string) => setDebouncedQuery(val), { wait: 200, leading: false, trailing: true }),
+    []
+  );
+
+  const debouncedSetRef = useRef(debouncedSet);
+  debouncedSetRef.current = debouncedSet;
+
+  useEffect(() => {
+    debouncedSetRef.current(inputValue);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (!open) {
+      setInputValue("");
+      setDebouncedQuery("");
+      debouncedSetRef.current.cancel?.();
+    }
+  }, [open]);
+
+  const filteredPages = useMemo(() => {
+    const all = pages ?? [];
+    if (!debouncedQuery.trim()) return all;
+    const q = debouncedQuery.toLowerCase();
+    return all.filter((p: Page) => (p.title || "Untitled").toLowerCase().includes(q));
+  }, [pages, debouncedQuery]);
+
   const navigate = useCallback(
     (id: Id<"pages">) => {
       router.push(`/doc/${id}`);
@@ -48,15 +79,21 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       onOpenChange={(o) => { if (!o) onClose(); }}
       title="Cari halaman"
       description="Ketik untuk mencari halaman"
+      shouldFilter={false}
     >
-      <CommandInput placeholder="Cari halaman..." clearable />
+      <CommandInput
+        placeholder="Cari halaman..."
+        clearable
+        value={inputValue}
+        onValueChange={setInputValue}
+      />
       <CommandList>
         <CommandEmpty>Tidak ada hasil ditemukan.</CommandEmpty>
         <CommandGroup heading="Halaman">
-          {(pages ?? []).map((page: Page) => (
+          {filteredPages.map((page: Page) => (
             <CommandItem
               key={page._id}
-              value={page.title || "Untitled"}
+              value={page._id}
               onSelect={() => navigate(page._id)}
               className="gap-3"
             >
