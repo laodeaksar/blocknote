@@ -1,7 +1,13 @@
 {
   "framework": "nextjs",
-  "buildCommand": "pnpm codegen && pnpm build",
+  "buildCommand": "pnpm build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "devCommand": "pnpm dev",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "env": {
+    "CONVEX_DEPLOY_KEY": "@convex-deploy-key",
+    "NEXT_PUBLIC_CONVEX_URL": "@next-public-convex-url",
+    "BETTER_AUTH_SECRET": "@better-auth-secret",
+    "BETTER_AUTH_URL": "@better-auth-url"
+  }
 }
