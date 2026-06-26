@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { Id } from "@/convex/_generated/dataModel";
 import { LoadingScreen } from "@/components/ui/loading-screen";
+import { useEditorContext } from "@/lib/editor-context";
 
 const Editor = dynamic(
   () => import("@/components/editor/index").then((m) => m.Editor),
@@ -17,9 +18,11 @@ const Editor = dynamic(
 interface EditorWrapperProps {
   pageId: Id<"pages">;
   editable?: boolean;
-  onCommentsOpen?: () => void;
 }
 
-export function EditorWrapper({ pageId, editable, onCommentsOpen }: EditorWrapperProps) {
-  return <Editor pageId={pageId} editable={editable} onCommentsOpen={onCommentsOpen} />;
+export function EditorWrapper({ pageId, editable }: EditorWrapperProps) {
+  const { openComments } = useEditorContext();
+  return (
+    <Editor pageId={pageId} editable={editable} onCommentsOpen={openComments} />
+  );
 }
