@@ -44,8 +44,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn(inter.variable, jetbrainsMono.variable)}>
-      <body className="antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn("antialiased", inter.variable, jetbrainsMono.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ConvexClientProvider>
             {children}
