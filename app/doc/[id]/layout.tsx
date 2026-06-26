@@ -7,9 +7,8 @@ import { api } from "@/convex/_generated/api";
 import { Navbar } from "@/components/navbar";
 import { CommentsPanel } from "@/components/comments-panel";
 import { Sidebar, MobileSidebar } from "@/components/sidebar";
-import { AppLayout } from "@/components/app-layout";
+import { SidebarProvider } from "@/lib/sidebar-context";
 import { EditorProvider, useEditorContext } from "@/lib/editor-context";
-import { cn } from "@/lib/utils";
 import type { Id } from "@/convex/_generated/dataModel";
 
 function DocInner({ children }: { children: React.ReactNode }) {
@@ -57,7 +56,7 @@ function DocInner({ children }: { children: React.ReactNode }) {
 
 export default function DocLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AppLayout>
+    <SidebarProvider>
       <div className="flex h-screen bg-background overflow-hidden">
         <Sidebar />
         <MobileSidebar />
@@ -65,6 +64,6 @@ export default function DocLayout({ children }: { children: React.ReactNode }) {
           <DocInner>{children}</DocInner>
         </EditorProvider>
       </div>
-    </AppLayout>
+    </SidebarProvider>
   );
 }
