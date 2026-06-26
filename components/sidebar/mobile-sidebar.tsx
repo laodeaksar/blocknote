@@ -217,19 +217,15 @@ export function MobileSidebar() {
 
       {/* Floating sheet */}
       <div
-        className={cn(
-          "md:hidden fixed inset-x-3 bottom-22 z-50 flex flex-col",
-          "bg-background rounded-2xl shadow-2xl border border-border/60",
-          "max-h-[calc(100dvh-104px)]",
-          open ? "translate-y-0" : "translate-y-[calc(100%+96px)]"
-        )}
+        className="md:hidden fixed inset-x-3 bottom-22 z-50 flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
         style={
           dragOffset > 0
             ? { transform: `translateY(${dragOffset}px)` }
             : {
+                transform: open ? "translateY(0px)" : "translateY(calc(100% + 96px))",
                 transition: open
-                  ? "transform 420ms var(--ease-spring)"
-                  : "transform 280ms var(--ease-snap)",
+                  ? "transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)"
+                  : "transform 280ms cubic-bezier(0.36, 0, 0.66, 0)",
               }
         }
       >
