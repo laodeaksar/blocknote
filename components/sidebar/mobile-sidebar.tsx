@@ -331,7 +331,7 @@ export function MobileSidebar() {
 
       {/* Pill bar */}
       <div
-        className="md:hidden fixed bottom-6 left-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
+        className="md:hidden fixed bottom-6 left-1/2 z-[60] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
         style={{
           transform: `translateX(-50%) scale(${open ? 0.92 : 1})`,
           transition: open
