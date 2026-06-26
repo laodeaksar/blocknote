@@ -129,7 +129,7 @@
   /* ── Font families ───────────────────────────────────────────────── */
   --font-sans: var(--font-geist-sans), ui-sans-serif, -apple-system, BlinkMacSystemFont,
                "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: var(--font-geist-mono), var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* ── Custom text sizes ───────────────────────────────────────────── */
   --text-xxs: 0.625rem;                   /* 10px — labels, timestamps, badges */

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ConvexClientProvider } from "@/lib/convex";
@@ -8,12 +7,6 @@ import { ThemeShortcut } from "@/components/theme-shortcut";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import "./globals.css";
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Notion Clone",
@@ -41,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("antialiased", GeistSans.variable, GeistMono.variable, jetbrainsMono.variable)}>
+      <body className={cn("antialiased", GeistSans.variable, GeistMono.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ConvexClientProvider>
             {children}
