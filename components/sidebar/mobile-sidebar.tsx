@@ -226,14 +226,17 @@ export function MobileSidebar() {
   return (
     <>
       {/* ── Pill bar ──────────────────────────────────────────────────
-          Rendered as a direct child (NOT in portal) so it always
-          appears immediately, even before client hydration completes.
-          position:fixed is never clipped by overflow:hidden ancestors.
+          Outer wrapper: full-width fixed strip, uses flex centering
+          (NO transform translateX) so iOS Safari hit-testing is correct.
+          Inner pill: only scale() so the center point never shifts.
       ─────────────────────────────────────────────────────────────── */}
       <div
-        className="md:hidden fixed bottom-6 left-1/2 z-[9999] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
+        className="md:hidden fixed bottom-6 left-0 right-0 z-[9999] flex justify-center"
+      >
+      <div
+        className="flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
         style={{
-          transform: `translateX(-50%) scale(${open ? 0.92 : 1})`,
+          transform: `scale(${open ? 0.92 : 1})`,
           transition: open
             ? "transform 320ms cubic-bezier(0.34,1.56,0.64,1)"
             : "transform 260ms cubic-bezier(0.36,0,0.66,0)",
@@ -273,6 +276,7 @@ export function MobileSidebar() {
         >
           <FilePlus className="size-4 pointer-events-none" />
         </button>
+      </div>
       </div>
 
       {/* ── Overlay (backdrop + sheet) via portal ─────────────────────
