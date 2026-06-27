@@ -220,12 +220,13 @@ export function MobileSidebar() {
         className="md:hidden fixed inset-x-3 bottom-22 z-50 flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
         style={
           dragOffset > 0
-            ? { transform: `translateY(${dragOffset}px)` }
+            ? { transform: `translateY(${dragOffset}px)`, pointerEvents: "auto" }
             : {
                 transform: open ? "translateY(0px)" : "translateY(calc(100% + 96px))",
                 transition: open
                   ? "transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)"
                   : "transform 280ms cubic-bezier(0.36, 0, 0.66, 0)",
+                pointerEvents: open ? "auto" : "none",
               }
         }
       >
