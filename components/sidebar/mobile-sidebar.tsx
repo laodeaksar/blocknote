@@ -39,7 +39,7 @@ import type { PageData } from "./types";
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [portalMounted, setPortalMounted] = useState(false);
   const { collapsed: desktopCollapsed } = useSidebar();
   const router = useRouter();
   const params = useParams();
@@ -47,7 +47,7 @@ export function MobileSidebar() {
   const convex = useConvex();
 
   useEffect(() => {
-    setMounted(true);
+    setPortalMounted(true);
   }, []);
 
   useEffect(() => {
@@ -223,137 +223,21 @@ export function MobileSidebar() {
     handleCreate();
   };
 
-  if (!mounted) return null;
-
-  const portal = createPortal(
+  return (
     <>
-      {/* Backdrop */}
+      {/* ── Pill bar ──────────────────────────────────────────────────
+          Rendered as a direct child (NOT in portal) so it always
+          appears immediately, even before client hydration completes.
+          position:fixed is never clipped by overflow:hidden ancestors.
+      ─────────────────────────────────────────────────────────────── */}
       <div
-        className={cn(
-          "md:hidden fixed inset-0 z-[9998] bg-black/40",
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        )}
-        style={{
-          backdropFilter: open ? "blur(4px)" : "blur(0px)",
-          transition: open
-            ? "opacity 350ms ease-out, backdrop-filter 350ms ease-out"
-            : "opacity 220ms ease-in, backdrop-filter 220ms ease-in",
-        }}
-        onClick={() => setOpen(false)}
-      />
-
-      {/* Floating sheet */}
-      <div
-        className="md:hidden fixed inset-x-3 bottom-22 z-[9999] flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
-        style={
-          dragOffset > 0
-            ? { transform: `translateY(${dragOffset}px)`, pointerEvents: "auto" }
-            : {
-                transform: open ? "translateY(0px)" : "translateY(calc(100% + 96px))",
-                transition: open
-                  ? "transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)"
-                  : "transform 280ms cubic-bezier(0.36, 0, 0.66, 0)",
-                pointerEvents: open ? "auto" : "none",
-                visibility: open ? "visible" : "hidden",
-              }
-        }
-      >
-        {/* Drag handle */}
-        <div
-          className="flex justify-center pt-3 pb-1 shrink-0 touch-none cursor-grab active:cursor-grabbing"
-          onTouchStart={handleDragStart}
-          onTouchMove={handleDragMove}
-          onTouchEnd={handleDragEnd}
-        >
-          <div className="w-10 h-1 rounded-full bg-muted-foreground/25" />
-        </div>
-
-        {/* Header */}
-        <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
-              <span className="text-background text-xxs font-bold">N</span>
-            </div>
-            <span className="text-sm font-semibold text-foreground">
-              Workspace
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-          </div>
-        </div>
-
-        {/* Page list */}
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="py-1">
-            {(pagesPending || pages === undefined) && (
-              <div className="space-y-1.5 px-3 py-2">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-7 w-full" />
-                ))}
-              </div>
-            )}
-            {pages !== undefined && pages.length === 0 && (
-              <p className="text-xs text-muted-foreground px-4 py-3">
-                No pages yet.
-              </p>
-            )}
-            <DndContext
-              sensors={mobileSensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleMobileDragEnd}
-            >
-              <SortableContext
-                items={localPages.map((p) => p._id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {localPages.map((page: PageData, index) => (
-                  <MobilePageItem
-                    key={page._id}
-                    page={page}
-                    isActive={currentId === page._id}
-                    index={index}
-                    onNavigate={() => {
-                      router.push(`/doc/${page._id}`);
-                      setOpen(false);
-                    }}
-                    onArchive={(e) => handleArchive(e, page._id)}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          </div>
-        </ScrollArea>
-
-        {/* Footer actions */}
-        <div className="shrink-0 border-t border-border p-1.5 space-y-0.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleCreate}
-            className="w-full justify-start gap-2"
-          >
-            <Plus data-icon="inline-start" />
-            New Page
-          </Button>
-          <TrashSection
-            archivedPages={archivedPages}
-            onRestore={handleRestore}
-            onRemove={handleRemove}
-            onClearAll={handleClearAll}
-            compact
-          />
-        </div>
-      </div>
-
-      {/* Pill bar */}
-      <div
-        className="md:hidden fixed bottom-6 left-1/2 z-[10000] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
+        className="md:hidden fixed bottom-6 left-1/2 z-[9999] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
         style={{
           transform: `translateX(-50%) scale(${open ? 0.92 : 1})`,
           transition: open
-            ? "transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)"
-            : "transform 260ms cubic-bezier(0.36, 0, 0.66, 0)",
+            ? "transform 320ms cubic-bezier(0.34,1.56,0.64,1)"
+            : "transform 260ms cubic-bezier(0.36,0,0.66,0)",
+          touchAction: "manipulation",
         }}
       >
         <button
@@ -361,42 +245,166 @@ export function MobileSidebar() {
           onPointerDown={toggleOpen}
           className={cn(
             "inline-flex items-center justify-center size-9 rounded-full transition-colors",
-            "hover:bg-muted active:bg-muted/80",
+            "hover:bg-muted active:bg-muted/80 cursor-pointer select-none",
             open && "bg-muted"
           )}
           aria-label="Toggle menu"
         >
           {open
-            ? <X className="size-4 animate-icon-spring-in" />
-            : <Menu className="size-4 animate-icon-spring-in" />
+            ? <X className="size-4 animate-icon-spring-in pointer-events-none" />
+            : <Menu className="size-4 animate-icon-spring-in pointer-events-none" />
           }
         </button>
-        <Separator orientation="vertical" className="h-5 mx-0.5" />
+        <Separator orientation="vertical" className="h-5 mx-0.5 pointer-events-none" />
         <button
           type="button"
           onPointerDown={openSearch}
-          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80"
+          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80 cursor-pointer select-none"
           aria-label="Cari halaman"
         >
-          <Search className="size-4" />
+          <Search className="size-4 pointer-events-none" />
         </button>
-        <Separator orientation="vertical" className="h-5 mx-0.5" />
+        <Separator orientation="vertical" className="h-5 mx-0.5 pointer-events-none" />
         <button
           type="button"
           onPointerDown={addPage}
-          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80"
+          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80 cursor-pointer select-none"
           aria-label="Halaman baru"
         >
-          <FilePlus className="size-4" />
+          <FilePlus className="size-4 pointer-events-none" />
         </button>
       </div>
-    </>,
-    document.body
-  );
 
-  return (
-    <>
-      {portal}
+      {/* ── Overlay (backdrop + sheet) via portal ─────────────────────
+          Portaled to document.body AFTER hydration to bypass any
+          overflow:hidden ancestor that could block touch events on iOS.
+      ─────────────────────────────────────────────────────────────── */}
+      {portalMounted && createPortal(
+        <>
+          {/* Backdrop */}
+          <div
+            className={cn(
+              "md:hidden fixed inset-0 bg-black/40",
+              open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            )}
+            style={{
+              zIndex: 9997,
+              backdropFilter: open ? "blur(4px)" : "blur(0px)",
+              transition: open
+                ? "opacity 350ms ease-out, backdrop-filter 350ms ease-out"
+                : "opacity 220ms ease-in, backdrop-filter 220ms ease-in",
+            }}
+            onClick={() => setOpen(false)}
+          />
+
+          {/* Floating sheet */}
+          <div
+            className="md:hidden fixed inset-x-3 bottom-22 flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
+            style={
+              dragOffset > 0
+                ? { zIndex: 9998, transform: `translateY(${dragOffset}px)`, pointerEvents: "auto" }
+                : {
+                    zIndex: 9998,
+                    transform: open ? "translateY(0px)" : "translateY(calc(100% + 96px))",
+                    transition: open
+                      ? "transform 420ms cubic-bezier(0.34,1.56,0.64,1)"
+                      : "transform 280ms cubic-bezier(0.36,0,0.66,0)",
+                    pointerEvents: open ? "auto" : "none",
+                    visibility: open ? "visible" : "hidden",
+                  }
+            }
+          >
+            {/* Drag handle */}
+            <div
+              className="flex justify-center pt-3 pb-1 shrink-0 touch-none cursor-grab active:cursor-grabbing"
+              onTouchStart={handleDragStart}
+              onTouchMove={handleDragMove}
+              onTouchEnd={handleDragEnd}
+            >
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/25" />
+            </div>
+
+            {/* Header */}
+            <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
+                  <span className="text-background text-xxs font-bold">N</span>
+                </div>
+                <span className="text-sm font-semibold text-foreground">
+                  Workspace
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+              </div>
+            </div>
+
+            {/* Page list */}
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="py-1">
+                {(pagesPending || pages === undefined) && (
+                  <div className="space-y-1.5 px-3 py-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-7 w-full" />
+                    ))}
+                  </div>
+                )}
+                {pages !== undefined && pages.length === 0 && (
+                  <p className="text-xs text-muted-foreground px-4 py-3">
+                    No pages yet.
+                  </p>
+                )}
+                <DndContext
+                  sensors={mobileSensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleMobileDragEnd}
+                >
+                  <SortableContext
+                    items={localPages.map((p) => p._id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {localPages.map((page: PageData, index) => (
+                      <MobilePageItem
+                        key={page._id}
+                        page={page}
+                        isActive={currentId === page._id}
+                        index={index}
+                        onNavigate={() => {
+                          router.push(`/doc/${page._id}`);
+                          setOpen(false);
+                        }}
+                        onArchive={(e) => handleArchive(e, page._id)}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </div>
+            </ScrollArea>
+
+            {/* Footer actions */}
+            <div className="shrink-0 border-t border-border p-1.5 space-y-0.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCreate}
+                className="w-full justify-start gap-2"
+              >
+                <Plus data-icon="inline-start" />
+                New Page
+              </Button>
+              <TrashSection
+                archivedPages={archivedPages}
+                onRestore={handleRestore}
+                onRemove={handleRemove}
+                onClearAll={handleClearAll}
+                compact
+              />
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <ConfirmDeleteDialog
         page={pageToDelete}
