@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
@@ -38,11 +39,16 @@ import type { PageData } from "./types";
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { collapsed: desktopCollapsed } = useSidebar();
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (
@@ -54,7 +60,6 @@ export function MobileSidebar() {
     }
   }, [desktopCollapsed]);
 
-  // Lock body scroll when sheet is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -158,10 +163,14 @@ export function MobileSidebar() {
   };
 
   const handleCreate = async () => {
-    const id = await createPage({ title: "Untitled" });
-    router.push(`/doc/${id}`);
-    toast.success("New page created");
-    setOpen(false);
+    try {
+      const id = await createPage({ title: "Untitled" });
+      router.push(`/doc/${id}`);
+      toast.success("New page created");
+      setOpen(false);
+    } catch {
+      toast.error("Gagal membuat halaman");
+    }
   };
 
   const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
@@ -198,12 +207,30 @@ export function MobileSidebar() {
     toast.success(`${count} halaman dihapus permanen`);
   };
 
-  return (
+  const toggleOpen = () => {
+    vibrate(10);
+    setOpen((v) => !v);
+  };
+
+  const openSearch = () => {
+    vibrate(10);
+    setOpen(false);
+    setSearchOpen(true);
+  };
+
+  const addPage = () => {
+    vibrate(10);
+    handleCreate();
+  };
+
+  if (!mounted) return null;
+
+  const portal = createPortal(
     <>
       {/* Backdrop */}
       <div
         className={cn(
-          "md:hidden fixed inset-0 z-40 bg-black/40",
+          "md:hidden fixed inset-0 z-[9998] bg-black/40",
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{
@@ -217,7 +244,7 @@ export function MobileSidebar() {
 
       {/* Floating sheet */}
       <div
-        className="md:hidden fixed inset-x-3 bottom-22 z-50 flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
+        className="md:hidden fixed inset-x-3 bottom-22 z-[9999] flex flex-col bg-background rounded-2xl shadow-2xl border border-border/60 max-h-[calc(100dvh-104px)]"
         style={
           dragOffset > 0
             ? { transform: `translateY(${dragOffset}px)`, pointerEvents: "auto" }
@@ -227,6 +254,7 @@ export function MobileSidebar() {
                   ? "transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)"
                   : "transform 280ms cubic-bezier(0.36, 0, 0.66, 0)",
                 pointerEvents: open ? "auto" : "none",
+                visibility: open ? "visible" : "hidden",
               }
         }
       >
@@ -252,14 +280,6 @@ export function MobileSidebar() {
           </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            {/*<Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => setOpen(false)}
-              aria-label="Tutup menu"
-            >
-              <X />
-            </Button>*/}
           </div>
         </div>
 
@@ -328,50 +348,56 @@ export function MobileSidebar() {
 
       {/* Pill bar */}
       <div
-        className="md:hidden fixed bottom-6 left-1/2 z-[60] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
+        className="md:hidden fixed bottom-6 left-1/2 z-[10000] flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
         style={{
           transform: `translateX(-50%) scale(${open ? 0.92 : 1})`,
           transition: open
-            ? "transform 320ms var(--ease-spring)"
-            : "transform 260ms var(--ease-snap)",
+            ? "transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)"
+            : "transform 260ms cubic-bezier(0.36, 0, 0.66, 0)",
         }}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => { vibrate(10); setOpen((v) => !v); }}
-          className={cn("rounded-full overflow-hidden", open && "bg-muted")}
+        <button
+          type="button"
+          onPointerDown={toggleOpen}
+          className={cn(
+            "inline-flex items-center justify-center size-9 rounded-full transition-colors",
+            "hover:bg-muted active:bg-muted/80",
+            open && "bg-muted"
+          )}
           aria-label="Toggle menu"
         >
           {open
-            ? <X key="x" className="animate-icon-spring-in" />
-            : <Menu key="menu" className="animate-icon-spring-in" />
+            ? <X className="size-4 animate-icon-spring-in" />
+            : <Menu className="size-4 animate-icon-spring-in" />
           }
-        </Button>
+        </button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => { vibrate(10); setOpen(false); setSearchOpen(true); }}
-          className="rounded-full"
+        <button
+          type="button"
+          onPointerDown={openSearch}
+          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80"
           aria-label="Cari halaman"
         >
-          <Search />
-        </Button>
+          <Search className="size-4" />
+        </button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => { vibrate(10); handleCreate(); }}
-          className="rounded-full"
+        <button
+          type="button"
+          onPointerDown={addPage}
+          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80"
           aria-label="Halaman baru"
         >
-          <FilePlus />
-        </Button>
+          <FilePlus className="size-4" />
+        </button>
       </div>
+    </>,
+    document.body
+  );
 
+  return (
+    <>
+      {portal}
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
-
       <ConfirmDeleteDialog
         page={pageToDelete}
         onClose={() => setPageToDelete(null)}
