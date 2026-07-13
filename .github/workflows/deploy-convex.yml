@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "convex/**"
+  
+  workflow_dispatch:
 
 jobs:
   deploy:
