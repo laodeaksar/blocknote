@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar, MobileSidebar } from "@/components/sidebar";
+import { AppLayout } from "@/components/app-layout";
 import { FileText, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -8,6 +9,7 @@ export default async function DashboardPage() {
   if (!cookieStore.has("better-auth.session_token")) redirect("/sign-in");
 
   return (
+    <AppLayout>
     <div className="flex h-screen bg-background">
       <Sidebar />
       <MobileSidebar />
@@ -29,5 +31,6 @@ export default async function DashboardPage() {
         </div>
       </main>
     </div>
+    </AppLayout>
   );
 }
