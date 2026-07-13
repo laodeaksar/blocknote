@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  allowedDevOrigins: ["*.replit.dev", "*.sisko.replit.dev", "*.pike.replit.dev", "127.0.0.1", "localhost"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
