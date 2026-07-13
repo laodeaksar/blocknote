@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "pnpm codegen && pnpm build",
+  "buildCommand": "pnpm build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "devCommand": "pnpm dev",
   "outputDirectory": ".next"
