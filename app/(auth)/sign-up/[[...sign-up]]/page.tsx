@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
@@ -34,9 +35,28 @@ function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const signUpMutation = useMutation({
+    mutationFn: async (input: { name: string; email: string; password: string }) => {
+      const { data, error } = await authClient.signUp.email({
+        name: input.name,
+        email: input.email,
+        password: input.password,
+        callbackURL: callbackUrl,
+      });
+      if (error) throw new Error(error.message ?? "Tidak dapat membuat akun. Silakan coba lagi.");
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Akun berhasil dibuat");
+      router.push(callbackUrl);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Terjadi kesalahan. Silakan coba lagi.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const nameError = validateName(name);
@@ -53,26 +73,10 @@ function SignUpForm() {
     }
 
     setFieldErrors({});
-    setLoading(true);
-    try {
-      const { error } = await authClient.signUp.email({
-        name,
-        email,
-        password,
-        callbackURL: callbackUrl,
-      });
-      if (error) {
-        toast.error(error.message ?? "Tidak dapat membuat akun. Silakan coba lagi.");
-      } else {
-        toast.success("Akun berhasil dibuat");
-        router.push(callbackUrl);
-      }
-    } catch {
-      toast.error("Terjadi kesalahan. Silakan coba lagi.");
-    } finally {
-      setLoading(false);
-    }
+    signUpMutation.mutate({ name, email, password });
   };
+
+  const loading = signUpMutation.isPending;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

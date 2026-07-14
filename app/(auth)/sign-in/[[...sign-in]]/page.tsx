@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
@@ -27,9 +28,27 @@ function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const signInMutation = useMutation({
+    mutationFn: async (input: { email: string; password: string }) => {
+      const { data, error } = await authClient.signIn.email({
+        email: input.email,
+        password: input.password,
+        callbackURL: callbackUrl,
+      });
+      if (error) throw new Error(error.message ?? "Email atau password salah");
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Berhasil masuk");
+      router.push(callbackUrl);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Terjadi kesalahan. Silakan coba lagi.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const emailError = validateEmail(email);
@@ -41,25 +60,10 @@ function SignInForm() {
     }
 
     setFieldErrors({});
-    setLoading(true);
-    try {
-      const { error } = await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: callbackUrl,
-      });
-      if (error) {
-        toast.error(error.message ?? "Email atau password salah");
-      } else {
-        toast.success("Berhasil masuk");
-        router.push(callbackUrl);
-      }
-    } catch {
-      toast.error("Terjadi kesalahan. Silakan coba lagi.");
-    } finally {
-      setLoading(false);
-    }
+    signInMutation.mutate({ email, password });
   };
+
+  const loading = signInMutation.isPending;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
