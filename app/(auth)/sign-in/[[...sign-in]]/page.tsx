@@ -3,7 +3,21 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateEmail(value: string): string | null {
+  if (!value.trim()) return "Email wajib diisi";
+  if (!EMAIL_REGEX.test(value)) return "Format email tidak valid";
+  return null;
+}
+
+function validatePassword(value: string): string | null {
+  if (!value) return "Password wajib diisi";
+  return null;
+}
 
 function SignInForm() {
   const router = useRouter();
@@ -12,12 +26,21 @@ function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setFieldErrors({ email: emailError ?? undefined, password: passwordError ?? undefined });
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
     try {
       const { error } = await authClient.signIn.email({
@@ -26,12 +49,13 @@ function SignInForm() {
         callbackURL: callbackUrl,
       });
       if (error) {
-        setError(error.message ?? "Invalid email or password");
+        toast.error(error.message ?? "Email atau password salah");
       } else {
+        toast.success("Berhasil masuk");
         router.push(callbackUrl);
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -55,7 +79,7 @@ function SignInForm() {
             Sign in to your account
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
                 Email
@@ -64,12 +88,20 @@ function SignInForm() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.email}
+                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                  fieldErrors.email ? "border-destructive" : "border-input"
+                }`}
                 placeholder="you@example.com"
               />
+              {fieldErrors.email && (
+                <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -80,19 +112,21 @@ function SignInForm() {
                 id="password"
                 type="password"
                 autoComplete="current-password"
-                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.password}
+                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                  fieldErrors.password ? "border-destructive" : "border-input"
+                }`}
                 placeholder="••••••••"
               />
+              {fieldErrors.password && (
+                <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>
+              )}
             </div>
-
-            {error && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
 
             <button
               type="submit"

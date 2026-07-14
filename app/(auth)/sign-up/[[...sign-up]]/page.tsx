@@ -3,7 +3,27 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateName(value: string): string | null {
+  if (!value.trim()) return "Nama wajib diisi";
+  return null;
+}
+
+function validateEmail(value: string): string | null {
+  if (!value.trim()) return "Email wajib diisi";
+  if (!EMAIL_REGEX.test(value)) return "Format email tidak valid";
+  return null;
+}
+
+function validatePassword(value: string): string | null {
+  if (!value) return "Password wajib diisi";
+  if (value.length < 8) return "Password minimal 8 karakter";
+  return null;
+}
 
 function SignUpForm() {
   const router = useRouter();
@@ -13,12 +33,26 @@ function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (nameError || emailError || passwordError) {
+      setFieldErrors({
+        name: nameError ?? undefined,
+        email: emailError ?? undefined,
+        password: passwordError ?? undefined,
+      });
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
     try {
       const { error } = await authClient.signUp.email({
@@ -28,12 +62,13 @@ function SignUpForm() {
         callbackURL: callbackUrl,
       });
       if (error) {
-        setError(error.message ?? "Could not create account. Please try again.");
+        toast.error(error.message ?? "Tidak dapat membuat akun. Silakan coba lagi.");
       } else {
+        toast.success("Akun berhasil dibuat");
         router.push(callbackUrl);
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +92,7 @@ function SignUpForm() {
             Start writing and organizing today
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
                 Name
@@ -66,12 +101,20 @@ function SignUpForm() {
                 id="name"
                 type="text"
                 autoComplete="name"
-                required
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.name}
+                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                  fieldErrors.name ? "border-destructive" : "border-input"
+                }`}
                 placeholder="Your name"
               />
+              {fieldErrors.name && (
+                <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>
+              )}
             </div>
 
             <div>
@@ -82,12 +125,20 @@ function SignUpForm() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.email}
+                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                  fieldErrors.email ? "border-destructive" : "border-input"
+                }`}
                 placeholder="you@example.com"
               />
+              {fieldErrors.email && (
+                <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -98,20 +149,21 @@ function SignUpForm() {
                 id="password"
                 type="password"
                 autoComplete="new-password"
-                required
-                minLength={8}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }}
+                aria-invalid={!!fieldErrors.password}
+                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                  fieldErrors.password ? "border-destructive" : "border-input"
+                }`}
                 placeholder="At least 8 characters"
               />
+              {fieldErrors.password && (
+                <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>
+              )}
             </div>
-
-            {error && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
 
             <button
               type="submit"
