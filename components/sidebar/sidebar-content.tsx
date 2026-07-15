@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useConvex } from "convex/react";
+import { useConvex, useConvexAuth } from "convex/react";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -49,6 +49,7 @@ export function SidebarContent({
   const params = useParams();
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
+  const { isAuthenticated } = useConvexAuth();
 
   const { data: pages, isPending: pagesPending } = useQuery(
     convexQuery(api.pages.list, {})
@@ -157,10 +158,32 @@ export function SidebarContent({
 
   const handleCreate = async () => {
     if (!checkRate(createLimiter, 60_000)) return;
-    const id = await createPage({ title: "Untitled" });
-    router.push(`/doc/${id}`);
-    toast.success("New page created");
-    onNavigate?.();
+    if (!isAuthenticated) {
+      toast.error("Sesi belum siap, coba lagi sebentar");
+      return;
+    }
+    try {
+      const id = await createPage({ title: "Untitled" });
+      router.push(`/doc/${id}`);
+      toast.success("New page created");
+      onNavigate?.();
+    } catch (err) {
+      // Auth token can briefly lag behind the UI right after navigation;
+      // retry once before surfacing an error to the user.
+      if (err instanceof Error && /auth/i.test(err.message)) {
+        try {
+          await new Promise((r) => setTimeout(r, 500));
+          const id = await createPage({ title: "Untitled" });
+          router.push(`/doc/${id}`);
+          toast.success("New page created");
+          onNavigate?.();
+          return;
+        } catch {
+          // fall through to error toast below
+        }
+      }
+      toast.error("Gagal membuat halaman");
+    }
   };
 
   const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
@@ -266,6 +289,7 @@ export function SidebarContent({
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
+            disabled={!isAuthenticated}
             title="New page"
             className="h-5 w-5"
           >
@@ -324,6 +348,7 @@ export function SidebarContent({
           variant="ghost"
           size="sm"
           onClick={handleCreate}
+          disabled={!isAuthenticated}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
           <Plus data-icon="inline-start" />

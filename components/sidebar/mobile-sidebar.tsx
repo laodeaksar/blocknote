@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useConvex } from "convex/react";
+import { useConvex, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -45,6 +45,7 @@ export function MobileSidebar() {
   const params = useParams();
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
+  const { isAuthenticated } = useConvexAuth();
 
   useEffect(() => {
     setPortalMounted(true);
@@ -163,12 +164,30 @@ export function MobileSidebar() {
   };
 
   const handleCreate = async () => {
+    if (!isAuthenticated) {
+      toast.error("Sesi belum siap, coba lagi sebentar");
+      return;
+    }
     try {
       const id = await createPage({ title: "Untitled" });
       router.push(`/doc/${id}`);
       toast.success("New page created");
       setOpen(false);
-    } catch {
+    } catch (err) {
+      // Auth token can briefly lag behind the UI right after navigation;
+      // retry once before surfacing an error to the user.
+      if (err instanceof Error && /auth/i.test(err.message)) {
+        try {
+          await new Promise((r) => setTimeout(r, 500));
+          const id = await createPage({ title: "Untitled" });
+          router.push(`/doc/${id}`);
+          toast.success("New page created");
+          setOpen(false);
+          return;
+        } catch {
+          // fall through to error toast below
+        }
+      }
       toast.error("Gagal membuat halaman");
     }
   };
@@ -271,7 +290,8 @@ export function MobileSidebar() {
         <button
           type="button"
           onPointerDown={addPage}
-          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80 cursor-pointer select-none"
+          disabled={!isAuthenticated}
+          className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Halaman baru"
         >
           <FilePlus className="size-4 pointer-events-none" />
@@ -391,6 +411,7 @@ export function MobileSidebar() {
                 variant="ghost"
                 size="sm"
                 onClick={handleCreate}
+                disabled={!isAuthenticated}
                 className="w-full justify-start gap-2"
               >
                 <Plus data-icon="inline-start" />

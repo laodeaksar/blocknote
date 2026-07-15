@@ -6,3 +6,4 @@
 - [Next.js Canary proxy middleware](nextjs-canary-proxy.md) — v16 canary uses proxy.ts (not middleware.ts); export `proxy` fn + `config`; both files existing causes fatal conflict
 - [Tailwind v4 PostCSS CSS relative colors](tailwind-postcss-relative-colors.md) — oklch(from var(...) l c h / alpha) breaks PostCSS production build silently; replace with color-mix()
 - [iOS Safari transform hit-testing](ios-safari-transform-hittest.md) — translateX(-50%) centering breaks touch hit-testing; use outer flex justify-center wrapper instead
+- [Convex Better Auth token race](convex-better-auth-token-race.md) — mutation buttons clicked right after nav can fire before JWT attaches, causing silent "Not authenticated" failures; gate on useConvexAuth().isAuthenticated
