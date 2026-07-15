@@ -1,43 +1,41 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
+import { Field, Form, setErrors, useForm } from "@formisch/react";
+import * as v from "valibot";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function validateName(value: string): string | null {
-  if (!value.trim()) return "Nama wajib diisi";
-  return null;
-}
-
-function validateEmail(value: string): string | null {
-  if (!value.trim()) return "Email wajib diisi";
-  if (!EMAIL_REGEX.test(value)) return "Format email tidak valid";
-  return null;
-}
-
-function validatePassword(value: string): string | null {
-  if (!value) return "Password wajib diisi";
-  if (value.length < 8) return "Password minimal 8 karakter";
-  return null;
-}
+const SignUpSchema = v.object({
+  name: v.pipe(v.string(), v.nonEmpty("Nama wajib diisi")),
+  email: v.pipe(
+    v.string(),
+    v.nonEmpty("Email wajib diisi"),
+    v.email("Format email tidak valid"),
+  ),
+  password: v.pipe(
+    v.string(),
+    v.nonEmpty("Password wajib diisi"),
+    v.minLength(8, "Password minimal 8 karakter"),
+  ),
+});
 
 function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+  const signUpForm = useForm({
+    schema: SignUpSchema,
+    validate: "submit",
+    revalidate: "input",
+  });
 
   const signUpMutation = useMutation({
-    mutationFn: async (input: { name: string; email: string; password: string }) => {
+    mutationFn: async (input: v.InferOutput<typeof SignUpSchema>) => {
       const { data, error } = await authClient.signUp.email({
         name: input.name,
         email: input.email,
@@ -52,31 +50,11 @@ function SignUpForm() {
       router.push(callbackUrl);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Terjadi kesalahan. Silakan coba lagi.");
+      const message = error.message || "Terjadi kesalahan. Silakan coba lagi.";
+      toast.error(message);
+      setErrors(signUpForm, { errors: [message] });
     },
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const nameError = validateName(name);
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
-
-    if (nameError || emailError || passwordError) {
-      setFieldErrors({
-        name: nameError ?? undefined,
-        email: emailError ?? undefined,
-        password: passwordError ?? undefined,
-      });
-      return;
-    }
-
-    setFieldErrors({});
-    signUpMutation.mutate({ name, email, password });
-  };
-
-  const loading = signUpMutation.isPending;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -96,87 +74,103 @@ function SignUpForm() {
             Start writing and organizing today
           </p>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
-                }}
-                aria-invalid={!!fieldErrors.name}
-                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
-                  fieldErrors.name ? "border-destructive" : "border-input"
-                }`}
-                placeholder="Your name"
-              />
-              {fieldErrors.name && (
-                <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>
-              )}
-            </div>
+          <Form
+            of={signUpForm}
+            onSubmit={async (output) => {
+              try {
+                await signUpMutation.mutateAsync(output);
+              } catch {
+                // surfaced via signUpMutation.onError
+              }
+            }}
+            className="space-y-4"
+          >
+            {signUpForm.errors && (
+              <p className="text-xs text-destructive text-center -mt-1">
+                {signUpForm.errors[0]}
+              </p>
+            )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
-                }}
-                aria-invalid={!!fieldErrors.email}
-                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
-                  fieldErrors.email ? "border-destructive" : "border-input"
-                }`}
-                placeholder="you@example.com"
-              />
-              {fieldErrors.email && (
-                <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>
+            <Field of={signUpForm} path={["name"]}>
+              {(field) => (
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+                    Name
+                  </label>
+                  <input
+                    {...field.props}
+                    id="name"
+                    type="text"
+                    value={field.input ?? ""}
+                    aria-invalid={!!field.errors}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                      field.errors ? "border-destructive" : "border-input"
+                    }`}
+                    placeholder="Your name"
+                  />
+                  {field.errors && (
+                    <p className="text-xs text-destructive mt-1">{field.errors[0]}</p>
+                  )}
+                </div>
               )}
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
-                }}
-                aria-invalid={!!fieldErrors.password}
-                className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
-                  fieldErrors.password ? "border-destructive" : "border-input"
-                }`}
-                placeholder="At least 8 characters"
-              />
-              {fieldErrors.password && (
-                <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>
+            <Field of={signUpForm} path={["email"]}>
+              {(field) => (
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
+                    Email
+                  </label>
+                  <input
+                    {...field.props}
+                    id="email"
+                    type="email"
+                    value={field.input ?? ""}
+                    aria-invalid={!!field.errors}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                      field.errors ? "border-destructive" : "border-input"
+                    }`}
+                    placeholder="you@example.com"
+                  />
+                  {field.errors && (
+                    <p className="text-xs text-destructive mt-1">{field.errors[0]}</p>
+                  )}
+                </div>
               )}
-            </div>
+            </Field>
+
+            <Field of={signUpForm} path={["password"]}>
+              {(field) => (
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
+                    Password
+                  </label>
+                  <input
+                    {...field.props}
+                    id="password"
+                    type="password"
+                    value={field.input ?? ""}
+                    aria-invalid={!!field.errors}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
+                      field.errors ? "border-destructive" : "border-input"
+                    }`}
+                    placeholder="At least 8 characters"
+                  />
+                  {field.errors && (
+                    <p className="text-xs text-destructive mt-1">{field.errors[0]}</p>
+                  )}
+                </div>
+              )}
+            </Field>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={signUpForm.isSubmitting}
               className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account…" : "Create account"}
+              {signUpForm.isSubmitting ? "Creating account…" : "Create account"}
             </button>
-          </form>
+          </Form>
 
           <p className="text-sm text-center text-muted-foreground mt-4">
             Already have an account?{" "}
