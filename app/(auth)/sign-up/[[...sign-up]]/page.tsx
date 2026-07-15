@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
@@ -27,6 +27,11 @@ function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const signUpForm = useForm({
     schema: SignUpSchema,
@@ -76,6 +81,7 @@ function SignUpForm() {
 
           <Form
             of={signUpForm}
+            method="post"
             onSubmit={async (output) => {
               try {
                 await signUpMutation.mutateAsync(output);
@@ -165,7 +171,7 @@ function SignUpForm() {
 
             <button
               type="submit"
-              disabled={signUpForm.isSubmitting}
+              disabled={!mounted || signUpForm.isSubmitting}
               className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {signUpForm.isSubmitting ? "Creating account…" : "Create account"}
