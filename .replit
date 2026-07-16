@@ -42,10 +42,15 @@ build = ["npm", "run", "build"]
 [userenv]
 
 [userenv.shared]
-NEXT_PUBLIC_APP_URL = "https://34b5bec9-2fad-49be-b12b-f20e8e83d1a0-00-2zymgz2axwxrw.sisko.replit.dev"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = "laodeaksar"
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET = "blocknote"
 CONVEX_DEPLOYMENT = "prod:reminiscent-curlew-987"
 NEXT_PUBLIC_CONVEX_URL = "https://reminiscent-curlew-987.convex.cloud"
 CONVEX_SITE_URL = "https://reminiscent-curlew-987.convex.site"
 BETTER_AUTH_SECRET = "1CrEVs0No3xOA6dVUWgZ/L0G2yVhb2hFREBnYPfyLa8="
+
+[userenv.development]
+NEXT_PUBLIC_APP_URL = "https://34b5bec9-2fad-49be-b12b-f20e8e83d1a0-00-2zymgz2axwxrw.sisko.replit.dev"
+
+[userenv.production]
+NEXT_PUBLIC_APP_URL = "https://laodeaksar.eu.org"

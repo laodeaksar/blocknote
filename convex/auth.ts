@@ -24,6 +24,9 @@ export const createAuth = (ctx: GenericCtx<GenericDataModel>) => {
         "https://*.replit.app",
         "https://*.sisko.replit.dev",
         "https://*.pike.replit.dev",
+        // Custom production domain — must be listed explicitly so Better Auth
+        // accepts requests originating from it.
+        "https://laodeaksar.eu.org",
       ];
 
       if (baseUrl) origins.push(baseUrl);
