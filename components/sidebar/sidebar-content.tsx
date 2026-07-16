@@ -158,10 +158,12 @@ export function SidebarContent({
 
   const handleCreate = async () => {
     if (!checkRate(createLimiter, 60_000)) return;
-    if (!isAuthenticated) {
-      toast.error("Sesi belum siap, coba lagi sebentar");
-      return;
-    }
+    // Note: we do NOT early-return on !isAuthenticated here.
+    // isAuthenticated can briefly be false while Convex refreshes its JWT
+    // token (e.g. after navigation or a WebSocket reconnect), even when the
+    // user is genuinely logged in. The button's disabled prop handles the
+    // obvious "not logged in" case; here we just try and rely on the retry
+    // logic below to recover from the transient race.
     try {
       const id = await createPage({ title: "Untitled" });
       router.push(`/doc/${id}`);
@@ -170,9 +172,9 @@ export function SidebarContent({
     } catch (err) {
       // Auth token can briefly lag behind the UI right after navigation;
       // retry once before surfacing an error to the user.
-      if (err instanceof Error && /auth/i.test(err.message)) {
+      if (err instanceof Error && /not authenticated|auth/i.test(err.message)) {
         try {
-          await new Promise((r) => setTimeout(r, 500));
+          await new Promise((r) => setTimeout(r, 800));
           const id = await createPage({ title: "Untitled" });
           router.push(`/doc/${id}`);
           toast.success("New page created");
