@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
@@ -23,10 +23,6 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const signInForm = useForm({
     schema: SignInSchema,
@@ -76,6 +72,7 @@ function SignInForm() {
           <Form
             of={signInForm}
             method="post"
+            noValidate
             onSubmit={async (output) => {
               try {
                 await signInMutation.mutateAsync(output);
@@ -141,10 +138,10 @@ function SignInForm() {
 
             <button
               type="submit"
-              disabled={!mounted || signInForm.isSubmitting}
+              disabled={signInMutation.isPending}
               className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {signInForm.isSubmitting ? "Signing in…" : "Sign in"}
+              {signInMutation.isPending ? "Signing in…" : "Sign in"}
             </button>
           </Form>
 

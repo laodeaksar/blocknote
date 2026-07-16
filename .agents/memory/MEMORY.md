@@ -8,3 +8,4 @@
 - [iOS Safari transform hit-testing](ios-safari-transform-hittest.md) — translateX(-50%) centering breaks touch hit-testing; use outer flex justify-center wrapper instead
 - [Convex Better Auth token race](convex-better-auth-token-race.md) — mutation buttons clicked right after nav can fire before JWT attaches, causing silent "Not authenticated" failures; gate on useConvexAuth().isAuthenticated
 - [Convex generated folder missing after import](convex-generated-missing.md) — import from GitHub strips _generated; regenerate from local source without deploy key
+- [formisch-react signals SSR bug](formisch-react-ssr.md) — @formisch/react isSubmitting evaluates true during client hydration; use mutation.isPending instead
