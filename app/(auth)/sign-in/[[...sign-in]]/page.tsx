@@ -72,7 +72,6 @@ function SignInForm() {
           <Form
             of={signInForm}
             method="post"
-            noValidate
             onSubmit={async (output) => {
               try {
                 await signInMutation.mutateAsync(output);
