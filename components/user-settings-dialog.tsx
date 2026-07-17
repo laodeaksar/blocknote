@@ -229,9 +229,14 @@ export function UserSettingsDialog({ open, onClose }: Props) {
             {formContent}
 
             <DialogFooter showCloseButton>
-              <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
-                {saving ? "Saving…" : "Save changes"}
-              </Button>
+              <LoadingButton
+                onClick={handleSave}
+                isPending={isBusy}
+                disabled={!name.trim()}
+                loadingText="Saving..."
+              >
+                Save changes
+              </LoadingButton>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -248,9 +253,14 @@ export function UserSettingsDialog({ open, onClose }: Props) {
             <div className="px-4">{formContent}</div>
 
             <DrawerFooter className="pt-4">
-              <Button onClick={handleSave} disabled={isBusy || !name.trim()}>
-                {saving ? "Saving…" : "Save changes"}
-              </Button>
+              <LoadingButton
+                onClick={handleSave}
+                isPending={isBusy}
+                disabled={!name.trim()}
+                loadingText="Saving..."
+              >
+                Save changes
+              </LoadingButton>
               <DrawerClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DrawerClose>

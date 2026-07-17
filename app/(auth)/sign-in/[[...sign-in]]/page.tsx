@@ -4,10 +4,26 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
-import { Field, Form, setErrors, useForm } from "@formisch/react";
+import { Field as FormischField, Form, setErrors, useForm } from "@formisch/react";
 import * as v from "valibot";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { Eye } from "lucide-react";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupButton,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { LoadingButton } from "@/components/ui/loading-button";
 
 const SignInSchema = v.object({
   email: v.pipe(
@@ -86,62 +102,67 @@ function SignInForm() {
                 {signInForm.errors[0]}
               </p>
             )}
-
-            <Field of={signInForm} path={["email"]}>
+            <FieldGroup>
+            <FormischField of={signInForm} path={["email"]}>
               {(field) => (
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                    Email
-                  </label>
-                  <input
+                <Field data-invalid={field.errors !== null}>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
                     {...field.props}
                     id="email"
                     type="email"
                     value={field.input ?? ""}
                     aria-invalid={!!field.errors}
-                    className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
-                      field.errors ? "border-destructive" : "border-input"
-                    }`}
                     placeholder="you@example.com"
                   />
                   {field.errors && (
-                    <p className="text-xs text-destructive mt-1">{field.errors[0]}</p>
+                    <FieldError errors={field.errors.map((message) => ({ message }))} />
                   )}
-                </div>
+                </Field>
               )}
-            </Field>
+            </FormischField>
+            </FieldGroup>
 
-            <Field of={signInForm} path={["password"]}>
+            <FieldGroup>
+            <FormischField of={signInForm} path={["password"]}>
               {(field) => (
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
-                    Password
-                  </label>
-                  <input
-                    {...field.props}
-                    id="password"
-                    type="password"
-                    value={field.input ?? ""}
-                    aria-invalid={!!field.errors}
-                    className={`w-full px-3 py-2 border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground ${
-                      field.errors ? "border-destructive" : "border-input"
-                    }`}
-                    placeholder="••••••••"
-                  />
+                <Field data-invalid={field.errors !== null}>
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput
+                      { ...field.props }
+                      id="password"
+                      type="password"
+                      value={field.input ?? ""}
+                      aria-invalid={!!field.errors}
+                      placeholder = "••••••••" />
+                       <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                aria-label="Show password"
+                title="Show password"
+                size="icon-xs"
+                onClick={}
+              >
+                <Eye />
+              </InputGroupButton>
+            </InputGroupAddon>
+                  </InputGroup>
                   {field.errors && (
-                    <p className="text-xs text-destructive mt-1">{field.errors[0]}</p>
+                    <FieldError errors={field.errors.map((message) => ({ message }))} />
                   )}
-                </div>
+                </Field>
               )}
-            </Field>
-
-            <button
-              type="submit"
-              disabled={signInMutation.isPending}
-              className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {signInMutation.isPending ? "Signing in…" : "Sign in"}
-            </button>
+            </FormischField>
+            </FieldGroup>
+            <LoadingButton
+            type="submit"
+        disabled={signInMutation.isPending}
+        isPending={signInMutation.isPending}
+        loadingText="Signing in ..."
+        className="w-full"
+      >
+        Sign in
+      </LoadingButton>
           </Form>
 
           <p className="text-sm text-center text-muted-foreground mt-4">

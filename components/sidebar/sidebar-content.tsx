@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
+import { convexQuery, convexMutation } from "@convex-dev/react-query";
 import { useConvex, useConvexAuth } from "convex/react";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
@@ -49,7 +49,7 @@ export function SidebarContent({
   const params = useParams();
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
 
   const { data: pages, isPending: pagesPending } = useQuery(
     convexQuery(api.pages.list, {})
@@ -58,10 +58,15 @@ export function SidebarContent({
     convexQuery(api.pages.getArchived, {})
   );
 
-  const { mutateAsync: createPage } = useMutation({
+  /*const { mutateAsync: createPage } = useMutation({
     mutationFn: (vars: { title: string }) =>
       convex.mutation(api.pages.create, vars),
-  });
+  });*/
+  const { mutateAsync: createPage, isPending: isCreating } = useMutation({
+  mutationFn: convexMutation(api.pages.create),
+  retry: 2,
+  retryDelay: 1000,
+});
   const { mutateAsync: archivePage } = useMutation({
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.archive, vars),
@@ -158,13 +163,22 @@ export function SidebarContent({
 
   const handleCreate = async () => {
     if (!checkRate(createLimiter, 60_000)) return;
-    // Note: we do NOT early-return on !isAuthenticated here.
-    // isAuthenticated can briefly be false while Convex refreshes its JWT
-    // token (e.g. after navigation or a WebSocket reconnect), even when the
-    // user is genuinely logged in. The button's disabled prop handles the
-    // obvious "not logged in" case; here we just try and rely on the retry
-    // logic below to recover from the transient race.
-    try {
+if (!isAuthenticated) { // <--- guard beneran
+  toast.error("Silakan login dulu");
+  return;
+}
+
+try {
+  const id = await createPage({ title: "Untitled" });
+  router.push(`/doc/${id}`);
+  toast.success("New page created");
+  onNavigate?.();
+} catch (err) {
+  console.error("Create error:", err);
+  toast.error(err instanceof Error ? err.message : "Gagal membuat halaman");
+}
+
+    /*try {
       const id = await createPage({ title: "Untitled" });
       router.push(`/doc/${id}`);
       toast.success("New page created");
@@ -185,7 +199,7 @@ export function SidebarContent({
         }
       }
       toast.error("Gagal membuat halaman");
-    }
+    }*/
   };
 
   const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
@@ -291,7 +305,7 @@ export function SidebarContent({
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
-            disabled={!isAuthenticated}
+            disabled={!isAuthenticated || authLoading || isCreating}
             title="New page"
             className="h-5 w-5"
           >
@@ -350,7 +364,7 @@ export function SidebarContent({
           variant="ghost"
           size="sm"
           onClick={handleCreate}
-          disabled={!isAuthenticated}
+          disabled={!isAuthenticated || authLoading || isCreating}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
           <Plus data-icon="inline-start" />
