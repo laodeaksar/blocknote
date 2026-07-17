@@ -38,7 +38,7 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
-
+  const [showPassword, setShowPassword] = useState(false)
 
   const signInForm = useForm({
     schema: SignInSchema,
@@ -132,18 +132,19 @@ function SignInForm() {
                     <InputGroupInput
                       { ...field.props }
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={field.input ?? ""}
                       aria-invalid={!!field.errors}
                       placeholder = "••••••••" />
                        <InputGroupAddon align="inline-end">
               <InputGroupButton
-                aria-label="Show password"
-                title="Show password"
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                title={showPassword ? "Hide password" : "Show password"}
                 size="icon-xs"
-                onClick={}
               >
-                <Eye />
+                {showPassword ? <EyeOff /> : <Eye />
               </InputGroupButton>
             </InputGroupAddon>
                   </InputGroup>

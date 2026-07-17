@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery, convexMutation } from "@convex-dev/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { useConvex, useConvexAuth } from "convex/react";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
@@ -62,11 +62,7 @@ export function SidebarContent({
     mutationFn: (vars: { title: string }) =>
       convex.mutation(api.pages.create, vars),
   });*/
-  const { mutateAsync: createPage, isPending: isCreating } = useMutation({
-  mutationFn: convexMutation(api.pages.create),
-  retry: 2,
-  retryDelay: 1000,
-});
+  const createPage = useConvexMutation(api.pages.create)
   const { mutateAsync: archivePage } = useMutation({
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.archive, vars),
@@ -305,7 +301,7 @@ try {
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
-            disabled={!isAuthenticated || authLoading || isCreating}
+            disabled={createPage.isPending || !isAuthenticated}
             title="New page"
             className="h-5 w-5"
           >
