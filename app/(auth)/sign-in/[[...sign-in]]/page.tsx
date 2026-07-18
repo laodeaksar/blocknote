@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { Field as FormischField, Form, setErrors, useForm } from "@formisch/reac
 import * as v from "valibot";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Eye } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Field,
   FieldDescription,
@@ -144,7 +144,7 @@ function SignInForm() {
                 title={showPassword ? "Hide password" : "Show password"}
                 size="icon-xs"
               >
-                {showPassword ? <EyeOff /> : <Eye />
+                {showPassword ? <EyeOff /> : <Eye />}
               </InputGroupButton>
             </InputGroupAddon>
                   </InputGroup>

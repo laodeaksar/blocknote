@@ -84,6 +84,7 @@ export function SidebarContent({
   });
 
   const [localPages, setLocalPages] = useState<PageData[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{
     id: Id<"pages">;
@@ -159,20 +160,22 @@ export function SidebarContent({
 
   const handleCreate = async () => {
     if (!checkRate(createLimiter, 60_000)) return;
-if (!isAuthenticated) { // <--- guard beneran
-  toast.error("Silakan login dulu");
-  return;
-}
-
-try {
-  const id = await createPage({ title: "Untitled" });
-  router.push(`/doc/${id}`);
-  toast.success("New page created");
-  onNavigate?.();
-} catch (err) {
-  console.error("Create error:", err);
-  toast.error(err instanceof Error ? err.message : "Gagal membuat halaman");
-}
+    if (!isAuthenticated) {
+      toast.error("Silakan login dulu");
+      return;
+    }
+    setIsCreating(true);
+    try {
+      const id = await createPage({ title: "Untitled" });
+      router.push(`/doc/${id}`);
+      toast.success("New page created");
+      onNavigate?.();
+    } catch (err) {
+      console.error("Create error:", err);
+      toast.error(err instanceof Error ? err.message : "Gagal membuat halaman");
+    } finally {
+      setIsCreating(false);
+    }
 
     /*try {
       const id = await createPage({ title: "Untitled" });
@@ -301,7 +304,7 @@ try {
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
-            disabled={createPage.isPending || !isAuthenticated}
+            disabled={isCreating || !isAuthenticated}
             title="New page"
             className="h-5 w-5"
           >

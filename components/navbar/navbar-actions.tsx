@@ -16,6 +16,7 @@ import type { Editor } from "@tiptap/react";
 
 export function NavbarActions({
   pageId,
+  title,
   isPublished,
   editor,
   commentsOpen,
@@ -23,6 +24,7 @@ export function NavbarActions({
   activeThreadCount
 }: {
   pageId: Id < "pages" > ;
+  title: string;
   isPublished: boolean;
   editor: Editor | null;
   commentsOpen ? : boolean;
@@ -33,12 +35,12 @@ export function NavbarActions({
   
   const handleExportHTML = () => {
     if (!editor) return;
-    exportHTML(editor.getHTML());
+    exportHTML(title, editor.getHTML());
     toast.success("Diekspor sebagai HTML");
   };
   const handleExportMD = async () => {
     if (!editor) return;
-    await exportMarkdown(editor.getHTML());
+    await exportMarkdown(title, editor.getHTML());
     toast.success("Diekspor sebagai Markdown");
   };
   

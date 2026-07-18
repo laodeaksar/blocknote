@@ -1,8 +1,9 @@
 "use client";
 import { useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery, convexMutation } from "@convex-dev/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
+import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useSidebar } from "@/lib/sidebar-context";
@@ -23,14 +24,15 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: { pageId: Id 
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId }));
   const { mutateAsync: updatePage, isPending: isUpdatingTitle } = useMutation({
-  mutationFn: convexMutation(api.pages.update),
-  retry: 2,
-  retryDelay: 1000,
-  onError: (err) => {
-    console.error("Update title error:", err);
-    toast.error(err instanceof Error ? err.message : "Gagal update judul");
-  },
-});
+    mutationFn: (vars: Parameters<typeof convex.mutation<typeof api.pages.update>>[1]) =>
+      convex.mutation(api.pages.update, vars),
+    retry: 2,
+    retryDelay: 1000,
+    onError: (err) => {
+      console.error("Update title error:", err);
+      toast.error(err instanceof Error ? err.message : "Gagal update judul");
+    },
+  });
   /*const { mutateAsync: updatePage } = useMutation({
     mutationFn: (vars: any) => convex.utation(api.pages.update, vars),
   });*/
@@ -55,7 +57,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: { pageId: Id 
         {page.icon && <span className="text-sm">{page.icon}</span>}
         <NavbarTitle
           title={page.title}
-          onSave={(t) => updatePage({ id: pageId, title: t })}
+          onSave={(t) => updatePage({ id: pageId, title: t }).then(() => {})}
           isPending={isUpdatingTitle}
         />
       </div>
@@ -69,6 +71,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: { pageId: Id 
         <NavbarStatus />
         <NavbarActions
           pageId={pageId}
+          title={page.title}
           isPublished={page.isPublished?? false}
           editor={editor}
           commentsOpen={commentsOpen}
