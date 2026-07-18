@@ -30,8 +30,10 @@ if (convexUrl) {
 
 export function ConvexClientProvider({
   children,
+  initialToken,
 }: {
   children: React.ReactNode;
+  initialToken?: string | null;
 }) {
   if (!convexUrl || !convex || !queryClient) {
     return (
@@ -44,7 +46,11 @@ export function ConvexClientProvider({
   }
 
   return (
-    <ConvexBetterAuthProvider client={convex} authClient={authClient as unknown as Parameters<typeof ConvexBetterAuthProvider>[0]["authClient"]}>
+    <ConvexBetterAuthProvider
+      client={convex}
+      authClient={authClient as unknown as Parameters<typeof ConvexBetterAuthProvider>[0]["authClient"]}
+      initialToken={initialToken ?? undefined}
+    >
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>

@@ -156,8 +156,13 @@ export function SidebarContent({
       toast.success("New page created");
       onNavigate?.();
     } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const data = (err as any)?.data ?? (err as any)?.cause ?? "";
       console.error("Create error:", err);
-      toast.error(err instanceof Error ? err.message : "Gagal membuat halaman");
+      toast.error(`Gagal membuat halaman: ${msg}`, {
+        description: data ? String(data) : undefined,
+        duration: 8000,
+      });
     } finally {
       setIsCreating(false);
     }

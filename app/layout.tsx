@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ConvexClientProvider } from "@/lib/convex";
+import { getToken } from "@/lib/auth-server";
 import { ThemeProvider } from "next-themes";
 import { ThemeShortcut } from "@/components/theme-shortcut";
 import { Toaster } from "@/components/ui/sonner";
@@ -27,16 +28,18 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const initialToken = await getToken().catch(() => null) ?? null;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("antialiased", GeistSans.variable, GeistMono.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ConvexClientProvider>
+          <ConvexClientProvider initialToken={initialToken}>
             {children}
             <ThemeShortcut />
             <Toaster />

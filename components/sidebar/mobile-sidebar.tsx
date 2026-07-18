@@ -177,7 +177,9 @@ export function MobileSidebar() {
           // fall through to error toast below
         }
       }
-      toast.error("Gagal membuat halaman");
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Mobile create error:", err);
+      toast.error(`Gagal membuat halaman: ${msg}`, { duration: 8000 });
     }
   };
 
