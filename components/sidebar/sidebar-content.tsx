@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex, useConvexAuth } from "convex/react";
+import { useSession } from "@/lib/auth-client";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -50,6 +51,8 @@ export function SidebarContent({
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
   const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
 
   const { data: pages, isPending: pagesPending } = useQuery(
     convexQuery(api.pages.list, {})
@@ -159,7 +162,7 @@ export function SidebarContent({
 
   const handleCreate = async () => {
     if (!checkRate(createLimiter, 60_000)) return;
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       toast.error("Silakan login dulu");
       return;
     }
@@ -303,7 +306,7 @@ export function SidebarContent({
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
-            disabled={isCreating || !isAuthenticated}
+            disabled={isCreating || !isLoggedIn}
             title="New page"
             className="h-5 w-5"
           >
@@ -362,7 +365,7 @@ export function SidebarContent({
           variant="ghost"
           size="sm"
           onClick={handleCreate}
-          disabled={!isAuthenticated || authLoading || isCreating}
+          disabled={!isLoggedIn || isCreating}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
           <Plus data-icon="inline-start" />

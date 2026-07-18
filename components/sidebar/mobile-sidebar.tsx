@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex, useConvexAuth } from "convex/react";
+import { useSession } from "@/lib/auth-client";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -46,6 +47,8 @@ export function MobileSidebar() {
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
   const { isAuthenticated } = useConvexAuth();
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
 
   useEffect(() => {
     setPortalMounted(true);
@@ -292,7 +295,7 @@ export function MobileSidebar() {
         <button
           type="button"
           onPointerDown={addPage}
-          disabled={!isAuthenticated}
+          disabled={!isLoggedIn}
           className="inline-flex items-center justify-center size-9 rounded-full transition-colors hover:bg-muted active:bg-muted/80 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Halaman baru"
         >
@@ -413,7 +416,7 @@ export function MobileSidebar() {
                 variant="ghost"
                 size="sm"
                 onClick={handleCreate}
-                disabled={!isAuthenticated}
+                disabled={!isLoggedIn}
                 className="w-full justify-start gap-2"
               >
                 <Plus data-icon="inline-start" />
