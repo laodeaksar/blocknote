@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { useConvex } from "convex/react";
+import { useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { FileText, Trash2, GripVertical } from "lucide-react";
@@ -25,15 +24,10 @@ export function MobilePageItem({
   onNavigate: () => void;
   onArchive: (e: React.MouseEvent) => void;
 }) {
-  const convex = useConvex();
+  const updatePage = useConvexMutation(api.pages.update);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(page.title || "");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const { mutateAsync: updatePage } = useMutation({
-    mutationFn: (vars: { id: Id<"pages">; title: string }) =>
-      convex.mutation(api.pages.update, vars),
-  });
 
   const {
     attributes,

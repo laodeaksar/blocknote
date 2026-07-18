@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { useConvex, useConvexAuth } from "convex/react";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useConvexAuth } from "convex/react";
 import { useSession } from "@/lib/auth-client";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
@@ -49,8 +49,7 @@ export function SidebarContent({
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
-  const convex = useConvex();
-  const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
+  const { isAuthenticated } = useConvexAuth();
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
 
@@ -61,32 +60,16 @@ export function SidebarContent({
     convexQuery(api.pages.getArchived, {})
   );
 
-  const { mutateAsync: createPage } = useMutation({
-    mutationFn: (vars: { title: string }) =>
-      convex.mutation(api.pages.create, vars),
-  });
-  const { mutateAsync: archivePage } = useMutation({
-    mutationFn: (vars: { id: Id<"pages"> }) =>
-      convex.mutation(api.pages.archive, vars),
-  });
-  const { mutateAsync: restorePage } = useMutation({
-    mutationFn: (vars: { id: Id<"pages"> }) =>
-      convex.mutation(api.pages.restore, vars),
-  });
-  const { mutateAsync: removePage, isPending: isRemoving } = useMutation({
-    mutationFn: (vars: { id: Id<"pages"> }) =>
-      convex.mutation(api.pages.remove, vars),
-  });
-  const { mutateAsync: clearTrashPages } = useMutation({
-    mutationFn: () => convex.mutation(api.pages.clearTrash, {}),
-  });
-  const { mutateAsync: reorderPages } = useMutation({
-    mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
-      convex.mutation(api.pages.reorder, vars),
-  });
+  const createPage = useConvexMutation(api.pages.create);
+  const archivePage = useConvexMutation(api.pages.archive);
+  const restorePage = useConvexMutation(api.pages.restore);
+  const removePage = useConvexMutation(api.pages.remove);
+  const clearTrashPages = useConvexMutation(api.pages.clearTrash);
+  const reorderPages = useConvexMutation(api.pages.reorder);
 
   const [localPages, setLocalPages] = useState<PageData[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{
     id: Id<"pages">;
@@ -230,9 +213,14 @@ export function SidebarContent({
   const confirmRemove = async () => {
     if (!pageToDelete) return;
     if (!checkRate(deleteLimiter, 30_000)) return;
-    await removePage({ id: pageToDelete.id });
-    toast.success("Page permanently deleted");
-    setPageToDelete(null);
+    setIsRemoving(true);
+    try {
+      await removePage({ id: pageToDelete.id });
+      toast.success("Page permanently deleted");
+      setPageToDelete(null);
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   const handleClearAll = async () => {
