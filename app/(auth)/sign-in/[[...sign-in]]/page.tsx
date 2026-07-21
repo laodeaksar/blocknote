@@ -3,39 +3,58 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import * as v from "valibot";
+import { useForm, useField, handleSubmit } from "@formisch/react";
+
 import { authClient } from "@/lib/auth-client";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+
+const signInSchema = v.object({
+  email: v.pipe(v.string(), v.email("Please enter a valid email address")),
+  password: v.pipe(v.string(), v.minLength(1, "Password is required")),
+});
 
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const form = useForm({ schema: signInSchema, validateOn: "blur" });
+  const emailField = useField(form, { path: ["email"] });
+  const passwordField = useField(form, { path: ["password"] });
+
+  const onSubmit = handleSubmit(form, async (values) => {
+    setServerError(null);
     setLoading(true);
     try {
       const { error } = await authClient.signIn.email({
-        email,
-        password,
+        email: values.email,
+        password: values.password,
         callbackURL: callbackUrl,
       });
       if (error) {
-        setError(error.message ?? "Invalid email or password");
+        setServerError(error.message ?? "Invalid email or password");
       } else {
         router.push(callbackUrl);
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setServerError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -55,52 +74,69 @@ function SignInForm() {
             Sign in to your account
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
-                placeholder="you@example.com"
-              />
-            </div>
+          <form onSubmit={onSubmit} noValidate>
+            <FieldGroup className="gap-4">
+              {/* Email */}
+              <Field data-invalid={!!emailField.errors || undefined}>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  aria-invalid={!!emailField.errors}
+                  {...emailField.props}
+                />
+                <FieldError
+                  errors={emailField.errors?.map((msg) => ({ message: msg }))}
+                />
+              </Field>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
-                placeholder="••••••••"
-              />
-            </div>
+              {/* Password */}
+              <Field data-invalid={!!passwordField.errors || undefined}>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <InputGroup>
+                  <InputGroupInput
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    aria-invalid={!!passwordField.errors}
+                    {...passwordField.props}
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                </InputGroup>
+                <FieldError
+                  errors={passwordField.errors?.map((msg) => ({ message: msg }))}
+                />
+              </Field>
 
-            {error && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
+              {/* Server error */}
+              {serverError && (
+                <FieldError className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+                  {serverError}
+                </FieldError>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Signing in…" : "Sign in"}
-            </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Signing in…" : "Sign in"}
+              </button>
+            </FieldGroup>
           </form>
 
           <p className="text-sm text-center text-muted-foreground mt-4">
