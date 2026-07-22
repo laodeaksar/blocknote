@@ -33,7 +33,6 @@ function SignUpForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({ schema: signUpSchema, validateOn: "blur" });
@@ -42,7 +41,6 @@ function SignUpForm() {
   const passwordField = useField(form, { path: ["password"] });
 
   const onSubmit = handleSubmit(form, async (values) => {
-    setLoading(true);
     try {
       const { error } = await authClient.signUp.email({
         name: values.name,
@@ -58,8 +56,6 @@ function SignUpForm() {
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
     }
   });
 
@@ -138,7 +134,7 @@ function SignUpForm() {
 
           <LoadingButton
             type="submit"
-            isPending={loading || form.isValidating}
+            isPending={form.isSubmitting || form.isValidating}
             loadingText={form.isValidating ? "Validating…" : "Creating account…"}
             className="w-full"
           >

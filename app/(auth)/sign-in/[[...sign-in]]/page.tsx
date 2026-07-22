@@ -29,7 +29,6 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({ schema: signInSchema, validateOn: "blur" });
@@ -37,7 +36,6 @@ function SignInForm() {
   const passwordField = useField(form, { path: ["password"] });
 
   const onSubmit = handleSubmit(form, async (values) => {
-    setLoading(true);
     try {
       const { error } = await authClient.signIn.email({
         email: values.email,
@@ -52,8 +50,6 @@ function SignInForm() {
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
     }
   });
 
@@ -116,7 +112,7 @@ function SignInForm() {
 
           <LoadingButton
             type="submit"
-            isPending={loading || form.isValidating}
+            isPending={form.isSubmitting || form.isValidating}
             loadingText={form.isValidating ? "Validating…" : "Signing in…"}
             className="w-full"
           >
