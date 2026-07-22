@@ -25,8 +25,6 @@ export default function AuthLoading() {
                 <Skeleton className="h-9 w-full rounded-lg" />
               </div>
             ))}
-
-            {/* Submit button */}
             <Skeleton className="h-9 w-full rounded-lg mt-2" />
           </div>
 
