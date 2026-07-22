@@ -17,6 +17,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 const signUpSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, "Name is required")),
@@ -135,13 +136,14 @@ function SignUpForm() {
             />
           </Field>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
-            className="w-full py-2 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            isPending={loading || form.isValidating}
+            loadingText={form.isValidating ? "Validating…" : "Creating account…"}
+            className="w-full"
           >
-            {loading ? "Creating account…" : "Create account"}
-          </button>
+            Create account
+          </LoadingButton>
         </FieldGroup>
       </form>
 
