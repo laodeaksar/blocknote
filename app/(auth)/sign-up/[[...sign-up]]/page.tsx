@@ -35,7 +35,7 @@ function SignUpForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useForm({ schema: signUpSchema, validateOn: "blur" });
+  const form = useForm({ schema: signUpSchema, validate: "blur" });
   const nameField = useField(form, { path: ["name"] });
   const emailField = useField(form, { path: ["email"] });
   const passwordField = useField(form, { path: ["password"] });

@@ -31,7 +31,7 @@ function SignInForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useForm({ schema: signInSchema, validateOn: "blur" });
+  const form = useForm({ schema: signInSchema, validate: "blur" });
   const emailField = useField(form, { path: ["email"] });
   const passwordField = useField(form, { path: ["password"] });
 
