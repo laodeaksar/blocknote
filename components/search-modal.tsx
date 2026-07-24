@@ -94,7 +94,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
               key={page._id}
               value={page._id}
               onSelect={() => navigate(page._id)}
-              className="gap-3"
+              className="gap-3 data-selected:bg-transparent data-selected:text-foreground"
             >
               {page.icon ? (
                 <span className="text-base shrink-0">{page.icon}</span>
