@@ -156,7 +156,7 @@ export function SidebarContent({
   }, []);
 
   const handleCreate = async () => {
-    if (!checkRate(createLimiter, 60_000)) return;
+    // if (!checkRate(createLimiter, 60_000)) return;
     const id = await createPage({ title: "Untitled" });
     router.push(`/doc/${id}`);
     toast.success("New page created");
