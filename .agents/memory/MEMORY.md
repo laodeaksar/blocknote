@@ -5,3 +5,4 @@
 - [base-ui context requirements](base-ui-context-requirements.md) — base-ui primitives must be inside their parent context or they silently fail to render
 - [Next.js Canary proxy middleware](nextjs-canary-proxy.md) — v16 canary uses proxy.ts (not middleware.ts); export `proxy` fn + `config`; both files existing causes fatal conflict
 - [Tailwind v4 PostCSS CSS relative colors](tailwind-postcss-relative-colors.md) — oklch(from var(...) l c h / alpha) breaks PostCSS production build silently; replace with color-mix()
+- [Imported Convex generated files](imported-convex-generated-files.md) — missing ignored generated modules can look like a page/UI failure; check them before debugging interactions

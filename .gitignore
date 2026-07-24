@@ -9,7 +9,8 @@ out/
 
 # production
 build/
-convex/_generated/
+# Keep the Convex client API and data model available after importing the repo.
+# The files are generated from the local Convex source and are required at build time.
 
 # misc
 .DS_Store

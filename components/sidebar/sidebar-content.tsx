@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
@@ -58,7 +58,8 @@ export function SidebarContent({
   );
 
   const { mutateAsync: createPage } = useMutation({
-    mutationFn: useConvexMutation(api.pages.create),
+    mutationFn: (vars: { title?: string; parentDocument?: Id<"pages"> }) =>
+      convex.mutation(api.pages.create, vars),
   });
   const { mutateAsync: archivePage } = useMutation({
     mutationFn: (vars: { id: Id<"pages"> }) =>
