@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useConvex } from "convex/react";
 import { RateLimiter, AsyncThrottler } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -28,7 +29,6 @@ import { UserMenu } from "@/components/user-menu";
 import { SearchModal } from "@/components/search-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { LoadingButton } from "@/components/ui/loading-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -48,6 +48,7 @@ export function SidebarContent({
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
+  const convex = useConvex();
 
   const { data: pages, isPending: pagesPending } = useQuery(
     convexQuery(api.pages.list, {})
@@ -56,23 +57,27 @@ export function SidebarContent({
     convexQuery(api.pages.getArchived, {})
   );
 
-  const { mutateAsync: createPage, isPending: isCreating } = useMutation({
+  const { mutateAsync: createPage } = useMutation({
     mutationFn: useConvexMutation(api.pages.create),
   });
   const { mutateAsync: archivePage } = useMutation({
-    mutationFn: useConvexMutation(api.pages.archive),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.archive, vars),
   });
   const { mutateAsync: restorePage } = useMutation({
-    mutationFn: useConvexMutation(api.pages.restore),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.restore, vars),
   });
   const { mutateAsync: removePage, isPending: isRemoving } = useMutation({
-    mutationFn: useConvexMutation(api.pages.remove),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.remove, vars),
   });
   const { mutateAsync: clearTrashPages } = useMutation({
-    mutationFn: useConvexMutation(api.pages.clearTrash),
+    mutationFn: () => convex.mutation(api.pages.clearTrash, {}),
   });
   const { mutateAsync: reorderPages } = useMutation({
-    mutationFn: useConvexMutation(api.pages.reorder),
+    mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
+      convex.mutation(api.pages.reorder, vars),
   });
 
   const [localPages, setLocalPages] = useState<PageData[]>([]);
@@ -191,7 +196,7 @@ export function SidebarContent({
 
   const handleClearAll = async () => {
     if (!checkRate(clearAllLimiter, 60_000)) return;
-    const count = await clearTrashPages({});
+    const count = await clearTrashPages();
     toast.success(`${count} halaman dihapus permanen`);
   };
 
@@ -212,7 +217,6 @@ export function SidebarContent({
         <div className="flex items-center gap-1">
           {onCollapse && (
             <Button
-              type="button"
               variant="ghost"
               size="icon-xs"
               onClick={onCollapse}
@@ -227,7 +231,6 @@ export function SidebarContent({
 
       <div className="px-2 space-y-0.5">
         <Button
-          type="button"
           variant="ghost"
           size="sm"
           className="w-full justify-start gap-2 text-muted-foreground"
@@ -242,7 +245,6 @@ export function SidebarContent({
         </Button>
         <div className="flex items-center gap-1">
           <Button
-            type="button"
             variant="ghost"
             size="sm"
             className="flex-1 justify-start gap-2 text-muted-foreground"
@@ -259,17 +261,15 @@ export function SidebarContent({
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Pages
           </span>
-          <LoadingButton
-            type="button"
+          <Button
             variant="ghost"
             size="icon-xs"
             onClick={handleCreate}
             title="New page"
             className="h-5 w-5"
-            isPending={isCreating}
           >
             <Plus className="size-4" />
-          </LoadingButton>
+          </Button>
         </div>
 
         <ScrollArea className="h-full">
@@ -319,18 +319,15 @@ export function SidebarContent({
           onRemove={handleRemove}
           onClearAll={handleClearAll}
         />
-        <LoadingButton
-          type="button"
+        <Button
           variant="ghost"
           size="sm"
           onClick={handleCreate}
           className="w-full justify-start gap-2 text-muted-foreground mt-1"
-          isPending={isCreating}
-          loadingText="Membuat…"
         >
           <Plus data-icon="inline-start" />
-          Halaman
-        </LoadingButton>
+          New page
+        </Button>
       </div>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />

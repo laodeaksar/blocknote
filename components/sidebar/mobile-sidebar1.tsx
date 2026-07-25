@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -26,7 +27,6 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/lib/sidebar-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { LoadingButton } from "@/components/ui/loading-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -42,6 +42,7 @@ export function MobileSidebar() {
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
+  const convex = useConvex();
 
   useEffect(() => {
     if (
@@ -71,23 +72,28 @@ export function MobileSidebar() {
   const { data: archivedPages } = useQuery(
     convexQuery(api.pages.getArchived, {})
   );
-  const { mutateAsync: createPage, isPending: isCreating } = useMutation({
-    mutationFn: useConvexMutation(api.pages.create),
+  const { mutateAsync: createPage } = useMutation({
+    mutationFn: (vars: { title: string }) =>
+      convex.mutation(api.pages.create, vars),
   });
   const { mutateAsync: archivePage } = useMutation({
-    mutationFn: useConvexMutation(api.pages.archive),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.archive, vars),
   });
   const { mutateAsync: restorePage } = useMutation({
-    mutationFn: useConvexMutation(api.pages.restore),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.restore, vars),
   });
   const { mutateAsync: removePage, isPending: isRemoving } = useMutation({
-    mutationFn: useConvexMutation(api.pages.remove),
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.remove, vars),
   });
   const { mutateAsync: clearTrashPages } = useMutation({
-    mutationFn: useConvexMutation(api.pages.clearTrash),
+    mutationFn: () => convex.mutation(api.pages.clearTrash, {}),
   });
   const { mutateAsync: reorderPages } = useMutation({
-    mutationFn: useConvexMutation(api.pages.reorder),
+    mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
+      convex.mutation(api.pages.reorder, vars),
   });
 
   const dragStartY = useRef(0);
@@ -188,7 +194,7 @@ export function MobileSidebar() {
   };
 
   const handleClearAll = async () => {
-    const count = await clearTrashPages({});
+    const count = await clearTrashPages();
     toast.success(`${count} halaman dihapus permanen`);
   };
 
@@ -250,7 +256,6 @@ export function MobileSidebar() {
           <div className="flex items-center gap-1">
             <ThemeToggle />
             {/*<Button
-              type="button"
               variant="ghost"
               size="icon-sm"
               onClick={() => setOpen(false)}
@@ -305,18 +310,15 @@ export function MobileSidebar() {
 
         {/* Footer actions */}
         <div className="shrink-0 border-t border-border p-1.5 space-y-0.5">
-          <LoadingButton
-            type="button"
+          <Button
             variant="ghost"
             size="sm"
             onClick={handleCreate}
             className="w-full justify-start gap-2"
-            isPending={isCreating}
-            loadingText="Membuat halaman…"
           >
             <Plus data-icon="inline-start" />
             New Page
-          </LoadingButton>
+          </Button>
           <TrashSection
             archivedPages={archivedPages}
             onRestore={handleRestore}
@@ -338,7 +340,6 @@ export function MobileSidebar() {
         }}
       >
         <Button
-          type="button"
           variant="ghost"
           size="icon"
           onClick={() => { vibrate(10); setOpen((v) => !v); }}
@@ -352,7 +353,6 @@ export function MobileSidebar() {
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
         <Button
-          type="button"
           variant="ghost"
           size="icon"
           onClick={() => { vibrate(10); setOpen(false); setSearchOpen(true); }}
@@ -362,17 +362,15 @@ export function MobileSidebar() {
           <Search />
         </Button>
         <Separator orientation="vertical" className="h-5 mx-0.5" />
-        <LoadingButton
-          type="button"
+        <Button
           variant="ghost"
           size="icon"
           onClick={() => { vibrate(10); handleCreate(); }}
           className="rounded-full"
           aria-label="Halaman baru"
-          isPending={isCreating}
         >
           <FilePlus />
-        </LoadingButton>
+        </Button>
       </div>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
