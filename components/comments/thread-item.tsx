@@ -23,11 +23,12 @@ import { toast } from "sonner";
 
 interface ThreadItemProps {
   thread: RawThread;
-  usersMap: Map<string, UserInfo>;
+  usersMap: Map < string,
+  UserInfo > ;
   currentUserId: string;
   isActive: boolean;
   onActivate: () => void;
-  resolved?: boolean;
+  resolved ? : boolean;
 }
 
 export function ThreadItem({
@@ -40,15 +41,15 @@ export function ThreadItem({
 }: ThreadItemProps) {
   const [expanded, setExpanded] = useState(false);
   const [replyText, setReplyText] = useState("");
-  const replyRef = useRef<HTMLTextAreaElement>(null);
-  const itemRef = useRef<HTMLDivElement>(null);
-
+  const replyRef = useRef < HTMLTextAreaElement > (null);
+  const itemRef = useRef < HTMLDivElement > (null);
+  
   const activeComments = thread.comments.filter((c) => !c.deletedAt);
   const first = activeComments[0];
   const replies = activeComments.slice(1);
   const author = first ? usersMap.get(first.userId) : undefined;
-  const threadId = thread.id as Id<"threads">;
-
+  const threadId = thread.id as Id < "threads" > ;
+  
   useEffect(() => {
     if (isActive && !expanded) {
       setExpanded(true);
@@ -57,53 +58,47 @@ export function ThreadItem({
       }, 80);
     }
   }, [isActive, expanded]);
-
+  
   useEffect(() => {
     if (expanded && !resolved) {
       setTimeout(() => replyRef.current?.focus(), 100);
     }
   }, [expanded, resolved]);
-
-  const resolveThread = useConvexMutation(api.comments.resolveThread);
-  const unresolveThread = useConvexMutation(api.comments.unresolveThread);
-  const addCommentFn = useConvexMutation(api.comments.addComment);
-  const deleteCommentFn = useConvexMutation(api.comments.deleteComment);
-  const deleteThreadFn = useConvexMutation(api.comments.deleteThread);
-
+  
   const { mutate: resolve, isPending: resolving } = useMutation({
-    mutationFn: (args: Parameters<typeof resolveThread>[0]) => resolveThread(args),
+    mutationFn: useConvexMutation(api.comments.resolveThread),
   });
   const { mutate: unresolve, isPending: unresolving } = useMutation({
-    mutationFn: (args: Parameters<typeof unresolveThread>[0]) => unresolveThread(args),
+    mutationFn: useConvexMutation(api.comments.unresolveThread),
   });
   const { mutate: addComment, isPending: sending } = useMutation({
-    mutationFn: (args: Parameters<typeof addCommentFn>[0]) => addCommentFn(args),
+    mutationFn: useConvexMutation(api.comments.addComment),
     onSuccess: () => setReplyText(""),
     onError: () => toast.error("Gagal mengirim balasan"),
   });
   const { mutate: deleteComment } = useMutation({
-    mutationFn: (args: Parameters<typeof deleteCommentFn>[0]) => deleteCommentFn(args),
+    mutationFn: useConvexMutation(api.comments.deleteComment),
     onError: () => toast.error("Gagal menghapus komentar"),
   });
   const { mutate: deleteThread } = useMutation({
-    mutationFn: (args: Parameters<typeof deleteThreadFn>[0]) => deleteThreadFn(args),
+    mutationFn: useConvexMutation(api.comments.deleteThread),
     onError: () => toast.error("Gagal menghapus thread"),
   });
-
+  
   const handleReply = () => {
     const trimmed = replyText.trim();
     if (!trimmed) return;
     addComment({ threadId, body: makeBody(trimmed) });
   };
-
+  
   const handleDeleteComment = (commentId: string, isOnly: boolean) => {
     if (isOnly) {
       deleteThread({ threadId });
     } else {
-      deleteComment({ commentId: commentId as Id<"comments">, threadId });
+      deleteComment({ commentId: commentId as Id < "comments" > , threadId });
     }
   };
-
+  
   const authorRow = (
     <div className="flex items-center gap-1.5 mb-1">
       <UserAvatar
@@ -120,7 +115,7 @@ export function ThreadItem({
       </span>
     </div>
   );
-
+  
   const textPreview = (clamp: boolean) => (
     <p className={cn("text-sm text-foreground leading-snug", clamp && "line-clamp-2")}>
       {extractText(first?.body) || (
@@ -128,7 +123,7 @@ export function ThreadItem({
       )}
     </p>
   );
-
+  
   const accordionContent = (
     <AccordionContent className="!pb-0">
       <div className="px-4 pb-3" onClick={(e) => e.stopPropagation()}>
@@ -171,7 +166,7 @@ export function ThreadItem({
       </div>
     </AccordionContent>
   );
-
+  
   return (
     <div
       ref={itemRef}
@@ -244,7 +239,7 @@ export function ThreadItem({
               </div>
 
               <AccordionTrigger
-                className="flex-1 pr-4 py-3 text-left outline-none items-start gap-0 hover:bg-accent/30 cursor-pointer transition-colors"
+                className="flex-1 pr-4 py-3 outline-none items-start gap-0 hover:bg-accent/30 cursor-pointer transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   {authorRow}

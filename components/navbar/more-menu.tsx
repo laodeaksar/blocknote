@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverContent } from "@/components/ui/popover"; // hapus PopoverTrigger
+import { Popover, PopoverContent } from "@/components/ui/popover"; 
 import { exportPageAsHTML, exportPageAsMarkdown, type ExportableEditor } from "@/lib/export-page";
 import { cn } from "@/lib/utils";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -43,10 +43,9 @@ export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMor
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild> {/* ganti render jadi asChild */}
-          <Button type="button" variant="ghost" size="icon-sm" aria-label="More options">
+        <DropdownMenuTrigger render={
+          <Button type="button" variant="ghost" size="icon-sm" aria-label="More options" />}>
             <MoreHorizontal className="size-4 text-muted-foreground" />
-          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">

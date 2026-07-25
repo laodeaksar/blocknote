@@ -3,12 +3,14 @@
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { Copy, Check, WrapText, ChevronDown } from "lucide-react";
-import { Select as SelectPrimitive } from "@base-ui/react/select";
+import { Copy, Check, WrapText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
 const LANGUAGES = [
@@ -80,36 +82,38 @@ export function CodeBlockNodeView({
 
         <div className="flex items-center gap-1">
           {/* Wrap toggle */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             contentEditable={false}
             onClick={() => setWrap((v) => !v)}
             title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
             className={cn(
-              "flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded transition-colors select-none",
+              "h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
               wrap
-                ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)]"
+                ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)] hover:bg-[var(--cb-dot)]"
                 : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
             )}
           >
             <WrapText className="size-3" />
-          </button>
+          </Button>
 
           {/* Copy button */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             contentEditable={false}
             onClick={handleCopy}
             title="Salin kode"
             className={cn(
-              "flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded transition-colors select-none",
+              "h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
               copied
-                ? "text-green-600 dark:text-green-400"
+                ? "text-green-600 dark:text-green-400 hover:bg-transparent"
                 : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
             )}
           >
             {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-          </button>
+          </Button>
 
           {/* Language selector */}
           <div contentEditable={false}>
@@ -117,10 +121,12 @@ export function CodeBlockNodeView({
               value={language}
               onValueChange={(val) => updateAttributes({ language: val })}
             >
-              <SelectPrimitive.Trigger className="flex items-center gap-1 text-[11px] font-mono text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] transition-colors px-1.5 py-0.5 rounded hover:bg-[var(--cb-dot)] select-none outline-none cursor-pointer">
-                <SelectPrimitive.Value />
-                <ChevronDown className="size-3 opacity-70 shrink-0" />
-              </SelectPrimitive.Trigger>
+              <SelectTrigger
+                size="sm"
+                className="h-auto gap-1 rounded border-0 px-1.5 py-0.5 text-[11px] font-mono text-[var(--cb-label)] cursor-pointer hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] dark:bg-transparent dark:hover:bg-[var(--cb-dot)] focus-visible:ring-0 focus-visible:border-transparent"
+              >
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent align="end" className="font-mono">
                 {LANGUAGES.map((l) => (
                   <SelectItem key={l.value} value={l.value} className="text-xs font-mono">
