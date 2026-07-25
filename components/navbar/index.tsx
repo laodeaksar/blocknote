@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Debouncer } from "@tanstack/pacer";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { useConvex, useConvexConnectionState } from "convex/react";
-import type { FunctionArgs } from "convex/server";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useConvexConnectionState } from "convex/react";
 import { Check, Loader2, MessageSquare, PanelLeft } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
@@ -33,13 +32,12 @@ type SaveStatus = "idle" | "saving" | "saved";
 export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) {
   const { toggle, collapsed } = useSidebar();
   const { editor } = useEditorContext();
-  const convex = useConvex();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId })) as {
     data: number | undefined;
   };
   const { mutateAsync: updatePage } = useMutation({
-    mutationFn: (vars: FunctionArgs<typeof api.pages.update>) => convex.mutation(api.pages.update, vars),
+    mutationFn: useConvexMutation(api.pages.update),
     onError: () => toast.error("Failed to update page"),
   });
 
