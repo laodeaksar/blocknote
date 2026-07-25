@@ -158,7 +158,7 @@ export function ThreadItem({
           onChange={setReplyText}
           onSubmit={handleReply}
           placeholder="Tulis balasan…"
-          disabled={sending}
+          isPending={sending}
           rows={2}
           textareaClassName="min-h-13"
           textareaRef={replyRef}

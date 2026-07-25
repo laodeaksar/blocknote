@@ -18,7 +18,6 @@ import type { Editor } from "@tiptap/react";
 import { MessageSquare, X } from "lucide-react";
 import { CommentInput } from "@/components/ui/comment-input";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 
 interface CommentComposeProps {
@@ -97,9 +96,8 @@ export function CommentCompose({
     };
   }, [onClose]);
 
-  const createThreadFn = useConvexMutation(api.comments.createThread);
   const { mutate: createThread, isPending } = useMutation({
-    mutationFn: (args: Parameters<typeof createThreadFn>[0]) => createThreadFn(args),
+    mutationFn: useConvexMutation(api.comments.createThread),
     onSuccess: (result) => {
       const threadId = (result as { id: string }).id;
       editor
@@ -117,6 +115,7 @@ export function CommentCompose({
   const handleSubmit = () => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    if (!checkRate(createLimiter, 60_000)) return;
     createThread({ pageId, body: makeBody(trimmed) });
   };
 
@@ -135,6 +134,7 @@ export function CommentCompose({
           <MessageSquare className="size-3.5 text-muted-foreground shrink-0" />
           <span className="text-xs font-medium text-foreground">Komentar baru</span>
           <Button
+            type="button"
             variant="ghost"
             size="icon-xs"
             onClick={onClose}
@@ -150,7 +150,7 @@ export function CommentCompose({
           onSubmit={handleSubmit}
           onCancel={onClose}
           placeholder="Tulis komentar…"
-          disabled={isPending}
+          isPending={isPending}
           autoFocus
           rows={3}
           textareaClassName="min-h-18 py-2.5"

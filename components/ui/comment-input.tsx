@@ -10,6 +10,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 interface CommentInputProps {
@@ -18,7 +19,7 @@ interface CommentInputProps {
   onSubmit: () => void;
   onCancel?: () => void;
   placeholder?: string;
-  disabled?: boolean;
+  isPending?: boolean;
   autoFocus?: boolean;
   rows?: number;
   className?: string;
@@ -32,7 +33,7 @@ export function CommentInput({
   onSubmit,
   onCancel,
   placeholder = "Tulis komentar…",
-  disabled = false,
+  isPending = false,
   autoFocus = false,
   rows = 3,
   className,
@@ -58,6 +59,7 @@ export function CommentInput({
         placeholder={placeholder}
         rows={rows}
         autoFocus={autoFocus}
+        disabled={isPending}
         className={cn("text-sm py-2 px-3", textareaClassName)}
         onKeyDown={handleKeyDown}
       />
@@ -75,7 +77,7 @@ export function CommentInput({
               variant="ghost"
               size="xs"
               onClick={onCancel}
-              disabled={disabled}
+              disabled={isPending}
             >
               Batal
             </Button>
@@ -83,11 +85,15 @@ export function CommentInput({
           <InputGroupButton
             variant="default"
             size="xs"
-            disabled={!value.trim() || disabled}
+            disabled={!value.trim() || isPending}
             onClick={onSubmit}
           >
-            <Send data-icon="inline-start" />
-            Kirim
+            {isPending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <Send data-icon="inline-start" />
+            )}
+            {isPending ? "Mengirim…" : "Kirim"}
           </InputGroupButton>
         </div>
       </InputGroupAddon>
