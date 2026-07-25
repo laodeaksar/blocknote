@@ -32,10 +32,8 @@ function LoadingButton({
       className={cn(className)}
       {...props}
     >
-      {isPending && (
-        <Spinner data-icon="inline-start" />
-      )}
-      {isPending && loadingText !== undefined ? loadingText : children}
+      {isPending && (<Spinner data-icon="inline-start" />)}
+      {isPending ? loadingText : children}
     </Button>
   );
 }
