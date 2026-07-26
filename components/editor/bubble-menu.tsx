@@ -66,7 +66,7 @@ export function EditorBubbleMenu({ editor, onComment }: EditorBubbleMenuProps) {
         if (selection instanceof NodeSelection) return false;
         return !selection.empty;
       }}
-      className="flex items-center gap-0.5 rounded-lg border border-border bg-background px-1 py-0.5 shadow-lg ring-1 ring-foreground/5"
+      className="flex items-center z-[2] gap-0.5 rounded-lg border border-border bg-background px-1 py-0.5 shadow-lg ring-1 ring-foreground/5"
     >
       <ToolbarButton
         title="Tebal (Ctrl+B)"

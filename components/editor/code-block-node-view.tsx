@@ -84,17 +84,12 @@ export function CodeBlockNodeView({
           {/* Wrap toggle */}
           <Button
             type="button"
-            variant="ghost"
+            variant={wrap ? "secondary" : "ghost"
             size="icon-sm"
             contentEditable={false}
             onClick={() => setWrap((v) => !v)}
             title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
-            className={cn(
-              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
-              wrap
-                ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)] hover:bg-[var(--cb-dot)]"
-                : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
-            )}
+            className={"text-[11px] font-mono rounded cursor-pointer transition-colors select-none"
           >
             <WrapText className="size-3" />
           </Button>
@@ -107,14 +102,9 @@ export function CodeBlockNodeView({
             contentEditable={false}
             onClick={handleCopy}
             title="Salin kode"
-            className={cn(
-              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
-              copied
-                ? "text-green-600 dark:text-green-400 hover:bg-transparent"
-                : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
-            )}
+            className={"text-[11px] font-mono cursor-pointer transition-colors select-none"
           >
-            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+            {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
           </Button>
 
           {/* Language selector */}
@@ -141,10 +131,10 @@ export function CodeBlockNodeView({
         </div>
       </div>
 
-      {/* ── Body: line numbers + code ───────────────────────────────── 
-      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">*/}
-      <div className="grid grid-cols-[auto_1fr] bg-[var(--cb-bg)] overflow-x-auto">
-        {/* Line numbers — sticky so they don't scroll horizontally */}
+      {/* ── Body: line numbers + code ───────────────────────────────── */}
+      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">
+      {/*<div className="grid grid-cols-[auto_1fr] bg-[var(--cb-bg)] overflow-x-auto">
+         Line numbers — sticky so they don't scroll horizontally */}
         <div
           contentEditable={false}
           aria-hidden="true"
@@ -165,7 +155,7 @@ export function CodeBlockNodeView({
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
-          <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !p-4 !font-mono !leading-6 !text-sm" />
+          <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !py-4 !px-3 !font-mono !leading-6 !text-sm" />
         </pre>
       </div>
     </NodeViewWrapper>
