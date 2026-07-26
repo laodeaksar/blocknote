@@ -84,7 +84,7 @@ export function CodeBlockNodeView({
           {/* Wrap toggle */}
           <Button
             type="button"
-            variant={wrap ? "secondary" : "ghost"
+            variant={wrap ? "secondary" : "ghost"}
             size="icon-sm"
             contentEditable={false}
             onClick={() => setWrap((v) => !v)}
