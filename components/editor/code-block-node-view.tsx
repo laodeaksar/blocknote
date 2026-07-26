@@ -145,10 +145,10 @@ export function CodeBlockNodeView({
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono leading-6"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end pt-4 pb-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono"
         >
           {lines.map((n) => (
-            <span key={n} className="tabular-nums leading-6 opacity-50 text-xs">
+            <span key={n} className="tabular-nums leading-6 opacity-50 text-sm">
               {n}
             </span>
           ))}
@@ -158,7 +158,7 @@ export function CodeBlockNodeView({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 flex-1 p-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
+            "m-0 flex-1 pt-4 pb-4 pl-4 pr-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
