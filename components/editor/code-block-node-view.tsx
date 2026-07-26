@@ -89,7 +89,7 @@ export function CodeBlockNodeView({
             onClick={() => setWrap((v) => !v)}
             title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
             className={cn(
-              "h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
+              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
               wrap
                 ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)] hover:bg-[var(--cb-dot)]"
                 : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
@@ -106,7 +106,7 @@ export function CodeBlockNodeView({
             onClick={handleCopy}
             title="Salin kode"
             className={cn(
-              "h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
+              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
               copied
                 ? "text-green-600 dark:text-green-400 hover:bg-transparent"
                 : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
@@ -123,7 +123,7 @@ export function CodeBlockNodeView({
             >
               <SelectTrigger
                 size="sm"
-                className="h-auto gap-1 rounded border-0 px-1.5 py-0.5 text-[11px] font-mono text-[var(--cb-label)] cursor-pointer hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] dark:bg-transparent dark:hover:bg-[var(--cb-dot)] focus-visible:ring-0 focus-visible:border-transparent"
+                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono text-[var(--cb-label)] cursor-pointer select-none hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] dark:bg-transparent dark:hover:bg-[var(--cb-dot)] focus-visible:ring-0 focus-visible:border-transparent"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -145,10 +145,10 @@ export function CodeBlockNodeView({
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono text-sm leading-relaxed"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono leading-6"
         >
           {lines.map((n) => (
-            <span key={n} className="tabular-nums leading-relaxed opacity-50 text-xs">
+            <span key={n} className="tabular-nums leading-6 opacity-50 text-xs">
               {n}
             </span>
           ))}
@@ -158,7 +158,7 @@ export function CodeBlockNodeView({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 flex-1 p-4 font-mono text-sm leading-relaxed bg-transparent border-0 rounded-none min-w-0",
+            "m-0 flex-1 p-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
