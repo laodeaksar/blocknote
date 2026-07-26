@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FileCode, FileText, MoreHorizontal, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { PublishPopover } from "@/components/publish-popover";
@@ -27,6 +27,7 @@ interface NavbarMoreMenuProps {
 
 export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMoreMenuProps) {
   const [showPublish, setShowPublish] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
   
   const handleExportHTML = () => {
     if (!editor) return;
@@ -41,7 +42,7 @@ export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMor
   };
   
   return (
-    <>
+    <div ref={anchorRef} className="inline-flex">
       <DropdownMenu>
         <DropdownMenuTrigger render={
           <Button type="button" variant="ghost" size="icon-sm" aria-label="More options" />}>
@@ -53,7 +54,7 @@ export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMor
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => setShowPublish(true)} // buka popover dari sini
+            onClick={() => setShowPublish(true)}
             className="gap-2 text-sm cursor-pointer"
           >
             <Share2 className={cn("size-4", isPublished ? "text-success" : "text-muted-foreground")} />
@@ -74,9 +75,9 @@ export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMor
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Popover dipisah, tanpa trigger */}
+      {/* Popover dipisah — anchor ke wrapper div agar Positioner punya referensi posisi */}
       <Popover open={showPublish} onOpenChange={setShowPublish}>
-        <PopoverContent align="end" className="w-auto p-0">
+        <PopoverContent align="end" className="w-auto p-0" anchor={anchorRef}>
           <PublishPopover
             pageId={pageId}
             isPublished={isPublished}
@@ -84,6 +85,6 @@ export function NavbarMoreMenu({ pageId, title, isPublished, editor }: NavbarMor
           />
         </PopoverContent>
       </Popover>
-    </>
+    </div>
   );
 }
