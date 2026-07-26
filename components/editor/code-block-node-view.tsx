@@ -141,8 +141,9 @@ export function CodeBlockNodeView({
         </div>
       </div>
 
-      {/* ── Body: line numbers + code ───────────────────────────────── */}
-      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">
+      {/* ── Body: line numbers + code ───────────────────────────────── 
+      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">*/}
+      <div className="grid grid-cols-[auto_1fr] bg-[var(--cb-bg)] overflow-x-auto">
         {/* Line numbers — sticky so they don't scroll horizontally */}
         <div
           contentEditable={false}
@@ -160,11 +161,11 @@ export function CodeBlockNodeView({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 mt-4 flex-1 p-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
+            "m-0 flex-1 p-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
-          <NodeViewContent as="div" className="hljs !bg-transparent !p-0 !font-mono" />
+          <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !p-0 !font-mono" />
         </pre>
       </div>
     </NodeViewWrapper>
