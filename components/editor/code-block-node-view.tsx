@@ -89,7 +89,7 @@ export function CodeBlockNodeView({
             contentEditable={false}
             onClick={() => setWrap((v) => !v)}
             title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
-            className={"text-[11px] font-mono rounded cursor-pointer transition-colors select-none"
+            className="text-[11px] font-mono rounded cursor-pointer transition-colors select-none"
           >
             <WrapText className="size-3" />
           </Button>
@@ -102,7 +102,7 @@ export function CodeBlockNodeView({
             contentEditable={false}
             onClick={handleCopy}
             title="Salin kode"
-            className={"text-[11px] font-mono cursor-pointer transition-colors select-none"
+            className="text-[11px] font-mono cursor-pointer transition-colors select-none"
           >
             {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
           </Button>
