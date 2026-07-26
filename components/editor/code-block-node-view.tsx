@@ -50,12 +50,12 @@ export function CodeBlockNodeView({
   const language: string = node.attrs.language || "plaintext";
   const [copied, setCopied] = useState(false);
   const [wrap, setWrap] = useState(false);
-  const preRef = useRef<HTMLPreElement>(null);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const preRef = useRef < HTMLPreElement > (null);
+  const copyTimer = useRef < ReturnType < typeof setTimeout > | null > (null);
+  
   const lineCount = Math.max(1, (node.textContent ?? "").split("\n").length);
   const lines = Array.from({ length: lineCount }, (_, i) => i + 1);
-
+  
   const handleCopy = () => {
     const text = preRef.current?.innerText ?? node.textContent ?? "";
     navigator.clipboard.writeText(text).then(() => {
@@ -64,7 +64,7 @@ export function CodeBlockNodeView({
       copyTimer.current = setTimeout(() => setCopied(false), 2000);
     });
   };
-
+  
   return (
     <NodeViewWrapper
       className={cn(
@@ -72,85 +72,45 @@ export function CodeBlockNodeView({
         selected && "ring-2 ring-ring"
       )}
     >
-      {/* ── Header ─────────────────────────────────────────────────── */}
+      {/* Header sama */}
       <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-[var(--cb-header)] border-b border-[var(--cb-border)]">
         <div className="flex gap-1.5 items-center">
           <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
           <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
           <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
         </div>
-
         <div className="flex items-center gap-1">
-          {/* Wrap toggle */}
-          <Button
-            type="button"
-            variant="ghost"
-            contentEditable={false}
-            onClick={() => setWrap((v) => !v)}
-            title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
-            className={cn(
-              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
-              wrap
-                ? "text-[var(--cb-label-hover)] bg-[var(--cb-dot)] hover:bg-[var(--cb-dot)]"
-                : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
-            )}
-          >
+          <Button type="button" variant="ghost" contentEditable={false} onClick={() => setWrap((v) =>!v)} className="h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded">
             <WrapText className="size-3" />
           </Button>
-
-          {/* Copy button */}
-          <Button
-            type="button"
-            variant="ghost"
-            contentEditable={false}
-            onClick={handleCopy}
-            title="Salin kode"
-            className={cn(
-              "h-auto flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none",
-              copied
-                ? "text-green-600 dark:text-green-400 hover:bg-transparent"
-                : "text-[var(--cb-label)] hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)]"
-            )}
-          >
-            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+          <Button type="button" variant="ghost" contentEditable={false} onClick={handleCopy} className="h-auto gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded">
+            {copied? <Check className="size-3" /> : <Copy className="size-3" />}
           </Button>
-
-          {/* Language selector */}
           <div contentEditable={false}>
-            <Select
-              value={language}
-              onValueChange={(val) => updateAttributes({ language: val })}
-            >
-              <SelectTrigger
-                size="sm"
-                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono text-[var(--cb-label)] cursor-pointer select-none hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] dark:bg-transparent dark:hover:bg-[var(--cb-dot)] focus-visible:ring-0 focus-visible:border-transparent"
-              >
+            <Select value={language} onValueChange={(val) => updateAttributes({ language: val })}>
+              <SelectTrigger size="sm" className="h-auto gap-1 rounded border-0 px-1.5 py-0.5 text-[11px] font-mono">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align="end" className="font-mono">
-                {LANGUAGES.map((l) => (
-                  <SelectItem key={l.value} value={l.value} className="text-xs font-mono">
-                    {l.label}
-                  </SelectItem>
-                ))}
+                {LANGUAGES.map((l) => <SelectItem key={l.value} value={l.value} className="text-xs font-mono">{l.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
         </div>
       </div>
 
-      {/* ── Body: line numbers + code ───────────────────────────────── */}
-      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">
-        {/* Line numbers — sticky so they don't scroll horizontally */}
+      {/* BODY FIX */}
+      <div className="grid grid-cols-[auto_1fr] bg-[var(--cb-bg)] overflow-x-auto">
+        {/* Line numbers */}
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono leading-6"
+          className="sticky left-0 z-[1] select-none shrink-0 py-4 pl-3 pr-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono text-xs leading-[1.6]"
         >
           {lines.map((n) => (
-            <span key={n} className="tabular-nums leading-6 opacity-50 text-xs">
+            <div key={n} className="tabular-nums opacity-50 h-[1.6em]"> {/* h sama dengan line-height */}
               {n}
-            </span>
+            </div>
           ))}
         </div>
 
@@ -158,11 +118,14 @@ export function CodeBlockNodeView({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 flex-1 p-4 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
-            wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
+            "m-0 p-4 font-mono text-xs leading-[1.6] bg-transparent border-0 rounded-none min-w-0", // text-xs + leading sama
+            wrap? "whitespace-pre-wrap break-words" : "whitespace-pre"
           )}
         >
-          <NodeViewContent as="div" className="hljs !bg-transparent !p-0 !font-mono" />
+          <NodeViewContent
+            as="div"
+            className="hljs!bg-transparent!p-0!font-mono!text-inherit!leading-[1.6]" // paksa inherit
+          />
         </pre>
       </div>
     </NodeViewWrapper>

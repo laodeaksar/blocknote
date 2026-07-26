@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useConvex } from "convex/react";
+import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { RateLimiter } from "@tanstack/pacer";
 import { api } from "@/convex/_generated/api";
@@ -28,12 +28,10 @@ export function PublishPopover({
   isPublished,
   onClose,
 }: PublishPopoverProps) {
-  const convex = useConvex();
   const [copied, setCopied] = useState(false);
 
   const { mutate: updatePage, isPending } = useMutation({
-    mutationFn: (vars: { id: Id<"pages">; isPublished: boolean }) =>
-      convex.mutation(api.pages.update, vars),
+    mutationFn: useConvexMutation(api.pages.update),
     onSuccess: () => {
       toast.success(isPublished ? "Page unpublished" : "Page published to web!");
     },
@@ -104,6 +102,7 @@ export function PublishPopover({
       </div>
 
       <LoadingButton
+        type="button"
         onClick={handleToggle}
         isPending={isPending}
         loadingText="Saving..."
@@ -119,6 +118,7 @@ export function PublishPopover({
             <InputGroupInput placeholder={publicUrl} readOnly />
             <InputGroupAddon align="inline-end">
               <InputGroupButton
+                type="button"
                 aria-label="Copy link"
                 title="Copy link"
                 size="icon-xs"
