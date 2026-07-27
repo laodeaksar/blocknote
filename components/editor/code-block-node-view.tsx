@@ -73,11 +73,11 @@ export function CodeBlockNodeView({
       )}
     >
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-[var(--cb-header)] border-b border-[var(--cb-border)]">
+      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-muted border-b border-muted-foreground">
         <div className="flex gap-1.5 items-center">
-          <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
-          <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
-          <span className="size-2.5 rounded-full bg-[var(--cb-dot)]" />
+          <span className="size-2.5 rounded-full bg-muted-foreground" />
+          <span className="size-2.5 rounded-full bg-muted-foreground" />
+          <span className="size-2.5 rounded-full bg-muted-foreground" />
         </div>
 
         <div className="flex items-center gap-1">
@@ -85,11 +85,11 @@ export function CodeBlockNodeView({
           <Button
             type="button"
             variant={wrap ? "secondary" : "ghost"}
-            size="icon-sm"
+            size="icon-xs"
             contentEditable={false}
             onClick={() => setWrap((v) => !v)}
             title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
-            className="text-[11px] font-mono rounded cursor-pointer transition-colors select-none"
+            className="text-[11px] cursor-pointer transition-colors select-none"
           >
             <WrapText className="size-3" />
           </Button>
@@ -98,11 +98,11 @@ export function CodeBlockNodeView({
           <Button
             type="button"
             variant="ghost"
-            size="icon-sm"
+            size="icon-xs"
             contentEditable={false}
             onClick={handleCopy}
             title="Salin kode"
-            className="text-[11px] font-mono cursor-pointer transition-colors select-none"
+            className="text-[11px] cursor-pointer transition-colors select-none"
           >
             {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
           </Button>
@@ -115,7 +115,7 @@ export function CodeBlockNodeView({
             >
               <SelectTrigger
                 size="sm"
-                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono text-[var(--cb-label)] cursor-pointer select-none hover:text-[var(--cb-label-hover)] hover:bg-[var(--cb-dot)] dark:bg-transparent dark:hover:bg-[var(--cb-dot)] focus-visible:ring-0 focus-visible:border-transparent"
+                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono cursor-pointer select-none focus-visible:ring-0 focus-visible:border-transparent"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -131,14 +131,13 @@ export function CodeBlockNodeView({
         </div>
       </div>
 
-      {/* ── Body: line numbers + code ───────────────────────────────── */}
-      <div className="flex bg-[var(--cb-bg)] overflow-x-auto">
-      {/*<div className="grid grid-cols-[auto_1fr] bg-[var(--cb-bg)] overflow-x-auto">
-         Line numbers — sticky so they don't scroll horizontally */}
+      {/* ── Body: line numbers + code ─────────────────────────────────*/}
+      <div className="flex bg-muted overflow-x-auto">
+      {/*Line numbers — sticky so they don't scroll horizontally */}
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-[var(--cb-bg)] border-r border-[var(--cb-border)] text-[var(--cb-label)] font-mono"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted border-r border-muted-foreground text-muted-foreground font-mono"
         >
           {lines.map((n) => (
             <span key={n} className="tabular-nums leading-6 opacity-50 text-sm">
@@ -155,7 +154,7 @@ export function CodeBlockNodeView({
             wrap ? "whitespace-pre-wrap break-all overflow-visible" : "overflow-visible whitespace-pre"
           )}
         >
-          <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !py-4 !px-3 !font-mono !leading-6 !text-sm" />
+          <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !py-4 !px-2 !font-mono !leading-6 !text-sm" />
         </pre>
       </div>
     </NodeViewWrapper>
