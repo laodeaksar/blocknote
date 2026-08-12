@@ -6,7 +6,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
 import { LogOut, Settings } from "lucide-react";
-import { UserAvatar } from "@components/ui/avatar"
+import { UserAvatar } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,12 +53,12 @@ const avatarUrl = profile?.avatarUrl ?? null;
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <UserAvatar
-            name={displayName}
-            email={email}
-            avatarColor={avatarUrl ? undefined : avatarColor}
-            avatarUrl={avatarUrl}
-            className="rounded-lg grayscale"
-          />
+                name={displayName}
+                email={email}
+                avatarColor={avatarUrl ? undefined : avatarColor}
+                avatarUrl={avatarUrl}
+                className="rounded-lg grayscale"
+              />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 {displayName && (
                 <span className="truncate font-medium">{displayName}</span>)}
@@ -77,13 +77,13 @@ const avatarUrl = profile?.avatarUrl ?? null;
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                 <UserAvatar
-            name={displayName}
-            email={email}
-            avatarColor={avatarUrl ? undefined : avatarColor}
-            avatarUrl={avatarUrl}
-            className="rounded-lg"
-          />
+                <UserAvatar
+                  name={displayName}
+                  email={email}
+                  avatarColor={avatarUrl ? undefined : avatarColor}
+                  avatarUrl={avatarUrl}
+                  className="rounded-lg"
+                />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   {displayName && (
                   <span className="truncate font-medium">{displayName}</span>
