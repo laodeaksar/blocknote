@@ -142,7 +142,7 @@ export function CodeBlockNodeView({
         <div className="flex items-center gap-1">
           <Button
             type="button"
-            variant={wrap? "primary" : "ghost"}
+            variant={wrap? "outline" : "ghost"}
             size="icon-xs"
             contentEditable={false}
             onClick={() => setWrap((v) =>!v)}
