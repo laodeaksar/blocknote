@@ -63,7 +63,8 @@ export function usePresence(
         const ed = editorRef.current;
         if (!ed || !userId || !enabled || !ed.view) return;
         const { from, to } = ed.view.state.selection;
-        await updatePresenceRef.current({ pageId, sessionId, userId, userName, color, from, to });
+        // await updatePresenceRef.current({ pageId, sessionId, userId, userName, color, from, to });
+        await updatePresenceRef.current({ pageId, sessionId, color, from, to });
       },
       { wait: 500, leading: true, trailing: true }
     )

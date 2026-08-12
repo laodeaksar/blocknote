@@ -66,4 +66,5 @@ export default defineSchema({
   })
     .index("by_page", ["pageId"])
     .index("by_page_session", ["pageId", "sessionId"]),
+    .index("by_updatedAt", ["updatedAt"]),
 });
