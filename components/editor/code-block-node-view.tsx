@@ -73,7 +73,7 @@ export function CodeBlockNodeView({
       )}
     >
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-muted border-b border-muted-foreground">
+      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-muted/70 border-b border-muted-foreground/40">
         <div className="flex gap-1.5 items-center">
           <span className="size-2.5 rounded-full bg-muted-foreground" />
           <span className="size-2.5 rounded-full bg-muted-foreground" />
@@ -137,7 +137,7 @@ export function CodeBlockNodeView({
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted border-r border-muted-foreground text-muted-foreground font-mono"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted/40 border-r border-muted-foreground/40 text-muted-foreground font-mono"
         >
           {lines.map((n) => (
             <span key={n} className="tabular-nums leading-6 opacity-50 text-sm">
