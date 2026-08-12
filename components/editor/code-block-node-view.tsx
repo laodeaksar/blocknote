@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useLayoutEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Copy, Check, WrapText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,32 +14,32 @@ import {
 } from "@/components/ui/select";
 
 const LANGUAGES = [
-  { value: "plaintext",   label: "Plain text" },
-  { value: "javascript",  label: "JavaScript" },
-  { value: "typescript",  label: "TypeScript" },
-  { value: "python",      label: "Python" },
-  { value: "bash",        label: "Bash / Shell" },
-  { value: "css",         label: "CSS" },
-  { value: "html",        label: "HTML" },
-  { value: "json",        label: "JSON" },
-  { value: "sql",         label: "SQL" },
-  { value: "go",          label: "Go" },
-  { value: "rust",        label: "Rust" },
-  { value: "java",        label: "Java" },
-  { value: "cpp",         label: "C++" },
-  { value: "c",           label: "C" },
-  { value: "csharp",      label: "C#" },
-  { value: "php",         label: "PHP" },
-  { value: "ruby",        label: "Ruby" },
-  { value: "swift",       label: "Swift" },
-  { value: "kotlin",      label: "Kotlin" },
-  { value: "yaml",        label: "YAML" },
-  { value: "markdown",    label: "Markdown" },
-  { value: "diff",        label: "Diff" },
-  { value: "graphql",     label: "GraphQL" },
-  { value: "lua",         label: "Lua" },
-  { value: "r",           label: "R" },
-  { value: "xml",         label: "XML" },
+  { value: "plaintext", label: "Plain text" },
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "python", label: "Python" },
+  { value: "bash", label: "Bash / Shell" },
+  { value: "css", label: "CSS" },
+  { value: "html", label: "HTML" },
+  { value: "json", label: "JSON" },
+  { value: "sql", label: "SQL" },
+  { value: "go", label: "Go" },
+  { value: "rust", label: "Rust" },
+  { value: "java", label: "Java" },
+  { value: "cpp", label: "C++" },
+  { value: "c", label: "C" },
+  { value: "csharp", label: "C#" },
+  { value: "php", label: "PHP" },
+  { value: "ruby", label: "Ruby" },
+  { value: "swift", label: "Swift" },
+  { value: "kotlin", label: "Kotlin" },
+  { value: "yaml", label: "YAML" },
+  { value: "markdown", label: "Markdown" },
+  { value: "diff", label: "Diff" },
+  { value: "graphql", label: "GraphQL" },
+  { value: "lua", label: "Lua" },
+  { value: "r", label: "R" },
+  { value: "xml", label: "XML" },
 ];
 
 export function CodeBlockNodeView({
@@ -50,12 +50,68 @@ export function CodeBlockNodeView({
   const language: string = node.attrs.language || "plaintext";
   const [copied, setCopied] = useState(false);
   const [wrap, setWrap] = useState(false);
-  const preRef = useRef<HTMLPreElement>(null);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const lineCount = Math.max(1, (node.textContent ?? "").split("\n").length);
-  const lines = Array.from({ length: lineCount }, (_, i) => i + 1);
-
+  const preRef = useRef < HTMLPreElement > (null);
+  const mirrorRef = useRef < HTMLDivElement > (null);
+  const copyTimer = useRef < ReturnType < typeof setTimeout > | null > (null);
+  
+  // -1 dipakai sebagai penanda "baris lanjutan" (wrap) — tidak dirender angkanya
+  const [lineNumbers, setLineNumbers] = useState < number[] > ([1]);
+  
+  const recalcLineNumbers = useCallback(() => {
+    const pre = preRef.current;
+    const mirror = mirrorRef.current;
+    if (!pre) return;
+    
+    const text = node.textContent ?? "";
+    const rawLines = text.length ? text.split("\n") : [""];
+    
+    // Tanpa wrap: 1 baris logis = 1 baris visual, tidak perlu pengukuran
+    if (!wrap || !mirror) {
+      setLineNumbers(rawLines.map((_, i) => i + 1));
+      return;
+    }
+    
+    // Samakan style mirror dengan pre asli supaya hasil ukur akurat
+    const style = getComputedStyle(pre);
+    mirror.style.width = `${pre.clientWidth}px`;
+    mirror.style.font = style.font;
+    mirror.style.lineHeight = style.lineHeight;
+    mirror.style.letterSpacing = style.letterSpacing;
+    mirror.style.padding = style.padding;
+    
+    const lineHeight = parseFloat(style.lineHeight) || 24;
+    const numbers: number[] = [];
+    
+    rawLines.forEach((line, idx) => {
+      const row = document.createElement("div");
+      row.style.whiteSpace = "pre-wrap";
+      row.style.wordBreak = "break-all";
+      row.textContent = line.length ? line : "\u200b"; // baris kosong tetap makan 1 baris
+      mirror.appendChild(row);
+      const rows = Math.max(1, Math.round(row.getBoundingClientRect().height / lineHeight));
+      mirror.removeChild(row);
+      
+      numbers.push(idx + 1);
+      for (let r = 1; r < rows; r++) numbers.push(-1);
+    });
+    
+    setLineNumbers(numbers);
+  }, [node, wrap]);
+  
+  // Recalc saat konten berubah (ketikan) atau toggle wrap berubah
+  useLayoutEffect(() => {
+    recalcLineNumbers();
+  }, [recalcLineNumbers]);
+  
+  // Recalc saat lebar container berubah (resize sidebar, dsb.)
+  useLayoutEffect(() => {
+    const pre = preRef.current;
+    if (!pre) return;
+    const ro = new ResizeObserver(() => recalcLineNumbers());
+    ro.observe(pre);
+    return () => ro.disconnect();
+  }, [recalcLineNumbers]);
+  
   const handleCopy = () => {
     const text = preRef.current?.innerText ?? node.textContent ?? "";
     navigator.clipboard.writeText(text).then(() => {
@@ -64,7 +120,7 @@ export function CodeBlockNodeView({
       copyTimer.current = setTimeout(() => setCopied(false), 2000);
     });
   };
-
+  
   return (
     <NodeViewWrapper
       className={cn(
@@ -81,7 +137,6 @@ export function CodeBlockNodeView({
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Wrap toggle */}
           <Button
             type="button"
             variant={wrap ? "secondary" : "ghost"}
@@ -94,7 +149,6 @@ export function CodeBlockNodeView({
             <WrapText className="size-3" />
           </Button>
 
-          {/* Copy button */}
           <Button
             type="button"
             variant="ghost"
@@ -107,7 +161,6 @@ export function CodeBlockNodeView({
             {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
           </Button>
 
-          {/* Language selector */}
           <div contentEditable={false}>
             <Select
               value={language}
@@ -133,20 +186,18 @@ export function CodeBlockNodeView({
 
       {/* ── Body: line numbers + code ─────────────────────────────────*/}
       <div className="flex bg-muted overflow-x-auto">
-      {/*Line numbers — sticky so they don't scroll horizontally */}
         <div
           contentEditable={false}
           aria-hidden="true"
           className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted/40 border-r border-muted-foreground/40 text-muted-foreground font-mono"
         >
-          {lines.map((n) => (
-            <span key={n} className="tabular-nums leading-6 opacity-50 text-sm">
-              {n}
+          {lineNumbers.map((n, i) => (
+            <span key={i} className="tabular-nums leading-6 opacity-50 text-sm">
+              {n > 0 ? n : ""}
             </span>
           ))}
         </div>
 
-        {/* Code content */}
         <pre
           ref={preRef}
           className={cn(
@@ -156,6 +207,21 @@ export function CodeBlockNodeView({
         >
           <NodeViewContent as="div" className="hljs !text-inherit !bg-transparent !py-4 !px-2 !font-mono !leading-6 !text-sm" />
         </pre>
+
+        {/* Mirror tersembunyi untuk mengukur tinggi baris saat wrap aktif */}
+        <div
+          ref={mirrorRef}
+          aria-hidden="true"
+          className="font-mono text-sm"
+          style={{
+            position: "absolute",
+            visibility: "hidden",
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
+        />
       </div>
     </NodeViewWrapper>
   );
