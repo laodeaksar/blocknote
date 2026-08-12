@@ -223,7 +223,7 @@ export function CodeBlockNodeView({
           )}
         >
           <NodeViewContent
-            as="code"
+            as="div"
             className="hljs !text-inherit !bg-transparent !p-0 !font-mono !leading-6 !text-sm block"
           />
         </pre>
