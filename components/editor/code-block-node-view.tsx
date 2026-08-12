@@ -56,6 +56,7 @@ export function CodeBlockNodeView({
   
   // -1 = baris lanjutan karena wrap. Tidak dirender angkanya
   const [lineNumbers, setLineNumbers] = useState < number[] > ([1]);
+  const [lineHeight, setLineHeight] = useState(24);
   
   const recalcLineNumbers = useCallback(() => {
     const pre = preRef.current;
@@ -64,6 +65,10 @@ export function CodeBlockNodeView({
     
     const text = node.textContent ?? "";
     const rawLines = text.length ? text.split("\n") : [""];
+    const style = getComputedStyle(pre);
+    const nextLineHeight = parseFloat(style.lineHeight) || 24;
+
+    setLineHeight(nextLineHeight);
     
     // Kalau tidak wrap, langsung 1:1
     if (!wrap || !mirror) {
@@ -72,16 +77,16 @@ export function CodeBlockNodeView({
     }
     
     // Samakan style mirror dengan pre biar ukurannya sama
-    const style = getComputedStyle(pre);
-    mirror.style.width = `${pre.clientWidth}px`;
+    const horizontalPadding =
+      parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    mirror.style.width = `${Math.max(0, pre.clientWidth - horizontalPadding)}px`;
     mirror.style.font = style.font;
-    mirror.style.lineHeight = style.lineHeight;
+    mirror.style.lineHeight = `${nextLineHeight}px`;
     mirror.style.letterSpacing = style.letterSpacing;
-    mirror.style.padding = style.padding;
+    mirror.style.padding = "0";
     mirror.style.whiteSpace = "pre-wrap";
     mirror.style.wordBreak = "break-all";
     
-    const lineHeight = parseFloat(style.lineHeight) || 24;
     const numbers: number[] = [];
     
     rawLines.forEach((line, idx) => {
@@ -91,7 +96,10 @@ export function CodeBlockNodeView({
       row.textContent = line.length ? line : "\u200b"; // baris kosong tetap 1 baris
       mirror.appendChild(row);
       
-      const visualRows = Math.max(1, Math.round(row.getBoundingClientRect().height / lineHeight));
+      const visualRows = Math.max(
+        1,
+        Math.round(row.getBoundingClientRect().height / nextLineHeight)
+      );
       mirror.removeChild(row);
       
       numbers.push(idx + 1); // baris pertama ada nomornya
@@ -193,9 +201,17 @@ export function CodeBlockNodeView({
           contentEditable={false}
           aria-hidden="true"
           className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted/40 border-r border-muted-foreground/40 text-muted-foreground font-mono"
+          style={{ lineHeight: `${lineHeight}px` }}
         >
           {lineNumbers.map((n, i) => (
-            <span key={i} className="tabular-nums leading-6 h-6 opacity-50 text-sm">
+            <span
+              key={i}
+              className="tabular-nums shrink-0 opacity-50 text-sm"
+              style={{
+                height: `${lineHeight}px`,
+                lineHeight: `${lineHeight}px`,
+              }}
+            >
               {n > 0 ? n : ""}
             </span>
           ))}
@@ -204,11 +220,14 @@ export function CodeBlockNodeView({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 flex-1 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
+            "m-0 flex-1 py-4 px-2 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
             wrap ? "whitespace-pre-wrap break-all" : "whitespace-pre overflow-x-auto"
           )}
         >
-          <NodeViewContent as="div" className="hljs!text-inherit!bg-transparent!py-4!px-2!font-mono!leading-6!text-sm" />
+          <NodeViewContent
+            as="div"
+            className="hljs!block!text-inherit!bg-transparent!p-0!font-mono!leading-6!text-sm"
+          />
         </pre>
 
         {/* Mirror tersembunyi untuk ukur tinggi baris saat wrap */}
