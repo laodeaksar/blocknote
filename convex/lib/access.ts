@@ -18,14 +18,19 @@ export async function assertPageAccess(
   const page = await ctx.db.get(pageId);
   
   if (!page) throw new Error("Not found");
-  if (page.isArchived && mode === "read" && !identity) throw new Error("Not found");
+  
+  // Archived selalu wajib login, baik read maupun write, dan tidak pernah
+  // bisa diakses publik meski isPublished === true.
+  if (page.isArchived && !identity) throw new Error("Not found");
   
   if (mode === "read" && page.isPublished && !page.isArchived) {
     return { page, identity };
   }
   
-  if (!identity) throw new Error("Not authenticated");
-  if (page.userId !== identity.subject) throw new Error("Unauthorized");
+  if (!identity) throw new Error("Not found");
+  // Sengaja "Not found", bukan "Unauthorized": jangan bocorkan keberadaan
+  // halaman privat ke user lain yang sudah login tapi bukan pemilik.
+  if (page.userId !== identity.subject) throw new Error("Not found");
   
   return { page, identity };
 }

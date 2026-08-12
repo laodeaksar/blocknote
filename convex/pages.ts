@@ -1,18 +1,19 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { assertPageAccess, tryPageAccess } from "./lib/access";
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return [];
-
+    
     const pages = await ctx.db
       .query("pages")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .filter((q) => q.eq(q.field("isArchived"), false))
       .collect();
-
+    
     return pages.sort((a, b) => {
       if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
       if (a.order !== undefined) return -1;
@@ -25,16 +26,11 @@ export const list = query({
 export const get = query({
   args: { id: v.id("pages") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const page = await ctx.db.get(args.id);
-    if (!page) return null;
-
-    if (page.isPublished && !page.isArchived) return page;
-
-    if (!identity) throw new Error("Not authenticated");
-    if (page.userId !== identity.subject) throw new Error("Unauthorized");
-
-    return page;
+    // Mengembalikan null (bukan throw) di jalur ini karena `get` dipakai
+    // langsung sebagai data source halaman editor — UI perlu bisa
+    // menampilkan "halaman tidak ditemukan" tanpa error boundary.
+    const access = await tryPageAccess(ctx, args.id, "read");
+    return access?.page ?? null;
   },
 });
 
@@ -45,8 +41,8 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
+    if (!identity) throw new Error("Not found");
+    
     const page = await ctx.db.insert("pages", {
       title: args.title ?? "Untitled",
       userId: identity.subject,
@@ -54,7 +50,7 @@ export const create = mutation({
       isPublished: false,
       parentDocument: args.parentDocument,
     });
-
+    
     return page;
   },
 });
@@ -68,14 +64,9 @@ export const update = mutation({
     isPublished: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
+    await assertPageAccess(ctx, args.id, "write");
+    
     const { id, ...rest } = args;
-    const page = await ctx.db.get(id);
-    if (!page) throw new Error("Not found");
-    if (page.userId !== identity.subject) throw new Error("Unauthorized");
-
     await ctx.db.patch(id, rest);
     return await ctx.db.get(id);
   },
@@ -84,13 +75,7 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("pages") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Not found");
-    if (page.userId !== identity.subject) throw new Error("Unauthorized");
-
+    await assertPageAccess(ctx, args.id, "write");
     await ctx.db.patch(args.id, { isArchived: true });
   },
 });
@@ -98,13 +83,7 @@ export const archive = mutation({
 export const restore = mutation({
   args: { id: v.id("pages") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Not found");
-    if (page.userId !== identity.subject) throw new Error("Unauthorized");
-
+    await assertPageAccess(ctx, args.id, "write");
     await ctx.db.patch(args.id, { isArchived: false });
   },
 });
@@ -112,13 +91,7 @@ export const restore = mutation({
 export const remove = mutation({
   args: { id: v.id("pages") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Not found");
-    if (page.userId !== identity.subject) throw new Error("Unauthorized");
-
+    await assertPageAccess(ctx, args.id, "write");
     await ctx.db.delete(args.id);
   },
 });
@@ -127,8 +100,8 @@ export const reorder = mutation({
   args: { orderedIds: v.array(v.id("pages")) },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
+    if (!identity) throw new Error("Not found");
+    
     for (let i = 0; i < args.orderedIds.length; i++) {
       const page = await ctx.db.get(args.orderedIds[i]);
       if (!page || page.userId !== identity.subject) continue;
@@ -141,14 +114,14 @@ export const clearTrash = mutation({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
+    if (!identity) throw new Error("Not found");
+    
     const pages = await ctx.db
       .query("pages")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .filter((q) => q.eq(q.field("isArchived"), true))
       .collect();
-
+    
     await Promise.all(pages.map((p) => ctx.db.delete(p._id)));
     return pages.length;
   },
@@ -159,7 +132,7 @@ export const getArchived = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return [];
-
+    
     return await ctx.db
       .query("pages")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
