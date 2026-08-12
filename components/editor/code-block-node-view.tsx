@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useLayoutEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Copy, Check, WrapText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,113 +50,104 @@ export function CodeBlockNodeView({
   const language: string = node.attrs.language || "plaintext";
   const [copied, setCopied] = useState(false);
   const [wrap, setWrap] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [lineHeights, setLineHeights] = useState<number[]>([]);
-
-  // Mengukur tinggi setiap elemen baris DOM yang dirender oleh TipTap/Highlight.js
-  const updateLineHeights = useCallback(() => {
-    if (!containerRef.current) return;
-
-    // Ambil elemen editor di dalam NodeViewContent
-    const codeContainer = containerRef.current.querySelector(".hljs") || containerRef.current.querySelector("code");
+  const preRef = useRef < HTMLPreElement > (null);
+  const mirrorRef = useRef < HTMLDivElement > (null); // buat ukur tinggi
+  const copyTimer = useRef < ReturnType < typeof setTimeout > | null > (null);
+  
+  // -1 = baris lanjutan karena wrap. Tidak dirender angkanya
+  const [lineNumbers, setLineNumbers] = useState < number[] > ([1]);
+  
+  const recalcLineNumbers = useCallback(() => {
+    const pre = preRef.current;
+    const mirror = mirrorRef.current;
+    if (!pre) return;
     
-    if (!codeContainer) return;
-
-    // Jika TipTap memisah per baris dengan tag div/p atau `\n`
-    const lines = Array.from(codeContainer.childNodes);
+    const text = node.textContent ?? "";
+    const rawLines = text.length ? text.split("\n") : [""];
     
-    // Hitung tinggi berdasarkan karakter newline / pemisahan baris DOM
-    const textContent = node.textContent || "";
-    const lineCount = Math.max(1, textContent.split("\n").length);
-
-    // Dapatkan computed line-height dari kontainer
-    const computedStyle = window.getComputedStyle(codeContainer);
-    const defaultLineHeight = parseFloat(computedStyle.lineHeight) || 24;
-
-    // Jika tanpa wrap, semua baris berukuran standar
-    if (!wrap) {
-      setLineHeights(new Array(lineCount).fill(defaultLineHeight));
+    // Kalau tidak wrap, langsung 1:1
+    if (!wrap || !mirror) {
+      setLineNumbers(rawLines.map((_, i) => i + 1));
       return;
     }
-
-    // Mengukur tinggi setiap baris secara akurat saat ter-wrap
-    const heights: number[] = [];
-    let currentHeight = 0;
-
-    lines.forEach((child) => {
-      if (child.nodeType === Node.TEXT_NODE) {
-        const text = child.textContent || "";
-        const parts = text.split("\n");
-        parts.forEach((_, idx) => {
-          if (idx > 0) {
-            heights.push(currentHeight || defaultLineHeight);
-            currentHeight = 0;
-          }
-        });
-      } else if (child instanceof HTMLElement) {
-        const rect = child.getBoundingClientRect();
-        currentHeight = Math.max(currentHeight, rect.height);
-      }
+    
+    // Samakan style mirror dengan pre biar ukurannya sama
+    const style = getComputedStyle(pre);
+    mirror.style.width = `${pre.clientWidth}px`;
+    mirror.style.font = style.font;
+    mirror.style.lineHeight = style.lineHeight;
+    mirror.style.letterSpacing = style.letterSpacing;
+    mirror.style.padding = style.padding;
+    mirror.style.whiteSpace = "pre-wrap";
+    mirror.style.wordBreak = "break-all";
+    
+    const lineHeight = parseFloat(style.lineHeight) || 24;
+    const numbers: number[] = [];
+    
+    rawLines.forEach((line, idx) => {
+      const row = document.createElement("div");
+      row.style.whiteSpace = "pre-wrap";
+      row.style.wordBreak = "break-all";
+      row.textContent = line.length ? line : "\u200b"; // baris kosong tetap 1 baris
+      mirror.appendChild(row);
+      
+      const visualRows = Math.max(1, Math.round(row.getBoundingClientRect().height / lineHeight));
+      mirror.removeChild(row);
+      
+      numbers.push(idx + 1); // baris pertama ada nomornya
+      for (let r = 1; r < visualRows; r++) numbers.push(-1); // baris lanjutan kosong
     });
-
-    // Masukkan sisa tinggi baris terakhir
-    heights.push(currentHeight || defaultLineHeight);
-
-    // Fallback jika kalkulasi DOM tidak seimbang dengan baris teks aktual
-    while (heights.length < lineCount) {
-      heights.push(defaultLineHeight);
-    }
-
-    setLineHeights(heights.slice(0, lineCount));
+    
+    setLineNumbers(numbers);
   }, [node.textContent, wrap]);
-
-  // Sync ukuran saat mengetik (node.textContent berubah), toggle wrap, atau window resize
-  useEffect(() => {
-    updateLineHeights();
-
-    const resizeObserver = new ResizeObserver(() => updateLineHeights());
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, [updateLineHeights]);
-
+  
+  // Recalc saat konten berubah atau toggle wrap
+  useLayoutEffect(() => {
+    recalcLineNumbers();
+  }, [recalcLineNumbers]);
+  
+  // Recalc saat resize sidebar/container
+  useLayoutEffect(() => {
+    const pre = preRef.current;
+    if (!pre) return;
+    const ro = new ResizeObserver(() => recalcLineNumbers());
+    ro.observe(pre);
+    return () => ro.disconnect();
+  }, [recalcLineNumbers]);
+  
   const handleCopy = () => {
-    const text = node.textContent ?? "";
+    const text = preRef.current?.innerText ?? node.textContent ?? "";
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       if (copyTimer.current) clearTimeout(copyTimer.current);
       copyTimer.current = setTimeout(() => setCopied(false), 2000);
     });
   };
-
+  
   return (
     <NodeViewWrapper
       className={cn(
-        "code-block-wrapper not-prose relative my-4 rounded-lg overflow-hidden border border-border bg-muted",
+        "code-block-wrapper not-prose relative my-4 rounded-lg overflow-hidden",
         selected && "ring-2 ring-ring"
       )}
     >
-      {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-muted/80 border-b border-border select-none">
+      {/* Header */}
+      <div className="code-block-header flex items-center justify-between px-3 py-1.5 bg-muted/70 border-b border-muted-foreground/40">
         <div className="flex gap-1.5 items-center">
-          <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-          <span className="size-2.5 rounded-full bg-muted-foreground/40" />
-          <span className="size-2.5 rounded-full bg-muted-foreground/40" />
+          <span className="size-2.5 rounded-full bg-muted-foreground/60" />
+          <span className="size-2.5 rounded-full bg-muted-foreground/60" />
+          <span className="size-2.5 rounded-full bg-muted-foreground/60" />
         </div>
 
         <div className="flex items-center gap-1">
           <Button
             type="button"
-            variant={wrap ? "secondary" : "ghost"}
+            variant={wrap? "primary" : "ghost"}
             size="icon-xs"
             contentEditable={false}
-            onClick={() => setWrap((v) => !v)}
-            title={wrap ? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
-            className="text-[11px] cursor-pointer transition-colors"
+            onClick={() => setWrap((v) =>!v)}
+            title={wrap? "Nonaktifkan word wrap" : "Aktifkan word wrap"}
+            className="text-[11px] cursor-pointer transition-colors select-none"
           >
             <WrapText className="size-3" />
           </Button>
@@ -168,9 +159,9 @@ export function CodeBlockNodeView({
             contentEditable={false}
             onClick={handleCopy}
             title="Salin kode"
-            className="text-[11px] cursor-pointer transition-colors"
+            className="text-[11px] cursor-pointer transition-colors select-none"
           >
-            {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
+            {copied? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
           </Button>
 
           <div contentEditable={false}>
@@ -180,7 +171,7 @@ export function CodeBlockNodeView({
             >
               <SelectTrigger
                 size="sm"
-                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono cursor-pointer focus-visible:ring-0 focus-visible:border-transparent"
+                className="w-fit h-auto gap-1 rounded border-0 bg-transparent px-1.5 py-0.5 text-[11px] font-mono cursor-pointer select-none focus-visible:ring-0 focus-visible:border-transparent"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -196,37 +187,44 @@ export function CodeBlockNodeView({
         </div>
       </div>
 
-      {/* ── Body: Line numbers + Code ───────────────────────────────── */}
-      <div ref={containerRef} className="flex bg-muted overflow-x-auto relative">
-        {/* Line Numbers Bar */}
+      {/* Body: line numbers + code */}
+      <div className="flex bg-muted">
         <div
           contentEditable={false}
           aria-hidden="true"
-          className="sticky left-0 z-10 select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted border-r border-border/60 text-muted-foreground font-mono text-xs"
+          className="sticky left-0 z-[1] select-none shrink-0 flex flex-col items-end py-4 px-3 bg-muted/40 border-r border-muted-foreground/40 text-muted-foreground font-mono"
         >
-          {lineHeights.map((height, i) => (
-            <span
-              key={i}
-              style={{ height: wrap ? `${height}px` : undefined }}
-              className="tabular-nums leading-6 opacity-40 flex items-start justify-end"
-            >
-              {i + 1}
+          {lineNumbers.map((n, i) => (
+            <span key={i} className="tabular-nums leading-6 h-6 opacity-50 text-sm">
+              {n > 0 ? n : ""}
             </span>
           ))}
         </div>
 
-        {/* Code Content */}
         <pre
+          ref={preRef}
           className={cn(
-            "m-0 flex-1 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0 py-4 px-3",
-            wrap ? "whitespace-pre-wrap break-words overflow-visible" : "overflow-visible whitespace-pre"
+            "m-0 flex-1 font-mono text-sm leading-6 bg-transparent border-0 rounded-none min-w-0",
+            wrap ? "whitespace-pre-wrap break-all" : "whitespace-pre overflow-x-auto"
           )}
         >
-          <NodeViewContent
-            as="div"
-            className="hljs !text-inherit !bg-transparent !p-0 !font-mono !leading-6 !text-sm block"
-          />
+          <NodeViewContent as="div" className="hljs!text-inherit!bg-transparent!py-4!px-2!font-mono!leading-6!text-sm" />
         </pre>
+
+        {/* Mirror tersembunyi untuk ukur tinggi baris saat wrap */}
+        <div
+          ref={mirrorRef}
+          aria-hidden="true"
+          className="font-mono text-sm"
+          style={{
+            position: "absolute",
+            visibility: "hidden",
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
+        />
       </div>
     </NodeViewWrapper>
   );
