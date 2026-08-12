@@ -55,6 +55,22 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
+  /* ── Syntax Highlighting (Light Mode — Mapped to Palette) ───────── */
+  --hl-comment: var(--muted-foreground);
+  --hl-keyword: var(--ring);
+  --hl-string: var(--success);
+  --hl-number: var(--warning);
+  --hl-function: var(--primary);
+  --hl-class: var(--primary);
+  --hl-tag: var(--destructive);
+  --hl-attr: var(--ring);
+  --hl-punctuation: var(--secondary-foreground);
+  --hl-operator: var(--ring);
+  --hl-variable: var(--foreground);
+  --hl-builtin: var(--warning);
+  --hl-deleted: var(--destructive);
+  --hl-inserted: var(--success);
 }
 
 /* ── Dark mode — class-based (.dark on <html>) ────────────────────── */
@@ -108,13 +124,29 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+
+  /* ── Syntax Highlighting (Dark Mode — Mapped to Palette) ────────── */
+  --hl-comment: var(--muted-foreground);
+  --hl-keyword: var(--ring);
+  --hl-string: var(--success);
+  --hl-number: var(--warning);
+  --hl-function: var(--primary);
+  --hl-class: var(--primary);
+  --hl-tag: var(--destructive);
+  --hl-attr: var(--ring);
+  --hl-punctuation: var(--secondary-foreground);
+  --hl-operator: var(--ring);
+  --hl-variable: var(--foreground);
+  --hl-builtin: var(--warning);
+  --hl-deleted: var(--destructive);
+  --hl-inserted: var(--success);
 }
 
 /* ── Tailwind v4 theme mapping ────────────────────────────────────── */
 @theme inline {
   /* ── Animations ─────────────────────────────────────────────────── */
   --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up   0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 
   /* Spring: slight overshoot on open, snappy on close */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -134,7 +166,7 @@
   /* ── Custom text sizes ───────────────────────────────────────────── */
   --text-xxs: 0.625rem;                   /* 10px — labels, timestamps, badges */
   --text-xs2: 0.6875rem;                  /* 11px — author names, hints        */
-  --text-badge: 0.5625rem;                  /* 9px  — notification dot counters  */
+  --text-badge: 0.5625rem;                /* 9px  — notification dot counters  */
 
   /* ── Colors ──────────────────────────────────────────────────────── */
   --color-background: var(--background);
@@ -175,12 +207,12 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* ── Comment highlight tokens ────────────────────────────────────── */
-  --color-comment-highlight:       oklch(91% 0.12 84);
-  --color-comment-highlight-hover: oklch(84% 0.16 72);
-  --color-comment-highlight-dk:    oklch(42% 0.10 75 / 0.55);
-  --color-comment-highlight-dk-tx: oklch(90% 0.04 84);
-  --color-comment-highlight-dk-hv: oklch(50% 0.14 72 / 0.65);
+  /* ── Comment highlight tokens (menggunakan --accent & --warning) ─── */
+  --color-comment-highlight: var(--accent);
+  --color-comment-highlight-hover: var(--secondary);
+  --color-comment-highlight-dk: var(--accent);
+  --color-comment-highlight-dk-tx: var(--accent-foreground);
+  --color-comment-highlight-dk-hv: var(--sidebar-hover);
 
   /* ── Table selection token ───────────────────────────────────────── */
   --color-selection-bg: color-mix(in oklch, var(--ring) 14%, transparent);
@@ -192,9 +224,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ── Base layer — font utilities registered here so every component  ──
-   can use className="font-sans" or className="font-mono" directly,   ──
-   without any additional imports.                                     ── */
+/* ── Base layer ────────────────────────────────────────────────────── */
 @layer base {
   *,
   ::before,
@@ -218,11 +248,12 @@
     color: var(--color-foreground);
     transition: background-color 0.2s ease, color 0.2s ease;
   }
-  
+
   button:not(:disabled),
-    [role="button"]:not(:disabled) {
-  cursor: pointer;
-  
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
@@ -230,9 +261,7 @@
     -webkit-text-fill-color: inherit !important;
     transition: background-color 5000s ease-in-out 0s;
   }
-}
 
-  /* Monospace elements — className="font-mono" available on any element */
   code,
   pre,
   kbd,
@@ -240,7 +269,6 @@
     @apply font-mono;
   }
 
-  /* Tabular numerics — angka lebar sama, tidak loncat saat nilai berubah */
   [data-slot="badge"],
   time,
   [data-slot="kbd"],
@@ -249,11 +277,7 @@
   }
 }
 
-/* ── Prose utility — opt-in typographic rhythm for non-editor pages ──
-   Usage:  <article className="prose">...</article>
-   Sizes:  prose-sm (14px base)  ·  prose (16px base)  ·  prose-lg (18px base)
-   Width:  prose-full removes the 65ch max-width cap
-   Safe:   does NOT apply to .tiptap-content or Shadcn UI components        ── */
+/* ── Prose utility ─────────────────────────────────────────────────── */
 @layer components {
   .prose {
     max-width: 65ch;
@@ -298,7 +322,6 @@
       color: var(--color-foreground);
     }
 
-    /* First / last child rhythm resets */
     & > *:first-child {
       margin-top: 0;
     }
@@ -362,7 +385,6 @@
       text-decoration: line-through;
     }
 
-    /* inline code — skip pre > code so block styles win */
     & :not(pre) > code {
       @apply font-mono;
       background-color: var(--color-muted);
@@ -423,7 +445,6 @@
     }
   }
 
-  /* ── Size modifiers ──────────────────────────────────────────────── */
   .prose-sm {
     font-size: 0.875rem;
     line-height: 1.65;
@@ -444,7 +465,6 @@
     & p { margin-bottom: 1.25rem; }
   }
 
-  /* ── Width modifier — removes 65ch cap for full-bleed layouts ────── */
   .prose-full {
     max-width: none;
   }
@@ -541,44 +561,6 @@
 }
 
 /* ── Code block node view ──────────────────────────────────────────── */
-
-/* Light mode tokens */
-:root {
-  --hl-comment: oklch(60% 0.01 250);
-  --hl-keyword: oklch(45% 0.20 290);
-  --hl-string: oklch(48% 0.15 150);
-  --hl-number: oklch(50% 0.18 35);
-  --hl-function: oklch(48% 0.17 245);
-  --hl-class: oklch(52% 0.18 55);
-  --hl-tag: oklch(48% 0.18 20);
-  --hl-attr: oklch(48% 0.16 290);
-  --hl-punctuation: oklch(45% 0.01 250);
-  --hl-operator: oklch(45% 0.20 290);
-  --hl-variable: oklch(40% 0.01 250);
-  --hl-builtin: oklch(50% 0.18 35);
-  --hl-deleted: oklch(48% 0.18 20);
-  --hl-inserted: oklch(48% 0.15 150);
-}
-
-/* Dark mode tokens */
-.dark {
-  --hl-comment: oklch(60% 0.02 260);
-  --hl-keyword: oklch(72% 0.20 300);
-  --hl-string: oklch(74% 0.15 145);
-  --hl-number: oklch(74% 0.16 60);
-  --hl-function: oklch(72% 0.17 220);
-  --hl-class: oklch(75% 0.16 80);
-  --hl-tag: oklch(70% 0.18 20);
-  --hl-attr: oklch(72% 0.15 300);
-  --hl-punctuation: oklch(72% 0.01 260);
-  --hl-operator: oklch(72% 0.20 300);
-  --hl-variable: oklch(82% 0.01 260);
-  --hl-builtin: oklch(74% 0.16 60);
-  --hl-deleted: oklch(70% 0.18 20);
-  --hl-inserted: oklch(74% 0.15 145);
-}
-
-/* Node view wrapper resets */
 .tiptap-content .ProseMirror .code-block-wrapper pre {
   background-color: transparent;
   border-radius: 0;
@@ -588,7 +570,7 @@
 
 /* Fallback: plain pre (no node view) */
 .tiptap-content .ProseMirror pre {
-  background-color: var(--cb-bg);
+  background-color: var(--muted);
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   overflow-x: auto;
@@ -746,7 +728,7 @@
 }
 
 .mobile-fab:active {
-  background-color: var(--color-sidebar-hover) !important;
+  background-color: var(--sidebar-hover) !important;
 }
 
 @keyframes page-item-in {
@@ -781,12 +763,12 @@
 
 /* ── Drawer snap handle ───────────────────────────────────────────── */
 [data-slot="drawer-content"] [data-vaul-drag-handle] {
-  background-color: var(--color-border);
+  background-color: var(--border);
   transition: background-color 0.2s ease;
 }
 
 [data-slot="drawer-content"] [data-vaul-drag-handle]:hover {
-  background-color: var(--color-muted-foreground);
+  background-color: var(--muted-foreground);
 }
 
 /* ── Sheet slide keyframes (fallback for older Base UI) ──────────── */
@@ -811,7 +793,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes sheet-slide-out-bottom {
-  from { opacity: 1; transform: translateY(0); }
+  from { opacity: 1; transform: translateX(0); }
   to { opacity: 0; transform: translateY(110%); }
 }
 @keyframes sheet-slide-in-top {
@@ -825,19 +807,20 @@
 
 /* ── Comment highlight mark ─────────────────────────────────────── */
 mark.comment-highlight {
-  background-color: var(--color-comment-highlight);
+  background-color: var(--accent);
+  color: var(--accent-foreground);
   border-radius: 2px;
   padding: 1px 0;
   cursor: pointer;
   transition: background-color 150ms ease;
 }
 mark.comment-highlight:hover {
-  background-color: var(--color-comment-highlight-hover);
+  background-color: var(--secondary);
 }
 .dark mark.comment-highlight {
-  background-color: var(--color-comment-highlight-dk);
-  color: var(--color-comment-highlight-dk-tx);
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 .dark mark.comment-highlight:hover {
-  background-color: var(--color-comment-highlight-dk-hv);
+  background-color: var(--sidebar-hover);
 }
