@@ -23,7 +23,7 @@ import {
 } from "@dnd-kit/sortable";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useSidebar } from "@/lib/sidebar-context";
+import { useSidebar as useUiSidebar } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
@@ -38,20 +38,20 @@ import type { PageData } from "./types";
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const { collapsed: desktopCollapsed } = useSidebar();
+  const { state: desktopState } = useUiSidebar();
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
 
   useEffect(() => {
     if (
-      desktopCollapsed === false &&
+      desktopState === "expanded" &&
       typeof window !== "undefined" &&
       window.innerWidth >= 768
     ) {
       setOpen(false);
     }
-  }, [desktopCollapsed]);
+  }, [desktopState]);
 
   // Lock body scroll when sheet is open
   useEffect(() => {

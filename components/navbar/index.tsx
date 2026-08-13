@@ -9,7 +9,7 @@ import { Check, Loader2, MessageSquare, PanelLeft } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { useSidebar } from "@/lib/sidebar-context";
+import { useSidebar } from "@/components/ui/sidebar";
 import { useEditorContext } from "@/lib/editor-context";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 import { UserMenu } from "@/components/user-menu";
@@ -30,7 +30,8 @@ interface NavbarProps {
 type SaveStatus = "idle" | "saving" | "saved";
 
 export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) {
-  const { toggle, collapsed } = useSidebar();
+  const { toggleSidebar, state } = useSidebar();
+  const collapsed = state === "collapsed";
   const { editor } = useEditorContext();
   const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { data: activeThreadCount = 0 } = useQuery(convexQuery(api.comments.countActiveThreads, { pageId })) as {
@@ -118,7 +119,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
                   type="button"
                   variant="ghost"
                   size="icon-sm"
-                  onClick={toggle}
+                   onClick={toggleSidebar}
                   aria-label="Toggle sidebar"
                   className="hidden md:inline-flex shrink-0"
                 />
@@ -127,7 +128,7 @@ export function Navbar({ pageId, commentsOpen, onToggleComments }: NavbarProps) 
               <PanelLeft className={cn("size-4 transition-colors", collapsed ? "text-foreground" : "text-muted-foreground")} />
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              Toggle sidebar <Kbd data-icon="inline-end">[</Kbd>
+                   Toggle sidebar <Kbd data-icon="inline-end">⌘B</Kbd>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

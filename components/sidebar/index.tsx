@@ -1,28 +1,23 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import { useSidebar } from "@/lib/sidebar-context";
-import { SidebarContent } from "./sidebar-content";
+import {
+  Sidebar as UiSidebar,
+  SidebarContent as UiSidebarContent,
+  SidebarRail,
+  useSidebar as useUiSidebar,
+} from "@/components/ui/sidebar";
+import { SidebarContent as WorkspaceSidebarContent } from "./sidebar-content";
 
 export function Sidebar() {
-  const { collapsed, toggle, expand } = useSidebar();
+  const { toggleSidebar } = useUiSidebar();
 
   return (
-    <div className="hidden md:flex h-full shrink-0">
-      {collapsed ? (
-        <button
-          onClick={expand}
-          title="Expand sidebar  [ "
-          className="flex items-center justify-center w-4 h-full bg-sidebar border-r border-border hover:bg-sidebar-hover transition-colors group"
-        >
-          <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground" />
-        </button>
-      ) : (
-        <aside className="flex flex-col w-60 h-full bg-sidebar border-r border-border">
-          <SidebarContent onCollapse={toggle} />
-        </aside>
-      )}
-    </div>
+    <UiSidebar collapsible="offcanvas" className="border-sidebar-border">
+      <UiSidebarContent className="p-0">
+        <WorkspaceSidebarContent onCollapse={toggleSidebar} />
+      </UiSidebarContent>
+      <SidebarRail />
+    </UiSidebar>
   );
 }
 

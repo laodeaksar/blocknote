@@ -23,7 +23,6 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { toast } from "sonner";
-import { useSidebar } from "@/lib/sidebar-context";
 import { UserMenu } from "@/components/user-menu";
 import { SearchModal } from "@/components/search-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
